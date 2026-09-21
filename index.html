@@ -11,222 +11,181 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-
-/* ── THEME ── */
 :root{
   --bg:#F2F2F7;--bg2:#FFFFFF;--bg3:#EFEFF4;
-  --label:#000000;--label2:#3C3C43;--label3:#8E8E93;--label4:#C7C7CC;
-  --separator:#C6C6C8;--separator2:#E5E5EA;
-  --accent:#5856D6;--accent2:#EEF;
-  --success:#34C759;--danger:#FF3B30;--warning:#FF9500;
-  --card-shadow:0 2px 12px rgba(0,0,0,.08);
-  --radius:16px;--radius-sm:12px;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --label:#000;--label2:#3C3C43;--label3:#8E8E93;--label4:#C7C7CC;
+  --sep:#C6C6C8;--sep2:#E5E5EA;
+  --accent:#5856D6;--accent2:#EEEEFF;
+  --ok:#34C759;--err:#FF3B30;--warn:#FF9500;
+  --shadow:0 2px 12px rgba(0,0,0,.08);
+  --r:16px;--r2:12px;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
 }
 [data-theme="dark"]{
-  --bg:#000000;--bg2:#1C1C1E;--bg3:#2C2C2E;
-  --label:#FFFFFF;--label2:#EBEBF5;--label3:#8E8E93;--label4:#48484A;
-  --separator:#38383A;--separator2:#2C2C2E;
-  --accent:#7C7AE8;--accent2:#1E1E3F;
-  --card-shadow:0 2px 12px rgba(0,0,0,.4);
+  --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;
+  --label:#FFF;--label2:#EBEBF5;--label3:#8E8E93;--label4:#48484A;
+  --sep:#38383A;--sep2:#2C2C2E;--accent:#7C7AE8;--accent2:#1E1E3F;
+  --shadow:0 2px 12px rgba(0,0,0,.4);
 }
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#000000;--bg2:#1C1C1E;--bg3:#2C2C2E;
-    --label:#FFFFFF;--label2:#EBEBF5;--label3:#8E8E93;--label4:#48484A;
-    --separator:#38383A;--separator2:#2C2C2E;
-    --accent:#7C7AE8;--accent2:#1E1E3F;
-    --card-shadow:0 2px 12px rgba(0,0,0,.4);
-  }
-}
-
-/* ── BASE ── */
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;--label:#FFF;--label2:#EBEBF5;
+  --label3:#8E8E93;--label4:#48484A;--sep:#38383A;--sep2:#2C2C2E;
+  --accent:#7C7AE8;--accent2:#1E1E3F;--shadow:0 2px 12px rgba(0,0,0,.4);
+}}
 html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--label);-webkit-overflow-scrolling:touch}
 .jp{font-family:'Noto Sans JP',sans-serif}
-
-/* ── SCREENS ── */
 .screen{display:none;min-height:100dvh;min-height:100vh;flex-direction:column;background:var(--bg)}
 .screen.active{display:flex}
 
-/* ── HEADER ── */
-.topbar{
-  background:var(--bg2);
-  padding:calc(var(--safe-top) + 12px) 20px 12px;
-  display:flex;align-items:center;gap:10px;
-  border-bottom:1px solid var(--separator2);
-  position:sticky;top:0;z-index:50;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  background:rgba(var(--bg2-rgb,255,255,255),.85);
-}
+/* TOPBAR */
+.topbar{background:rgba(var(--bg2-rgb,255,255,255),.85);padding:calc(var(--st)+12px) 20px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--sep2);position:sticky;top:0;z-index:50;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 [data-theme="dark"] .topbar{background:rgba(28,28,30,.85)}
-.topbar-title{font-size:17px;font-weight:700;flex:1;letter-spacing:-.3px;color:var(--label)}
+.topbar-title{font-size:17px;font-weight:700;flex:1;color:var(--label)}
 .topbar-btn{background:none;border:none;color:var(--accent);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;touch-action:manipulation;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%}
 .topbar-btn:active{background:var(--bg3)}
-.topbar-icon{font-size:22px;color:var(--label)}
 
-/* ── SCROLL CONTENT ── */
-.scroll{flex:1;overflow-y:auto;padding:16px 16px calc(16px + var(--safe-bottom));max-width:600px;width:100%;margin:0 auto}
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;padding:16px 16px calc(16px + var(--sb));max-width:600px;width:100%;margin:0 auto}
 
-/* ── AUTH ── */
-.auth-screen{min-height:100dvh;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;padding-top:calc(var(--safe-top) + 32px);padding-bottom:calc(var(--safe-bottom) + 32px)}
-.auth-logo-wrap{text-align:center;margin-bottom:40px}
-.auth-logo{font-size:56px;margin-bottom:12px;display:block}
-.auth-app{font-size:28px;font-weight:700;letter-spacing:-1px;color:var(--label)}
-.auth-app span{color:var(--accent)}
-.auth-sub{font-size:14px;color:var(--label3);margin-top:6px}
-.auth-card{background:var(--bg2);border-radius:20px;padding:24px;width:100%;max-width:400px;box-shadow:var(--card-shadow)}
-.seg-ctrl{display:flex;background:var(--bg3);border-radius:10px;padding:2px;margin-bottom:24px}
-.seg-btn{flex:1;padding:8px;text-align:center;font-size:14px;font-weight:600;border:none;background:none;border-radius:8px;color:var(--label3);cursor:pointer;font-family:inherit;touch-action:manipulation;transition:all .2s}
-.seg-btn.active{background:var(--bg2);color:var(--label);box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.field{margin-bottom:14px}
-.field label{font-size:12px;font-weight:700;color:var(--label3);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:6px}
-.field input{width:100%;padding:13px 16px;background:var(--bg3);border:none;border-radius:12px;font-size:16px;color:var(--label);font-family:inherit;outline:none;-webkit-appearance:none;transition:box-shadow .2s}
-.field input:focus{box-shadow:0 0 0 3px rgba(88,86,214,.25)}
-.field input::placeholder{color:var(--label4)}
-.err{font-size:13px;color:var(--danger);margin-bottom:12px;display:none;padding:10px 14px;background:rgba(255,59,48,.1);border-radius:10px}
+/* AUTH */
+.auth-wrap{min-height:100dvh;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;padding-top:calc(var(--st)+32px);padding-bottom:calc(var(--sb)+32px);background:var(--bg)}
+.auth-logo{font-size:56px;text-align:center;margin-bottom:10px}
+.auth-name{font-size:30px;font-weight:800;text-align:center;letter-spacing:-1px;color:var(--label);margin-bottom:4px}
+.auth-name em{color:var(--accent);font-style:normal}
+.auth-sub2{font-size:14px;color:var(--label3);text-align:center;margin-bottom:36px}
+.auth-box{background:var(--bg2);border-radius:20px;padding:24px;width:100%;max-width:400px;box-shadow:var(--shadow)}
+.seg{display:flex;background:var(--bg3);border-radius:10px;padding:2px;margin-bottom:22px}
+.seg-btn{flex:1;padding:9px;text-align:center;font-size:14px;font-weight:600;border:none;background:none;border-radius:8px;color:var(--label3);cursor:pointer;font-family:inherit;touch-action:manipulation;transition:all .2s}
+.seg-btn.on{background:var(--bg2);color:var(--label);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.fld{margin-bottom:14px}
+.fld label{font-size:12px;font-weight:700;color:var(--label3);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:6px}
+.fld input{width:100%;padding:13px 16px;background:var(--bg3);border:none;border-radius:12px;font-size:16px;color:var(--label);font-family:inherit;outline:none;-webkit-appearance:none;transition:box-shadow .2s}
+.fld input:focus{box-shadow:0 0 0 3px rgba(88,86,214,.3)}
+.fld input::placeholder{color:var(--label4)}
+.errmsg{font-size:13px;color:var(--err);display:none;padding:10px 14px;background:rgba(255,59,48,.1);border-radius:10px;margin-bottom:12px}
+.infomsg{font-size:13px;color:var(--accent);display:none;padding:10px 14px;background:var(--accent2);border-radius:10px;margin-bottom:12px}
 .auth-btn{width:100%;padding:15px;background:var(--accent);color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;touch-action:manipulation;transition:opacity .15s;margin-top:4px}
 .auth-btn:active{opacity:.75}
 .auth-btn:disabled{opacity:.5}
-.auth-footer{text-align:center;margin-top:16px}
-.auth-footer button{background:none;border:none;color:var(--label3);font-size:13px;cursor:pointer;font-family:inherit;touch-action:manipulation}
 
-/* ── HOME ── */
-.greeting-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.greeting-text h2{font-size:22px;font-weight:700;letter-spacing:-.5px;color:var(--label)}
-.greeting-text p{font-size:14px;color:var(--label3);margin-top:2px}
-.theme-btn{background:var(--bg2);border:none;width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--card-shadow);touch-action:manipulation;flex-shrink:0}
+/* HOME */
+.greet h2{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.greet p{font-size:14px;color:var(--label3)}
+.greet{margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.theme-btn{background:var(--bg2);border:none;width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);touch-action:manipulation;flex-shrink:0}
 .theme-btn:active{opacity:.7}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.stat{background:var(--bg2);border-radius:var(--r2);padding:14px 12px;text-align:center;box-shadow:var(--shadow)}
+.stat-n{font-size:26px;font-weight:700;color:var(--accent);line-height:1}
+.stat-l{font-size:11px;color:var(--label3);margin-top:4px;font-weight:500}
+.sec-hd{font-size:12px;font-weight:700;color:var(--label3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;padding-left:2px}
 
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
-.stat-card{background:var(--bg2);border-radius:var(--radius-sm);padding:14px 12px;text-align:center;box-shadow:var(--card-shadow)}
-.stat-num{font-size:26px;font-weight:700;color:var(--accent);line-height:1}
-.stat-lbl{font-size:11px;color:var(--label3);margin-top:4px;font-weight:500}
-
-.section-header{font-size:13px;font-weight:700;color:var(--label3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;padding-left:4px}
-
-/* ── DAY CARDS ── */
-.day-cards{display:flex;flex-direction:column;gap:10px}
-.day-card{background:var(--bg2);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--card-shadow);touch-action:manipulation;border:none;width:100%;text-align:left;font-family:inherit;cursor:pointer;transition:opacity .15s}
+/* DAY LIST */
+.day-list{display:flex;flex-direction:column;gap:10px}
+.day-card{background:var(--bg2);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);touch-action:manipulation;border:none;width:100%;text-align:left;font-family:inherit;cursor:pointer;transition:opacity .15s}
 .day-card:active{opacity:.6}
-.day-card.locked{opacity:.35;cursor:not-allowed}
+.day-card.locked{opacity:.35;cursor:default}
 .day-card.locked:active{opacity:.35}
-.day-num-badge{width:46px;height:46px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-weight:700}
-.day-num-badge.done{background:rgba(52,199,89,.15)}
-.day-num-badge.active{background:var(--accent2)}
-.day-num-badge.locked{background:var(--bg3)}
-.day-num-badge .num{font-size:16px;font-weight:800;line-height:1}
-.day-num-badge.done .num{color:var(--success)}
-.day-num-badge.active .num{color:var(--accent)}
-.day-num-badge.locked .num{color:var(--label4)}
-.day-num-badge .d-label{font-size:9px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;margin-top:1px}
-.day-num-badge.done .d-label{color:var(--success)}
-.day-num-badge.active .d-label{color:var(--accent)}
-.day-num-badge.locked .d-label{color:var(--label4)}
+.day-badge{width:46px;height:46px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.day-badge.done{background:rgba(52,199,89,.15)}
+.day-badge.go{background:var(--accent2)}
+.day-badge.lock{background:var(--bg3)}
+.day-badge .dn{font-size:16px;font-weight:800;line-height:1}
+.day-badge.done .dn{color:var(--ok)}
+.day-badge.go .dn{color:var(--accent)}
+.day-badge.lock .dn{color:var(--label4)}
+.day-badge .dl{font-size:9px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;margin-top:1px}
+.day-badge.done .dl{color:var(--ok)}
+.day-badge.go .dl{color:var(--accent)}
+.day-badge.lock .dl{color:var(--label4)}
 .day-info{flex:1;min-width:0}
-.day-name{font-size:15px;font-weight:600;color:var(--label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.day-meta{font-size:13px;color:var(--label3);margin-top:2px}
-.day-pill{font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
-.day-pill.done{background:rgba(52,199,89,.12);color:var(--success)}
-.day-pill.test{background:rgba(255,149,0,.12);color:var(--warning)}
-.day-pill.go{background:var(--accent2);color:var(--accent)}
-.day-pill.lock{background:var(--bg3);color:var(--label4)}
+.day-nm{font-size:15px;font-weight:600;color:var(--label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day-wc{font-size:13px;color:var(--label3);margin-top:2px}
+.pill{font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.pill.done{background:rgba(52,199,89,.12);color:var(--ok)}
+.pill.test{background:rgba(255,149,0,.12);color:var(--warn)}
+.pill.go{background:var(--accent2);color:var(--accent)}
+.pill.lock{background:var(--bg3);color:var(--label4)}
 
-/* ── FLASHCARD SCREEN ── */
-.fc-wrap{flex:1;display:flex;flex-direction:column;padding:20px 16px;padding-bottom:calc(20px + var(--safe-bottom));max-width:600px;width:100%;margin:0 auto}
+/* FC WRAP */
+.fc-wrap{flex:1;display:flex;flex-direction:column;padding:20px 16px;padding-bottom:calc(20px + var(--sb));max-width:600px;width:100%;margin:0 auto}
 .fc-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.fc-count{font-size:13px;color:var(--label3);font-weight:500}
+.fc-cnt{font-size:13px;color:var(--label3);font-weight:500}
 .fc-phase{font-size:12px;font-weight:700;color:var(--accent);background:var(--accent2);padding:4px 12px;border-radius:20px}
-.prog-bar{height:4px;background:var(--separator2);border-radius:2px;overflow:hidden;margin-bottom:20px}
-.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
-.flashcard{
-  flex:1;background:var(--bg2);border-radius:24px;
-  box-shadow:var(--card-shadow);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:40px 28px;text-align:center;
-  cursor:pointer;touch-action:manipulation;
-  min-height:260px;max-height:380px;
-  position:relative;transition:background .2s,transform .1s;
-  user-select:none;-webkit-user-select:none;
-}
-.flashcard:active{transform:scale(.98)}
-.flashcard.flipped{background:var(--accent2)}
+.prog{height:4px;background:var(--sep2);border-radius:2px;overflow:hidden;margin-bottom:20px}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
+
+/* FLASHCARD */
+.fc{flex:1;background:var(--bg2);border-radius:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;cursor:pointer;touch-action:manipulation;min-height:260px;max-height:380px;position:relative;transition:background .2s,transform .1s;user-select:none;-webkit-user-select:none}
+.fc:active{transform:scale(.98)}
+.fc.flipped{background:var(--accent2)}
 .fc-word{font-size:56px;font-weight:700;line-height:1.1;color:var(--label);letter-spacing:-1px}
 .fc-tap{font-size:13px;color:var(--label4);position:absolute;bottom:18px;left:50%;transform:translateX(-50%);white-space:nowrap}
-.fc-meaning{font-size:28px;font-weight:600;color:var(--accent);margin-top:20px;letter-spacing:-.5px}
-.write-box{background:var(--bg2);border-radius:var(--radius-sm);padding:14px 18px;text-align:center;margin-top:14px;border:1.5px dashed var(--accent)}
+.fc-meaning{font-size:28px;font-weight:600;color:var(--accent);margin-top:20px}
+.write-box{background:var(--bg2);border-radius:var(--r2);padding:14px 18px;text-align:center;margin-top:14px;border:1.5px dashed var(--accent)}
 .write-box p{font-size:14px;color:var(--accent);font-weight:500}
-.fc-actions{display:flex;gap:10px;margin-top:14px}
-.fc-actions .btn{flex:1}
 
-/* ── BLANK REVIEW ── */
-.blank-card{background:var(--bg2);border-radius:24px;box-shadow:var(--card-shadow);padding:36px 24px;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:14px}
-.blank-prompt{font-size:13px;color:var(--label3);margin-bottom:14px;font-weight:500}
-.blank-show{font-size:34px;font-weight:700;color:var(--label);letter-spacing:-.5px}
-.blank-ans{font-size:26px;font-weight:700;color:var(--accent);margin-top:18px;display:none;letter-spacing:-.5px}
+/* BLANK */
+.bl-card{background:var(--bg2);border-radius:24px;box-shadow:var(--shadow);padding:36px 24px;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:14px}
+.bl-prompt{font-size:13px;color:var(--label3);margin-bottom:14px;font-weight:500}
+.bl-show{font-size:34px;font-weight:700;color:var(--label)}
+.bl-ans{font-size:26px;font-weight:700;color:var(--accent);margin-top:18px;display:none}
 .self-row{display:none;gap:10px;margin-top:12px}
 
-/* ── QUIZ ── */
-.quiz-q{background:var(--bg2);border-radius:20px;padding:28px 20px;text-align:center;box-shadow:var(--card-shadow);margin-bottom:16px}
-.quiz-word{font-size:48px;font-weight:700;letter-spacing:-1px;color:var(--label)}
-.quiz-hint{font-size:13px;color:var(--label3);margin-top:8px}
+/* QUIZ */
+.qz-q{background:var(--bg2);border-radius:20px;padding:28px 20px;text-align:center;box-shadow:var(--shadow);margin-bottom:16px}
+.qz-word{font-size:48px;font-weight:700;letter-spacing:-1px;color:var(--label)}
+.qz-hint{font-size:13px;color:var(--label3);margin-top:8px}
 .opts{display:flex;flex-direction:column;gap:10px}
-.opt{background:var(--bg2);border:2px solid var(--separator2);border-radius:var(--radius-sm);padding:16px 18px;font-size:15px;font-weight:500;cursor:pointer;text-align:left;font-family:inherit;color:var(--label);touch-action:manipulation;-webkit-appearance:none;user-select:none;min-height:54px;transition:all .15s;width:100%}
+.opt{background:var(--bg2);border:2px solid var(--sep2);border-radius:var(--r2);padding:16px 18px;font-size:15px;font-weight:500;cursor:pointer;text-align:left;font-family:inherit;color:var(--label);touch-action:manipulation;-webkit-appearance:none;user-select:none;min-height:54px;width:100%;transition:all .15s}
 .opt:active{background:var(--bg3)}
-.opt.correct{border-color:var(--success)!important;background:rgba(52,199,89,.1)!important;color:var(--success)}
-.opt.wrong{border-color:var(--danger)!important;background:rgba(255,59,48,.1)!important;color:var(--danger)}
-.opt.reveal{opacity:.45;pointer-events:none}
-.result-card{background:var(--bg2);border-radius:24px;padding:36px 24px;text-align:center;box-shadow:var(--card-shadow);margin-bottom:20px}
-.result-score{font-size:64px;font-weight:800;letter-spacing:-2px}
-.result-msg{font-size:17px;color:var(--label2);margin-top:8px;font-weight:500}
-.result-sub{font-size:14px;color:var(--label3);margin-top:6px}
+.opt.correct{border-color:var(--ok)!important;background:rgba(52,199,89,.1)!important;color:var(--ok)}
+.opt.wrong{border-color:var(--err)!important;background:rgba(255,59,48,.1)!important;color:var(--err)}
+.opt.reveal{opacity:.4;pointer-events:none}
+.result-card{background:var(--bg2);border-radius:24px;padding:36px 24px;text-align:center;box-shadow:var(--shadow);margin-bottom:20px}
+.r-score{font-size:64px;font-weight:800;letter-spacing:-2px}
+.r-msg{font-size:17px;color:var(--label2);margin-top:8px;font-weight:500}
+.r-sub{font-size:14px;color:var(--label3);margin-top:6px}
 
-/* ── WRONG NOTES ── */
-.wrong-card{background:var(--bg2);border-radius:var(--radius-sm);padding:16px;box-shadow:var(--card-shadow);display:flex;align-items:center;gap:14px}
-.wrong-jp{font-size:26px;font-weight:700;color:var(--label);line-height:1.1}
-.wrong-kr{font-size:14px;color:var(--label3);margin-top:3px}
-.wrong-day-tag{font-size:11px;color:var(--label4);margin-top:2px}
+/* WRONG */
+.wrong-card{background:var(--bg2);border-radius:var(--r2);padding:16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
+.wjp{font-size:26px;font-weight:700;color:var(--label)}
+.wkr{font-size:14px;color:var(--label3);margin-top:3px}
+.wday{font-size:11px;color:var(--label4);margin-top:2px}
 .empty{text-align:center;padding:60px 20px;color:var(--label3)}
 .empty .ico{font-size:48px;display:block;margin-bottom:12px}
+.review-info{background:var(--accent2);border-radius:var(--r2);padding:14px 16px;font-size:14px;color:var(--accent);font-weight:500;margin-bottom:16px}
 
-/* ── BUTTONS ── */
-.btn{display:block;width:100%;padding:15px;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;touch-action:manipulation;transition:opacity .15s;-webkit-appearance:none;user-select:none;letter-spacing:-.2px}
+/* BUTTONS */
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:var(--r2);font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;touch-action:manipulation;transition:opacity .15s;-webkit-appearance:none;user-select:none;letter-spacing:-.2px}
 .btn:active{opacity:.7}
 .btn:disabled{opacity:.4}
 .btn-accent{background:var(--accent);color:#fff}
-.btn-success{background:var(--success);color:#fff}
-.btn-danger{background:var(--danger);color:#fff}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-err{background:var(--err);color:#fff}
 .btn-muted{background:var(--bg3);color:var(--label2)}
+.btn-outline{background:none;border:2px solid var(--sep);color:var(--label2)}
 .btn-sm{padding:11px 18px;font-size:14px;width:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px}
-.btn-outline{background:none;border:2px solid var(--separator);color:var(--label2)}
+.gap{height:12px}
+.row{display:flex;gap:10px}
+.row .btn{flex:1}
 
-/* ── BOTTOM NAV ── */
-.bottom-nav{background:var(--bg2);border-top:1px solid var(--separator2);display:flex;padding-bottom:var(--safe-bottom);position:sticky;bottom:0;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+/* BOTTOM NAV */
+.bottom-nav{background:var(--bg2);border-top:1px solid var(--sep2);display:flex;padding-bottom:var(--sb);position:sticky;bottom:0;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px;border:none;background:none;font-family:inherit;cursor:pointer;touch-action:manipulation;color:var(--label3);font-size:10px;font-weight:600;gap:3px;min-height:54px;transition:color .15s;letter-spacing:.2px}
-.nav-btn.active{color:var(--accent)}
+.nav-btn.on{color:var(--accent)}
 .nav-ico{font-size:23px;line-height:1}
 
-/* ── MISC ── */
-.toast{position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--label);backdrop-filter:blur(20px);padding:11px 20px;border-radius:30px;font-size:14px;font-weight:500;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;box-shadow:var(--card-shadow);border:1px solid var(--separator)}
+/* TOAST / LOADER */
+.toast{position:fixed;bottom:calc(90px + var(--sb));left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--label);backdrop-filter:blur(20px);padding:11px 20px;border-radius:30px;font-size:14px;font-weight:500;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow);border:1px solid var(--sep)}
 .toast.show{opacity:1}
 .loader{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:300}
 .loader.show{display:flex}
 .spin{width:44px;height:44px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.sync{width:7px;height:7px;border-radius:50%;background:var(--success);flex-shrink:0}
-.sync.busy{background:var(--warning);animation:pulse .9s infinite}
+.sync{width:7px;height:7px;border-radius:50%;background:var(--ok);flex-shrink:0}
+.sync.busy{background:var(--warn);animation:pulse .9s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.gap{height:12px}
-.review-info{background:var(--accent2);border-radius:var(--radius-sm);padding:14px 16px;font-size:14px;color:var(--accent);font-weight:500;margin-bottom:16px}
-
-/* ── SETUP ── */
-.setup-screen{min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;padding-top:calc(var(--safe-top)+24px);padding-bottom:calc(var(--safe-bottom)+24px)}
-.setup-box{background:var(--bg2);border-radius:20px;padding:28px 24px;width:100%;max-width:480px;box-shadow:var(--card-shadow)}
-.setup-box h2{font-size:20px;font-weight:700;margin-bottom:8px;color:var(--label)}
-.setup-box p{font-size:14px;color:var(--label3);margin-bottom:16px;line-height:1.6}
-.setup-box ol{font-size:14px;color:var(--label3);padding-left:20px;margin-bottom:16px;line-height:2.2}
-.setup-box textarea{width:100%;height:180px;padding:12px;background:var(--bg3);border:none;border-radius:12px;font-size:12px;font-family:monospace;resize:vertical;outline:none;color:var(--label);-webkit-appearance:none}
-.setup-box textarea:focus{box-shadow:0 0 0 3px rgba(88,86,214,.25)}
 </style>
 </head>
 <body>
@@ -234,48 +193,31 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <div class="loader" id="loader"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
 
-<!-- SETUP -->
-<div id="screen-setup" class="screen">
-  <div class="setup-screen">
-    <div class="setup-box">
-      <h2>🔥 Firebase 설정</h2>
-      <p>Firebase Console에서 앱을 등록하고 <code>firebaseConfig</code>를 붙여넣으세요.</p>
-      <div class="field"><label>firebaseConfig</label>
-        <textarea id="config-input" placeholder='const firebaseConfig = { apiKey: "...", ... }'></textarea>
-        <div class="err" id="config-err"></div>
-      </div>
-      <button class="btn btn-accent" onclick="saveConfig()">저장하고 시작하기</button>
-    </div>
-  </div>
-</div>
-
 <!-- AUTH -->
-<div id="screen-auth" class="screen">
-  <div class="auth-screen">
-    <div class="auth-logo-wrap">
-      <span class="auth-logo">🎌</span>
-      <div class="auth-app">こと<span>ば</span> N3</div>
-      <div class="auth-sub">하루 한 Day, 꾸준히 N3 정복</div>
-    </div>
-    <div class="auth-card">
-      <div class="seg-ctrl">
-        <button class="seg-btn active" id="tab-login" onclick="switchTab('login')">로그인</button>
+<div id="screen-auth" class="screen active">
+  <div class="auth-wrap">
+    <div class="auth-logo">🎌</div>
+    <div class="auth-name">こと<em>ば</em> N3</div>
+    <div class="auth-sub2">하루 한 Day, 꾸준히 N3 정복</div>
+    <div class="auth-box">
+      <div class="seg">
+        <button class="seg-btn on" id="tab-login" onclick="switchTab('login')">로그인</button>
         <button class="seg-btn" id="tab-signup" onclick="switchTab('signup')">회원가입</button>
       </div>
       <div id="form-login">
-        <div class="field"><label>이메일</label><input type="email" id="login-email" placeholder="name@email.com"></div>
-        <div class="field"><label>비밀번호</label><input type="password" id="login-pw" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-        <div class="err" id="login-err"></div>
-        <button class="btn btn-accent" id="login-btn" onclick="doLogin()">로그인</button>
+        <div class="fld"><label>이메일</label><input type="email" id="li-email" placeholder="name@email.com"></div>
+        <div class="fld"><label>비밀번호</label><input type="password" id="li-pw" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="errmsg" id="li-err"></div>
+        <button class="auth-btn" id="li-btn" onclick="doLogin()">로그인</button>
       </div>
       <div id="form-signup" style="display:none">
-        <div class="field"><label>이름</label><input type="text" id="signup-name" placeholder="홍길동"></div>
-        <div class="field"><label>이메일</label><input type="email" id="signup-email" placeholder="name@email.com"></div>
-        <div class="field"><label>비밀번호 (6자 이상)</label><input type="password" id="signup-pw" placeholder="••••••" onkeydown="if(event.key==='Enter')doSignup()"></div>
-        <div class="err" id="signup-err"></div>
-        <button class="btn btn-accent" id="signup-btn" onclick="doSignup()">회원가입</button>
+        <div class="fld"><label>이름</label><input type="text" id="su-name" placeholder="홍길동"></div>
+        <div class="fld"><label>이메일</label><input type="email" id="su-email" placeholder="name@email.com"></div>
+        <div class="fld"><label>비밀번호 (6자 이상)</label><input type="password" id="su-pw" placeholder="••••••" onkeydown="if(event.key==='Enter')doSignup()"></div>
+        <div class="errmsg" id="su-err"></div>
+        <div class="infomsg" id="su-info"></div>
+        <button class="auth-btn" id="su-btn" onclick="doSignup()">회원가입</button>
       </div>
-      <div class="auth-footer"><button onclick="resetConfig()">Firebase 설정 변경</button></div>
     </div>
   </div>
 </div>
@@ -285,26 +227,24 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   <div class="topbar">
     <span class="topbar-title">こと<span style="color:var(--accent)">ば</span> N3</span>
     <span class="sync" id="sync"></span>
-    <button class="topbar-btn" onclick="toggleTheme()" title="다크모드">🌙</button>
-    <button class="topbar-btn" onclick="doLogout()" title="로그아웃">👤</button>
+    <button class="topbar-btn" onclick="toggleTheme()">🌙</button>
+    <button class="topbar-btn" onclick="doLogout()">👤</button>
   </div>
   <div class="scroll">
-    <div class="greeting-row">
-      <div class="greeting-text">
-        <h2 id="home-greeting">안녕하세요!</h2>
-        <p id="home-sub">오늘의 학습을 시작해보세요</p>
-      </div>
+    <div class="greet">
+      <div><h2 id="home-hi"></h2><p id="home-sub"></p></div>
+      <button class="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num" id="s-days">0</div><div class="stat-lbl">완료 Day</div></div>
-      <div class="stat-card"><div class="stat-num" id="s-words">0</div><div class="stat-lbl">학습 단어</div></div>
-      <div class="stat-card"><div class="stat-num" id="s-wrong">0</div><div class="stat-lbl">오답</div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="s-days">0</div><div class="stat-l">완료 Day</div></div>
+      <div class="stat"><div class="stat-n" id="s-words">0</div><div class="stat-l">학습 단어</div></div>
+      <div class="stat"><div class="stat-n" id="s-wrong">0</div><div class="stat-l">오답</div></div>
     </div>
-    <div class="section-header">학습 Day</div>
-    <div class="day-cards" id="day-list"></div>
+    <div class="sec-hd">학습 Day</div>
+    <div class="day-list" id="day-list"></div>
   </div>
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="showHome()"><span class="nav-ico">🏠</span>홈</button>
+    <button class="nav-btn on" onclick="showHome()"><span class="nav-ico">🏠</span>홈</button>
     <button class="nav-btn" onclick="showWrong()"><span class="nav-ico">📝</span>오답노트</button>
     <button class="nav-btn" onclick="showWeekend()"><span class="nav-ico">🔄</span>주말복습</button>
   </div>
@@ -313,25 +253,20 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- FLASHCARD -->
 <div id="screen-flash" class="screen">
   <div class="topbar">
-    <button class="topbar-btn" onclick="exitToHome()"><span style="font-size:20px">←</span></button>
-    <span class="topbar-title" id="flash-title">플래시카드</span>
+    <button class="topbar-btn" onclick="exitHome()">←</button>
+    <span class="topbar-title" id="fc-title">플래시카드</span>
   </div>
   <div class="fc-wrap">
-    <div class="fc-meta">
-      <span class="fc-count" id="fc-count">1 / 42</span>
-      <span class="fc-phase">① 플래시카드</span>
-    </div>
-    <div class="prog-bar"><div class="prog-fill" id="fc-prog"></div></div>
-    <div class="flashcard" id="flashcard" onclick="flipCard()">
+    <div class="fc-meta"><span class="fc-cnt" id="fc-cnt"></span><span class="fc-phase">① 플래시카드</span></div>
+    <div class="prog"><div class="prog-fill" id="fc-prog"></div></div>
+    <div class="fc" id="fc-card" onclick="flipCard()">
       <div class="fc-word jp" id="fc-word"></div>
       <div class="fc-meaning" id="fc-meaning" style="display:none"></div>
       <div class="fc-tap" id="fc-tap">탭해서 뜻 확인</div>
     </div>
-    <div class="write-box" id="write-box" style="display:none">
-      <p>✏️ 노트에 단어를 한 번 써보세요</p>
-    </div>
+    <div class="write-box" id="write-box" style="display:none"><p>✏️ 노트에 단어를 한 번 써보세요</p></div>
     <div class="gap"></div>
-    <div class="fc-actions" id="fc-actions" style="display:none">
+    <div class="row" id="fc-btns" style="display:none">
       <button class="btn btn-muted" onclick="prevCard()">← 이전</button>
       <button class="btn btn-accent" onclick="nextCard()">다음 →</button>
     </div>
@@ -339,26 +274,23 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 </div>
 
-<!-- BLANK REVIEW -->
+<!-- BLANK -->
 <div id="screen-blank" class="screen">
   <div class="topbar">
-    <button class="topbar-btn" onclick="exitToHome()"><span style="font-size:20px">←</span></button>
-    <span class="topbar-title" id="blank-title">백지 복습</span>
+    <button class="topbar-btn" onclick="exitHome()">←</button>
+    <span class="topbar-title" id="bl-title">백지 복습</span>
   </div>
   <div class="fc-wrap">
-    <div class="fc-meta">
-      <span class="fc-count" id="bl-count">1 / 42</span>
-      <span class="fc-phase">② 백지 복습</span>
-    </div>
-    <div class="prog-bar"><div class="prog-fill" id="bl-prog"></div></div>
-    <div class="blank-card">
-      <div class="blank-prompt" id="bl-prompt"></div>
-      <div class="blank-show jp" id="bl-show"></div>
-      <div class="blank-ans" id="bl-ans"></div>
+    <div class="fc-meta"><span class="fc-cnt" id="bl-cnt"></span><span class="fc-phase">② 백지 복습</span></div>
+    <div class="prog"><div class="prog-fill" id="bl-prog"></div></div>
+    <div class="bl-card">
+      <div class="bl-prompt" id="bl-prompt"></div>
+      <div class="bl-show jp" id="bl-show"></div>
+      <div class="bl-ans" id="bl-ans"></div>
     </div>
     <div class="self-row" id="self-row">
-      <button class="btn btn-danger" onclick="blankResult(false)">❌ 몰랐어요</button>
-      <button class="btn btn-success" onclick="blankResult(true)">✅ 알았어요</button>
+      <button class="btn btn-err" onclick="blankRes(false)">❌ 몰랐어요</button>
+      <button class="btn btn-ok" onclick="blankRes(true)">✅ 알았어요</button>
     </div>
     <button class="btn btn-accent" id="bl-reveal" onclick="revealBlank()">정답 확인</button>
   </div>
@@ -367,42 +299,39 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- QUIZ -->
 <div id="screen-quiz" class="screen">
   <div class="topbar">
-    <button class="topbar-btn" onclick="exitToHome()"><span style="font-size:20px">←</span></button>
-    <span class="topbar-title" id="quiz-title">확인 테스트</span>
+    <button class="topbar-btn" onclick="exitHome()">←</button>
+    <span class="topbar-title" id="qz-title">확인 테스트</span>
   </div>
-  <div id="quiz-body" class="fc-wrap">
-    <div class="fc-meta">
-      <span class="fc-count" id="qz-count">1 / 20</span>
-      <span class="fc-phase">③ 누적 테스트</span>
-    </div>
-    <div class="prog-bar"><div class="prog-fill" id="qz-prog"></div></div>
-    <div class="quiz-q"><div class="quiz-word jp" id="qz-word"></div><div class="quiz-hint">이 단어의 뜻은?</div></div>
+  <div id="qz-body" class="fc-wrap">
+    <div class="fc-meta"><span class="fc-cnt" id="qz-cnt"></span><span class="fc-phase">③ 누적 테스트</span></div>
+    <div class="prog"><div class="prog-fill" id="qz-prog"></div></div>
+    <div class="qz-q"><div class="qz-word jp" id="qz-word"></div><div class="qz-hint">이 단어의 뜻은?</div></div>
     <div class="opts" id="opts"></div>
     <div class="gap"></div>
-    <button class="btn btn-accent" id="qz-next" onclick="nextQuiz()" style="display:none">다음 →</button>
+    <button class="btn btn-accent" id="qz-next" onclick="nextQ()" style="display:none">다음 →</button>
   </div>
-  <div id="quiz-result" class="fc-wrap" style="display:none">
+  <div id="qz-result" class="fc-wrap" style="display:none">
     <div class="result-card">
-      <div class="result-score" id="r-score"></div>
-      <div class="result-msg" id="r-msg"></div>
-      <div class="result-sub" id="r-sub"></div>
+      <div class="r-score" id="r-score"></div>
+      <div class="r-msg" id="r-msg"></div>
+      <div class="r-sub" id="r-sub"></div>
     </div>
     <button class="btn btn-accent" id="r-pass" onclick="passQuiz()" style="display:none;margin-bottom:10px">다음 Day 진입하기 🎉</button>
     <button class="btn btn-muted" onclick="retryQuiz()" style="margin-bottom:10px">다시 도전하기 🔄</button>
-    <button class="btn btn-outline" onclick="exitToHome()">홈으로</button>
+    <button class="btn btn-outline" onclick="exitHome()">홈으로</button>
   </div>
 </div>
 
-<!-- WRONG NOTES -->
+<!-- WRONG -->
 <div id="screen-wrong" class="screen">
   <div class="topbar">
-    <button class="topbar-btn" onclick="showHome()"><span style="font-size:20px">←</span></button>
+    <button class="topbar-btn" onclick="showHome()">←</button>
     <span class="topbar-title">오답노트</span>
   </div>
   <div class="scroll"><div id="wrong-body"></div></div>
   <div class="bottom-nav">
     <button class="nav-btn" onclick="showHome()"><span class="nav-ico">🏠</span>홈</button>
-    <button class="nav-btn active" onclick="showWrong()"><span class="nav-ico">📝</span>오답노트</button>
+    <button class="nav-btn on" onclick="showWrong()"><span class="nav-ico">📝</span>오답노트</button>
     <button class="nav-btn" onclick="showWeekend()"><span class="nav-ico">🔄</span>주말복습</button>
   </div>
 </div>
@@ -410,24 +339,21 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- WRONG FLASH -->
 <div id="screen-wf" class="screen">
   <div class="topbar">
-    <button class="topbar-btn" onclick="showWrong()"><span style="font-size:20px">←</span></button>
-    <span class="topbar-title">오답 재학습</span>
+    <button class="topbar-btn" onclick="showWrong()">←</button>
+    <span class="topbar-title" id="wf-title">오답 재학습</span>
   </div>
   <div class="fc-wrap">
-    <div class="fc-meta">
-      <span class="fc-count" id="wf-count"></span>
-      <span class="fc-phase" id="wf-phase">오답 플래시카드</span>
-    </div>
-    <div class="prog-bar"><div class="prog-fill" id="wf-prog"></div></div>
-    <div class="flashcard" id="wf-card" onclick="wfFlip()">
+    <div class="fc-meta"><span class="fc-cnt" id="wf-cnt"></span><span class="fc-phase" id="wf-phase">오답 플래시카드</span></div>
+    <div class="prog"><div class="prog-fill" id="wf-prog"></div></div>
+    <div class="fc" id="wf-card" onclick="wfFlip()">
       <div class="fc-word jp" id="wf-word"></div>
       <div class="fc-meaning" id="wf-meaning" style="display:none"></div>
       <div class="fc-tap" id="wf-tap">탭해서 뜻 확인</div>
     </div>
     <div class="gap"></div>
-    <div class="fc-actions" id="wf-btns" style="display:none">
-      <button class="btn btn-danger" onclick="wfResult(false)">❌ 아직 모름</button>
-      <button class="btn btn-success" onclick="wfResult(true)">✅ 알았어요!</button>
+    <div class="row" id="wf-btns" style="display:none">
+      <button class="btn btn-err" onclick="wfRes(false)">❌ 아직 모름</button>
+      <button class="btn btn-ok" onclick="wfRes(true)">✅ 알았어요!</button>
     </div>
   </div>
 </div>
@@ -435,139 +361,157 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- WEEKEND -->
 <div id="screen-weekend" class="screen">
   <div class="topbar">
-    <button class="topbar-btn" onclick="showHome()"><span style="font-size:20px">←</span></button>
+    <button class="topbar-btn" onclick="showHome()">←</button>
     <span class="topbar-title">주말 복습</span>
   </div>
   <div class="scroll"><div id="weekend-body"></div></div>
   <div class="bottom-nav">
     <button class="nav-btn" onclick="showHome()"><span class="nav-ico">🏠</span>홈</button>
     <button class="nav-btn" onclick="showWrong()"><span class="nav-ico">📝</span>오답노트</button>
-    <button class="nav-btn active" onclick="showWeekend()"><span class="nav-ico">🔄</span>주말복습</button>
+    <button class="nav-btn on" onclick="showWeekend()"><span class="nav-ico">🔄</span>주말복습</button>
   </div>
 </div>
 
 <script type="module">
-import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,updateProfile}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import{getFirestore,doc,getDoc,setDoc}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 const N3=[{"day": 1, "topic": "인간관계 (1)", "words": [{"no": 1, "word": "挨拶", "meaning": "인사"}, {"no": 2, "word": "相手", "meaning": "상대방"}, {"no": 3, "word": "姉", "meaning": "누나/언니"}, {"no": 4, "word": "大家", "meaning": "집주인"}, {"no": 5, "word": "お互い", "meaning": "서로"}, {"no": 6, "word": "大人", "meaning": "어른"}, {"no": 7, "word": "親子", "meaning": "부모와 자식"}, {"no": 8, "word": "家族", "meaning": "가족"}, {"no": 9, "word": "神", "meaning": "신"}, {"no": 10, "word": "歓迎", "meaning": "환영"}, {"no": 11, "word": "客", "meaning": "손님"}, {"no": 12, "word": "恋人", "meaning": "연인"}, {"no": 13, "word": "主人", "meaning": "주인, 남편"}, {"no": 14, "word": "紹介", "meaning": "소개"}, {"no": 15, "word": "親戚", "meaning": "친척"}, {"no": 16, "word": "信頼", "meaning": "신뢰"}, {"no": 17, "word": "先祖", "meaning": "선조, 조상"}, {"no": 18, "word": "相談", "meaning": "상담"}, {"no": 19, "word": "尊敬", "meaning": "존경"}, {"no": 20, "word": "対象", "meaning": "대상"}, {"no": 21, "word": "他人", "meaning": "타인"}, {"no": 22, "word": "知人", "meaning": "지인"}, {"no": 23, "word": "店員", "meaning": "점원"}, {"no": 24, "word": "独身", "meaning": "독신"}, {"no": 25, "word": "仲間", "meaning": "동료, 친구"}, {"no": 26, "word": "配慮", "meaning": "배려"}, {"no": 27, "word": "秘密", "meaning": "비밀"}, {"no": 28, "word": "部長", "meaning": "부장"}, {"no": 29, "word": "味方", "meaning": "아군, 자기편"}, {"no": 30, "word": "娘", "meaning": "딸"}, {"no": 31, "word": "両親", "meaning": "부모님"}, {"no": 32, "word": "争う", "meaning": "다투다"}, {"no": 33, "word": "伺う", "meaning": "찾아뵙다, 여쭙다"}, {"no": 34, "word": "送る", "meaning": "보내다"}, {"no": 35, "word": "助ける", "meaning": "돕다"}, {"no": 36, "word": "頼る", "meaning": "의지하다"}, {"no": 37, "word": "慰める", "meaning": "위로하다"}, {"no": 38, "word": "離す", "meaning": "떼다, 떨어뜨리다"}, {"no": 39, "word": "招く", "meaning": "초대하다"}, {"no": 40, "word": "譲る", "meaning": "양보하다"}, {"no": 41, "word": "偉大", "meaning": "위대"}, {"no": 42, "word": "親しい", "meaning": "친하다"}]}, {"day": 2, "topic": "인간관계 (2)", "words": [{"no": 1, "word": "愛情", "meaning": "애정"}, {"no": 2, "word": "兄", "meaning": "형/오빠"}, {"no": 3, "word": "いとこ", "meaning": "사촌"}, {"no": 4, "word": "おかげ", "meaning": "덕분"}, {"no": 5, "word": "夫", "meaning": "남편"}, {"no": 6, "word": "お礼", "meaning": "답례, 사례"}, {"no": 7, "word": "代わり", "meaning": "대신"}, {"no": 8, "word": "感謝", "meaning": "감사"}, {"no": 9, "word": "兄弟", "meaning": "형제"}, {"no": 10, "word": "ご無沙汰", "meaning": "격조함(오랜만)"}, {"no": 11, "word": "自信", "meaning": "자신감"}, {"no": 12, "word": "氏名", "meaning": "성명"}, {"no": 13, "word": "出身", "meaning": "출신"}, {"no": 14, "word": "招待", "meaning": "초대"}, {"no": 15, "word": "信用", "meaning": "신용"}, {"no": 16, "word": "生命", "meaning": "생명"}, {"no": 17, "word": "先輩", "meaning": "선배"}, {"no": 18, "word": "祖父", "meaning": "할아버지"}, {"no": 19, "word": "存在", "meaning": "존재"}, {"no": 20, "word": "立場", "meaning": "입장"}, {"no": 21, "word": "男性", "meaning": "남성"}, {"no": 22, "word": "父親", "meaning": "아버지"}, {"no": 23, "word": "同僚", "meaning": "동료"}, {"no": 24, "word": "年寄り", "meaning": "노인"}, {"no": 25, "word": "人間", "meaning": "인간"}, {"no": 26, "word": "久しぶり", "meaning": "오랜만"}, {"no": 27, "word": "夫婦", "meaning": "부부"}, {"no": 28, "word": "訪問", "meaning": "방문"}, {"no": 29, "word": "マナー", "meaning": "매너"}, {"no": 30, "word": "名字", "meaning": "성씨"}, {"no": 31, "word": "迷惑", "meaning": "폐, 민폐"}, {"no": 32, "word": "いらっしゃる", "meaning": "가시다/오시다/계시다(존경)"}, {"no": 33, "word": "贈る", "meaning": "선물하다, 증정하다"}, {"no": 34, "word": "誘う", "meaning": "권유하다, 꾀다"}, {"no": 35, "word": "訪ねる", "meaning": "방문하다"}, {"no": 36, "word": "似る", "meaning": "닮다"}, {"no": 37, "word": "話す", "meaning": "말하다"}, {"no": 38, "word": "見送る", "meaning": "배웅하다"}, {"no": 39, "word": "もてる", "meaning": "인기가 있다"}, {"no": 40, "word": "別れる", "meaning": "헤어지다"}, {"no": 41, "word": "礼儀正しい", "meaning": "예의 바르다"}, {"no": 42, "word": "若い", "meaning": "젊다"}]}, {"day": 3, "topic": "성격과 성질", "words": [{"no": 1, "word": "共通", "meaning": "공통"}, {"no": 2, "word": "緊張", "meaning": "긴장"}, {"no": 3, "word": "癖", "meaning": "버릇"}, {"no": 4, "word": "けち", "meaning": "인색함"}, {"no": 5, "word": "欠点", "meaning": "결점"}, {"no": 6, "word": "行動", "meaning": "행동"}, {"no": 7, "word": "声", "meaning": "목소리"}, {"no": 8, "word": "正直", "meaning": "정직"}, {"no": 9, "word": "性格", "meaning": "성격"}, {"no": 10, "word": "短所", "meaning": "단점"}, {"no": 11, "word": "特長", "meaning": "특장점, 특별한 장점"}, {"no": 12, "word": "特定", "meaning": "특정"}, {"no": 13, "word": "左利き", "meaning": "왼손잡이"}, {"no": 14, "word": "変わる", "meaning": "바뀌다, 변하다"}, {"no": 15, "word": "異なる", "meaning": "다르다"}, {"no": 16, "word": "偉い", "meaning": "훌륭하다, 대단하다"}, {"no": 17, "word": "賢い", "meaning": "현명하다"}, {"no": 18, "word": "固い", "meaning": "딱딱하다, 완고하다"}, {"no": 19, "word": "細かい", "meaning": "세세하다, 자잘하다"}, {"no": 20, "word": "しつこい", "meaning": "집요하다"}, {"no": 21, "word": "ずうずうしい", "meaning": "뻔뻔하다"}, {"no": 22, "word": "ずるい", "meaning": "교활하다, 얌체같다"}, {"no": 23, "word": "鋭い", "meaning": "날카롭다"}, {"no": 24, "word": "そそっかしい", "meaning": "덜렁대다"}, {"no": 25, "word": "頼もしい", "meaning": "믿음직하다"}, {"no": 26, "word": "鈍い", "meaning": "둔하다"}, {"no": 27, "word": "古い", "meaning": "낡다, 오래되다"}, {"no": 28, "word": "珍しい", "meaning": "드물다, 희귀하다"}, {"no": 29, "word": "優しい", "meaning": "상냥하다, 다정하다"}, {"no": 30, "word": "あいまい", "meaning": "애매함"}, {"no": 31, "word": "いいかげん", "meaning": "적당함, 무책임함"}, {"no": 32, "word": "おおざっぱ", "meaning": "대충함"}, {"no": 33, "word": "穏やか", "meaning": "온화함"}, {"no": 34, "word": "勝手", "meaning": "제멋대로임"}, {"no": 35, "word": "素直", "meaning": "순수함, 솔직함"}, {"no": 36, "word": "大丈夫", "meaning": "괜찮음"}, {"no": 37, "word": "駄目", "meaning": "안 됨, 소용없음"}, {"no": 38, "word": "単純", "meaning": "단순"}, {"no": 39, "word": "不思議", "meaning": "불가사의, 이상함"}, {"no": 40, "word": "愉快", "meaning": "유쾌"}, {"no": 41, "word": "豊か", "meaning": "풍부함"}, {"no": 42, "word": "立派", "meaning": "훌륭함"}]}, {"day": 4, "topic": "감정과 태도 (1)", "words": [{"no": 1, "word": "安心", "meaning": "안심"}, {"no": 2, "word": "笑顔", "meaning": "웃는 얼굴"}, {"no": 3, "word": "感激", "meaning": "감격"}, {"no": 4, "word": "感情", "meaning": "감정"}, {"no": 5, "word": "感動", "meaning": "감동"}, {"no": 6, "word": "機嫌", "meaning": "기분"}, {"no": 7, "word": "苦情", "meaning": "불평, 클레임"}, {"no": 8, "word": "失望", "meaning": "실망"}, {"no": 9, "word": "自慢", "meaning": "자랑"}, {"no": 10, "word": "集中", "meaning": "집중"}, {"no": 11, "word": "上品", "meaning": "고상함, 품위 있음"}, {"no": 12, "word": "涙", "meaning": "눈물"}, {"no": 13, "word": "比較", "meaning": "비교"}, {"no": 14, "word": "真心", "meaning": "진심"}, {"no": 15, "word": "文句", "meaning": "불평, 불만"}, {"no": 16, "word": "わがまま", "meaning": "제멋대로, 버릇없음"}, {"no": 17, "word": "味わう", "meaning": "맛보다"}, {"no": 18, "word": "謝る", "meaning": "사과하다"}, {"no": 19, "word": "慌てる", "meaning": "당황하다"}, {"no": 20, "word": "怒る", "meaning": "화내다"}, {"no": 21, "word": "驚く", "meaning": "놀라다"}, {"no": 22, "word": "思う", "meaning": "생각하다"}, {"no": 23, "word": "断る", "meaning": "거절하다"}, {"no": 24, "word": "信じる", "meaning": "믿다"}, {"no": 25, "word": "黙る", "meaning": "침묵하다"}, {"no": 26, "word": "喜ぶ", "meaning": "기뻐하다"}, {"no": 27, "word": "意外", "meaning": "의외"}, {"no": 28, "word": "親切", "meaning": "친절"}, {"no": 29, "word": "丁寧", "meaning": "정중함, 공손함"}, {"no": 30, "word": "真面目", "meaning": "성실함, 진지함"}, {"no": 31, "word": "積極的", "meaning": "적극적"}, {"no": 32, "word": "気軽", "meaning": "부담없음, 편함"}, {"no": 33, "word": "退屈", "meaning": "지루함"}, {"no": 34, "word": "平気", "meaning": "태연함, 아무렇지 않음"}, {"no": 35, "word": "厚かましい", "meaning": "뻔뻔하다"}, {"no": 36, "word": "嬉しい", "meaning": "기쁘다"}, {"no": 37, "word": "大人しい", "meaning": "얌전하다"}, {"no": 38, "word": "くだらない", "meaning": "하찮다, 시시하다"}, {"no": 39, "word": "怖い", "meaning": "무섭다"}, {"no": 40, "word": "つまらない", "meaning": "재미없다, 시시하다"}, {"no": 41, "word": "とんでもない", "meaning": "터무니없다"}, {"no": 42, "word": "恥ずかしい", "meaning": "부끄럽다"}]}, {"day": 5, "topic": "감정과 태도 (2)", "words": [{"no": 1, "word": "意志", "meaning": "의지"}, {"no": 2, "word": "遠慮", "meaning": "사양, 조심"}, {"no": 3, "word": "感じ", "meaning": "느낌"}, {"no": 4, "word": "感心", "meaning": "감탄"}, {"no": 5, "word": "記憶", "meaning": "기억"}, {"no": 6, "word": "期待", "meaning": "기대"}, {"no": 7, "word": "幸い", "meaning": "다행"}, {"no": 8, "word": "支配", "meaning": "지배"}, {"no": 9, "word": "邪魔", "meaning": "방해"}, {"no": 10, "word": "冗談", "meaning": "농담"}, {"no": 11, "word": "心配", "meaning": "걱정"}, {"no": 12, "word": "反対", "meaning": "반대"}, {"no": 13, "word": "不満", "meaning": "불만"}, {"no": 14, "word": "満足", "meaning": "만족"}, {"no": 15, "word": "予想", "meaning": "예상"}, {"no": 16, "word": "甘やかす", "meaning": "응석을 받아주다"}, {"no": 17, "word": "表す", "meaning": "나타내다"}, {"no": 18, "word": "祈る", "meaning": "기도하다"}, {"no": 19, "word": "落ち着く", "meaning": "진정되다, 안정되다"}, {"no": 20, "word": "思い浮かぶ", "meaning": "떠오르다"}, {"no": 21, "word": "悲しむ", "meaning": "슬퍼하다"}, {"no": 22, "word": "叱る", "meaning": "혼내다"}, {"no": 23, "word": "憎む", "meaning": "미워하다"}, {"no": 24, "word": "向ける", "meaning": "향하게 하다"}, {"no": 25, "word": "笑う", "meaning": "웃다"}, {"no": 26, "word": "嫌", "meaning": "싫음"}, {"no": 27, "word": "大切", "meaning": "소중함"}, {"no": 28, "word": "不安", "meaning": "불안"}, {"no": 29, "word": "余計", "meaning": "쓸데없음, 여분"}, {"no": 30, "word": "楽", "meaning": "편안함, 즐거움"}, {"no": 31, "word": "真剣", "meaning": "진지함"}, {"no": 32, "word": "怪しい", "meaning": "수상하다"}, {"no": 33, "word": "恐ろしい", "meaning": "두렵다, 무섭다"}, {"no": 34, "word": "思いがけない", "meaning": "뜻밖이다"}, {"no": 35, "word": "悔しい", "meaning": "분하다"}, {"no": 36, "word": "騒がしい", "meaning": "시끄럽다"}, {"no": 37, "word": "辛い", "meaning": "괴롭다"}, {"no": 38, "word": "懐かしい", "meaning": "그립다"}, {"no": 39, "word": "ばからしい", "meaning": "어이없다, 바보같다"}, {"no": 40, "word": "申し訳ない", "meaning": "죄송하다"}, {"no": 41, "word": "面倒くさい", "meaning": "귀찮다"}, {"no": 42, "word": "やかましい", "meaning": "시끄럽다"}]}, {"day": 6, "topic": "모양·디자인·패션", "words": [{"no": 1, "word": "穴", "meaning": "구멍"}, {"no": 2, "word": "大きさ", "meaning": "크기"}, {"no": 3, "word": "外見", "meaning": "외견, 겉모습"}, {"no": 4, "word": "形", "meaning": "형태, 모양"}, {"no": 5, "word": "格好", "meaning": "모양새, 꼴"}, {"no": 6, "word": "髪", "meaning": "머리카락"}, {"no": 7, "word": "革靴", "meaning": "가죽구두"}, {"no": 8, "word": "逆", "meaning": "반대, 역"}, {"no": 9, "word": "工夫", "meaning": "궁리"}, {"no": 10, "word": "高級", "meaning": "고급"}, {"no": 11, "word": "高層", "meaning": "고층"}, {"no": 12, "word": "個性", "meaning": "개성"}, {"no": 13, "word": "種類", "meaning": "종류"}, {"no": 14, "word": "姿", "meaning": "모습"}, {"no": 15, "word": "大小", "meaning": "대소, 크고 작음"}, {"no": 16, "word": "特徴", "meaning": "특징"}, {"no": 17, "word": "変化", "meaning": "변화"}, {"no": 18, "word": "服装", "meaning": "복장"}, {"no": 19, "word": "宝石", "meaning": "보석"}, {"no": 20, "word": "包装", "meaning": "포장"}, {"no": 21, "word": "模様", "meaning": "무늬"}, {"no": 22, "word": "様子", "meaning": "모습, 상황"}, {"no": 23, "word": "流行", "meaning": "유행"}, {"no": 24, "word": "着替える", "meaning": "갈아입다"}, {"no": 25, "word": "締める", "meaning": "조이다, 매다"}, {"no": 26, "word": "ずれる", "meaning": "어긋나다"}, {"no": 27, "word": "つぶれる", "meaning": "찌부러지다, 망하다"}, {"no": 28, "word": "似合う", "meaning": "어울리다"}, {"no": 29, "word": "伸ばす", "meaning": "늘리다, 펴다"}, {"no": 30, "word": "目立つ", "meaning": "눈에 띄다"}, {"no": 31, "word": "破れる", "meaning": "찢어지다"}, {"no": 32, "word": "赤い", "meaning": "빨갛다"}, {"no": 33, "word": "厚い", "meaning": "두껍다"}, {"no": 34, "word": "格好いい", "meaning": "멋있다"}, {"no": 35, "word": "だらしない", "meaning": "칠칠치 못하다"}, {"no": 36, "word": "低い", "meaning": "낮다"}, {"no": 37, "word": "細い", "meaning": "가늘다"}, {"no": 38, "word": "丸い", "meaning": "둥글다"}, {"no": 39, "word": "緩い", "meaning": "느슨하다, 헐렁하다"}, {"no": 40, "word": "おしゃれ", "meaning": "멋을 냄, 세련됨"}, {"no": 41, "word": "素敵", "meaning": "멋짐"}, {"no": 42, "word": "派手", "meaning": "화려함"}]}, {"day": 7, "topic": "가사와 식생활 (1)", "words": [{"no": 1, "word": "味", "meaning": "맛"}, {"no": 2, "word": "栄養", "meaning": "영양"}, {"no": 3, "word": "家事", "meaning": "가사, 집안일"}, {"no": 4, "word": "皮", "meaning": "껍질"}, {"no": 5, "word": "関係", "meaning": "관계"}, {"no": 6, "word": "果物", "meaning": "과일"}, {"no": 7, "word": "こつ", "meaning": "요령"}, {"no": 8, "word": "材料", "meaning": "재료"}, {"no": 9, "word": "順", "meaning": "순서"}, {"no": 10, "word": "食生活", "meaning": "식생활"}, {"no": 11, "word": "食器", "meaning": "식기"}, {"no": 12, "word": "洗濯", "meaning": "세탁"}, {"no": 13, "word": "卵", "meaning": "달걀"}, {"no": 14, "word": "朝食", "meaning": "조식, 아침식사"}, {"no": 15, "word": "手間", "meaning": "수고, 품"}, {"no": 16, "word": "箸", "meaning": "젓가락"}, {"no": 17, "word": "晩ごはん", "meaning": "저녁밥"}, {"no": 18, "word": "表面", "meaning": "표면"}, {"no": 19, "word": "保存", "meaning": "보존"}, {"no": 20, "word": "豆", "meaning": "콩"}, {"no": 21, "word": "床", "meaning": "바닥"}, {"no": 22, "word": "容器", "meaning": "용기"}, {"no": 23, "word": "汚れ", "meaning": "얼룩, 더러움"}, {"no": 24, "word": "和食", "meaning": "일식"}, {"no": 25, "word": "温める", "meaning": "데우다"}, {"no": 26, "word": "洗う", "meaning": "씻다"}, {"no": 27, "word": "薄める", "meaning": "묽게 하다, 희석하다"}, {"no": 28, "word": "飾る", "meaning": "장식하다"}, {"no": 29, "word": "腐る", "meaning": "썩다"}, {"no": 30, "word": "焦げる", "meaning": "타다, 눌다"}, {"no": 31, "word": "冷める", "meaning": "식다"}, {"no": 32, "word": "包む", "meaning": "싸다, 포장하다"}, {"no": 33, "word": "抜く", "meaning": "빼다, 뽑다"}, {"no": 34, "word": "掃く", "meaning": "쓸다"}, {"no": 35, "word": "干す", "meaning": "말리다"}, {"no": 36, "word": "焼く", "meaning": "굽다"}, {"no": 37, "word": "温かい", "meaning": "따뜻하다"}, {"no": 38, "word": "甘い", "meaning": "달다"}, {"no": 39, "word": "硬い", "meaning": "딱딱하다"}, {"no": 40, "word": "濃い", "meaning": "진하다"}, {"no": 41, "word": "苦い", "meaning": "쓰다"}, {"no": 42, "word": "清潔", "meaning": "청결"}]}, {"day": 8, "topic": "가사와 식생활 (2)", "words": [{"no": 1, "word": "油", "meaning": "기름"}, {"no": 2, "word": "お湯", "meaning": "뜨거운 물"}, {"no": 3, "word": "かび", "meaning": "곰팡이"}, {"no": 4, "word": "換気", "meaning": "환기"}, {"no": 5, "word": "牛肉", "meaning": "소고기"}, {"no": 6, "word": "氷", "meaning": "얼음"}, {"no": 7, "word": "米", "meaning": "쌀"}, {"no": 8, "word": "試食", "meaning": "시식"}, {"no": 9, "word": "賞味期限", "meaning": "유통기한"}, {"no": 10, "word": "食料", "meaning": "식료"}, {"no": 11, "word": "水道", "meaning": "수도"}, {"no": 12, "word": "台所", "meaning": "부엌"}, {"no": 13, "word": "たんす", "meaning": "장롱"}, {"no": 14, "word": "定食", "meaning": "정식(식당 메뉴)"}, {"no": 15, "word": "出前", "meaning": "배달(음식)"}, {"no": 16, "word": "針", "meaning": "바늘"}, {"no": 17, "word": "半分", "meaning": "절반"}, {"no": 18, "word": "弁当", "meaning": "도시락"}, {"no": 19, "word": "骨", "meaning": "뼈"}, {"no": 20, "word": "野菜", "meaning": "채소"}, {"no": 21, "word": "用意", "meaning": "준비"}, {"no": 22, "word": "冷蔵庫", "meaning": "냉장고"}, {"no": 23, "word": "余る", "meaning": "남다"}, {"no": 24, "word": "生かす", "meaning": "살리다, 활용하다"}, {"no": 25, "word": "囲む", "meaning": "둘러싸다"}, {"no": 26, "word": "切る", "meaning": "자르다"}, {"no": 27, "word": "加える", "meaning": "더하다"}, {"no": 28, "word": "こぼす", "meaning": "흘리다, 쏟다"}, {"no": 29, "word": "畳む", "meaning": "개다, 접다"}, {"no": 30, "word": "煮る", "meaning": "끓이다, 조리다"}, {"no": 31, "word": "残る", "meaning": "남다"}, {"no": 32, "word": "拭く", "meaning": "닦다"}, {"no": 33, "word": "むく", "meaning": "껍질을 벗기다"}, {"no": 34, "word": "沸く", "meaning": "끓다"}, {"no": 35, "word": "分ける", "meaning": "나누다"}, {"no": 36, "word": "熱い", "meaning": "뜨겁다"}, {"no": 37, "word": "おかしい", "meaning": "이상하다"}, {"no": 38, "word": "辛い", "meaning": "맵다"}, {"no": 39, "word": "冷たい", "meaning": "차갑다"}, {"no": 40, "word": "柔らかい", "meaning": "부드럽다"}, {"no": 41, "word": "新鮮", "meaning": "신선"}, {"no": 42, "word": "手軽", "meaning": "간편함"}]}, {"day": 9, "topic": "일상생활 (1)", "words": [{"no": 1, "word": "泡", "meaning": "거품"}, {"no": 2, "word": "噂", "meaning": "소문"}, {"no": 3, "word": "大声", "meaning": "큰 목소리"}, {"no": 4, "word": "外食", "meaning": "외식"}, {"no": 5, "word": "壁", "meaning": "벽"}, {"no": 6, "word": "禁止", "meaning": "금지"}, {"no": 7, "word": "気配", "meaning": "기척, 낌새"}, {"no": 8, "word": "習慣", "meaning": "습관"}, {"no": 9, "word": "準備", "meaning": "준비"}, {"no": 10, "word": "整理", "meaning": "정리"}, {"no": 11, "word": "選択", "meaning": "선택"}, {"no": 12, "word": "掃除", "meaning": "청소"}, {"no": 13, "word": "暖房", "meaning": "난방"}, {"no": 14, "word": "調子", "meaning": "상태, 컨디션"}, {"no": 15, "word": "手紙", "meaning": "편지"}, {"no": 16, "word": "到着", "meaning": "도착"}, {"no": 17, "word": "内緒", "meaning": "비밀"}, {"no": 18, "word": "日常", "meaning": "일상"}, {"no": 19, "word": "花束", "meaning": "꽃다발"}, {"no": 20, "word": "ほんの", "meaning": "그저, 아주 사소한"}, {"no": 21, "word": "村", "meaning": "마을"}, {"no": 22, "word": "利用", "meaning": "이용"}, {"no": 23, "word": "現れる", "meaning": "나타나다"}, {"no": 24, "word": "動く", "meaning": "움직이다"}, {"no": 25, "word": "起きる", "meaning": "일어나다"}, {"no": 26, "word": "飼う", "meaning": "기르다, 사육하다"}, {"no": 27, "word": "掛ける", "meaning": "걸다"}, {"no": 28, "word": "貸す", "meaning": "빌려주다"}, {"no": 29, "word": "傾く", "meaning": "기울다"}, {"no": 30, "word": "考える", "meaning": "생각하다"}, {"no": 31, "word": "暮らす", "meaning": "생활하다, 살다"}, {"no": 32, "word": "困る", "meaning": "곤란하다"}, {"no": 33, "word": "しまう", "meaning": "치우다, 집어넣다"}, {"no": 34, "word": "捨てる", "meaning": "버리다"}, {"no": 35, "word": "頼む", "meaning": "부탁하다"}, {"no": 36, "word": "着く", "meaning": "도착하다"}, {"no": 37, "word": "出かける", "meaning": "외출하다"}, {"no": 38, "word": "閉じる", "meaning": "닫다"}, {"no": 39, "word": "取り替える", "meaning": "교체하다"}, {"no": 40, "word": "眠る", "meaning": "잠들다"}, {"no": 41, "word": "運ぶ", "meaning": "옮기다, 운반하다"}, {"no": 42, "word": "引く", "meaning": "당기다"}, {"no": 43, "word": "振る", "meaning": "흔들다"}, {"no": 44, "word": "磨く", "meaning": "닦다"}, {"no": 45, "word": "認める", "meaning": "인정하다"}, {"no": 46, "word": "結ぶ", "meaning": "묶다, 맺다"}, {"no": 47, "word": "求める", "meaning": "요구하다, 구하다"}, {"no": 48, "word": "汚す", "meaning": "더럽히다"}, {"no": 49, "word": "汚い", "meaning": "더럽다"}]}, {"day": 10, "topic": "일상생활 (2)", "words": [{"no": 1, "word": "糸", "meaning": "실"}, {"no": 2, "word": "お祝い", "meaning": "축하"}, {"no": 3, "word": "屋上", "meaning": "옥상"}, {"no": 4, "word": "片方", "meaning": "한쪽"}, {"no": 5, "word": "帰宅", "meaning": "귀가"}, {"no": 6, "word": "毛", "meaning": "털"}, {"no": 7, "word": "自分", "meaning": "자신"}, {"no": 8, "word": "住所", "meaning": "주소"}, {"no": 9, "word": "生活", "meaning": "생활"}, {"no": 10, "word": "世話", "meaning": "보살핌, 신세"}, {"no": 11, "word": "想像", "meaning": "상상"}, {"no": 12, "word": "中止", "meaning": "중지"}, {"no": 13, "word": "机", "meaning": "책상"}, {"no": 14, "word": "道具", "meaning": "도구"}, {"no": 15, "word": "途中", "meaning": "도중"}, {"no": 16, "word": "匂い", "meaning": "냄새"}, {"no": 17, "word": "場合", "meaning": "경우"}, {"no": 18, "word": "ふた", "meaning": "뚜껑"}, {"no": 19, "word": "翻訳", "meaning": "번역"}, {"no": 20, "word": "窓", "meaning": "창문"}, {"no": 21, "word": "郵便", "meaning": "우편"}, {"no": 22, "word": "留守", "meaning": "부재중"}, {"no": 23, "word": "植える", "meaning": "심다"}, {"no": 24, "word": "選ぶ", "meaning": "고르다, 선택하다"}, {"no": 25, "word": "隠す", "meaning": "숨기다"}, {"no": 26, "word": "重ねる", "meaning": "포개다, 거듭하다"}, {"no": 27, "word": "片付ける", "meaning": "정리하다, 치우다"}, {"no": 28, "word": "乾く", "meaning": "마르다"}, {"no": 29, "word": "気づく", "meaning": "알아차리다"}, {"no": 30, "word": "比べる", "meaning": "비교하다"}, {"no": 31, "word": "覚める", "meaning": "깨다"}, {"no": 32, "word": "閉める", "meaning": "닫다"}, {"no": 33, "word": "育てる", "meaning": "기르다, 키우다"}, {"no": 34, "word": "建つ", "meaning": "세워지다"}, {"no": 35, "word": "使う", "meaning": "사용하다"}, {"no": 36, "word": "付ける", "meaning": "붙이다"}, {"no": 37, "word": "出る", "meaning": "나가다, 나오다"}, {"no": 38, "word": "届く", "meaning": "닿다, 도착하다"}, {"no": 39, "word": "願う", "meaning": "바라다"}, {"no": 40, "word": "除く", "meaning": "제외하다, 없애다"}, {"no": 41, "word": "外す", "meaning": "떼다, 벗기다"}, {"no": 42, "word": "引っ越す", "meaning": "이사하다"}, {"no": 43, "word": "守る", "meaning": "지키다"}, {"no": 44, "word": "見つける", "meaning": "찾아내다"}, {"no": 45, "word": "迎える", "meaning": "맞이하다"}, {"no": 46, "word": "燃える", "meaning": "타다"}, {"no": 47, "word": "戻る", "meaning": "돌아가다"}, {"no": 48, "word": "重い", "meaning": "무겁다"}, {"no": 49, "word": "普通", "meaning": "보통"}]}, {"day": 11, "topic": "학교생활과 교육 (1)", "words": [{"no": 1, "word": "育児", "meaning": "육아"}, {"no": 2, "word": "数", "meaning": "수, 숫자"}, {"no": 3, "word": "基礎", "meaning": "기초"}, {"no": 4, "word": "教育", "meaning": "교육"}, {"no": 5, "word": "興味", "meaning": "흥미"}, {"no": 6, "word": "研究", "meaning": "연구"}, {"no": 7, "word": "講演", "meaning": "강연"}, {"no": 8, "word": "構造", "meaning": "구조"}, {"no": 9, "word": "差", "meaning": "차이"}, {"no": 10, "word": "資格", "meaning": "자격"}, {"no": 11, "word": "失敗", "meaning": "실패"}, {"no": 12, "word": "実力", "meaning": "실력"}, {"no": 13, "word": "授業", "meaning": "수업"}, {"no": 14, "word": "宿題", "meaning": "숙제"}, {"no": 15, "word": "常識", "meaning": "상식"}, {"no": 16, "word": "証明書", "meaning": "증명서"}, {"no": 17, "word": "正解", "meaning": "정답"}, {"no": 18, "word": "成長", "meaning": "성장"}, {"no": 19, "word": "早退", "meaning": "조퇴"}, {"no": 20, "word": "体育", "meaning": "체육"}, {"no": 21, "word": "足し算", "meaning": "덧셈"}, {"no": 22, "word": "挑戦", "meaning": "도전"}, {"no": 23, "word": "動作", "meaning": "동작"}, {"no": 24, "word": "復習", "meaning": "복습"}, {"no": 25, "word": "別々", "meaning": "각각, 따로따로"}, {"no": 26, "word": "申し込み", "meaning": "신청"}, {"no": 27, "word": "目標", "meaning": "목표"}, {"no": 28, "word": "予習", "meaning": "예습"}, {"no": 29, "word": "留学", "meaning": "유학"}, {"no": 30, "word": "歴史", "meaning": "역사"}, {"no": 31, "word": "受かる", "meaning": "합격하다"}, {"no": 32, "word": "移す", "meaning": "옮기다"}, {"no": 33, "word": "貸し出す", "meaning": "대출하다"}, {"no": 34, "word": "借りる", "meaning": "빌리다"}, {"no": 35, "word": "配る", "meaning": "나누어주다, 배부하다"}, {"no": 36, "word": "調べる", "meaning": "조사하다"}, {"no": 37, "word": "悩む", "meaning": "고민하다"}, {"no": 38, "word": "含む", "meaning": "포함하다"}, {"no": 39, "word": "用いる", "meaning": "사용하다, 이용하다"}, {"no": 40, "word": "厳しい", "meaning": "엄격하다"}, {"no": 41, "word": "簡単", "meaning": "간단"}, {"no": 42, "word": "盛ん", "meaning": "성행함, 활발함"}]}, {"day": 12, "topic": "학교생활과 교육 (2)", "words": [{"no": 1, "word": "意味", "meaning": "의미"}, {"no": 2, "word": "環境", "meaning": "환경"}, {"no": 3, "word": "希望", "meaning": "희망"}, {"no": 4, "word": "教師", "meaning": "교사"}, {"no": 5, "word": "計画", "meaning": "계획"}, {"no": 6, "word": "合格", "meaning": "합격"}, {"no": 7, "word": "国語", "meaning": "국어"}, {"no": 8, "word": "作文", "meaning": "작문"}, {"no": 9, "word": "試験", "meaning": "시험"}, {"no": 10, "word": "質問", "meaning": "질문"}, {"no": 11, "word": "指導", "meaning": "지도"}, {"no": 12, "word": "塾", "meaning": "학원"}, {"no": 13, "word": "受験", "meaning": "수험, 시험을 봄"}, {"no": 14, "word": "上級", "meaning": "상급"}, {"no": 15, "word": "承知", "meaning": "알겠음, 승낙"}, {"no": 16, "word": "将来", "meaning": "장래"}, {"no": 17, "word": "成績", "meaning": "성적"}, {"no": 18, "word": "説明", "meaning": "설명"}, {"no": 19, "word": "卒業", "meaning": "졸업"}, {"no": 20, "word": "大量", "meaning": "대량"}, {"no": 21, "word": "単語", "meaning": "단어"}, {"no": 22, "word": "通知", "meaning": "통지"}, {"no": 23, "word": "日程", "meaning": "일정"}, {"no": 24, "word": "平均", "meaning": "평균"}, {"no": 25, "word": "返却", "meaning": "반납"}, {"no": 26, "word": "面接", "meaning": "면접"}, {"no": 27, "word": "目的", "meaning": "목적"}, {"no": 28, "word": "理解", "meaning": "이해"}, {"no": 29, "word": "寮", "meaning": "기숙사"}, {"no": 30, "word": "失う", "meaning": "잃다"}, {"no": 31, "word": "覚える", "meaning": "외우다, 기억하다"}, {"no": 32, "word": "通う", "meaning": "다니다"}, {"no": 33, "word": "くっつける", "meaning": "붙이다"}, {"no": 34, "word": "騒ぐ", "meaning": "떠들다"}, {"no": 35, "word": "解く", "meaning": "풀다"}, {"no": 36, "word": "習う", "meaning": "배우다"}, {"no": 37, "word": "混ぜる", "meaning": "섞다"}, {"no": 38, "word": "やり直す", "meaning": "다시 하다"}, {"no": 39, "word": "難しい", "meaning": "어렵다"}, {"no": 40, "word": "熱心", "meaning": "열심"}, {"no": 41, "word": "必死", "meaning": "필사적"}, {"no": 42, "word": "明確", "meaning": "명확"}]}, {"day": 13, "topic": "일과 사회생활 (1)", "words": [{"no": 1, "word": "意見", "meaning": "의견"}, {"no": 2, "word": "記念", "meaning": "기념"}, {"no": 3, "word": "協力", "meaning": "협력"}, {"no": 4, "word": "作業", "meaning": "작업"}, {"no": 5, "word": "参考", "meaning": "참고"}, {"no": 6, "word": "指示", "meaning": "지시"}, {"no": 7, "word": "実現", "meaning": "실현"}, {"no": 8, "word": "就職", "meaning": "취직"}, {"no": 9, "word": "主張", "meaning": "주장"}, {"no": 10, "word": "出張", "meaning": "출장"}, {"no": 11, "word": "省略", "meaning": "생략"}, {"no": 12, "word": "担当", "meaning": "담당"}, {"no": 13, "word": "都合", "meaning": "사정, 형편"}, {"no": 14, "word": "年齢", "meaning": "연령"}, {"no": 15, "word": "配達", "meaning": "배달"}, {"no": 16, "word": "販売", "meaning": "판매"}, {"no": 17, "word": "報告", "meaning": "보고"}, {"no": 18, "word": "募集", "meaning": "모집"}, {"no": 19, "word": "無理", "meaning": "무리"}, {"no": 20, "word": "用事", "meaning": "볼일, 용무"}, {"no": 21, "word": "理由", "meaning": "이유"}, {"no": 22, "word": "訳", "meaning": "이유, 번역"}, {"no": 23, "word": "欠席", "meaning": "결석"}, {"no": 24, "word": "収入", "meaning": "수입(소득)"}, {"no": 25, "word": "やり方", "meaning": "방법, 하는 방식"}, {"no": 26, "word": "はんこ", "meaning": "도장"}, {"no": 27, "word": "憧れる", "meaning": "동경하다"}, {"no": 28, "word": "移る", "meaning": "옮기다, 이동하다"}, {"no": 29, "word": "教える", "meaning": "가르치다"}, {"no": 30, "word": "従う", "meaning": "따르다"}, {"no": 31, "word": "優れる", "meaning": "뛰어나다"}, {"no": 32, "word": "勤める", "meaning": "근무하다"}, {"no": 33, "word": "取る", "meaning": "잡다, 취하다"}, {"no": 34, "word": "逃げる", "meaning": "도망가다"}, {"no": 35, "word": "働く", "meaning": "일하다"}, {"no": 36, "word": "引き出す", "meaning": "인출하다, 이끌어내다"}, {"no": 37, "word": "間違える", "meaning": "잘못하다, 틀리다"}, {"no": 38, "word": "知らせる", "meaning": "알리다"}, {"no": 39, "word": "酔う", "meaning": "취하다"}, {"no": 40, "word": "確実", "meaning": "확실"}, {"no": 41, "word": "完全", "meaning": "완전"}, {"no": 42, "word": "具体的", "meaning": "구체적"}]}, {"day": 14, "topic": "일과 사회생활 (2)", "words": [{"no": 1, "word": "規則", "meaning": "규칙"}, {"no": 2, "word": "競争", "meaning": "경쟁"}, {"no": 3, "word": "許可", "meaning": "허가"}, {"no": 4, "word": "形式", "meaning": "형식"}, {"no": 5, "word": "建設", "meaning": "건설"}, {"no": 6, "word": "残業", "meaning": "잔업, 야근"}, {"no": 7, "word": "事情", "meaning": "사정"}, {"no": 8, "word": "失礼", "meaning": "실례"}, {"no": 9, "word": "集合", "meaning": "집합"}, {"no": 10, "word": "条件", "meaning": "조건"}, {"no": 11, "word": "資料", "meaning": "자료"}, {"no": 12, "word": "通勤", "meaning": "통근"}, {"no": 13, "word": "伝言", "meaning": "전언, 메시지"}, {"no": 14, "word": "努力", "meaning": "노력"}, {"no": 15, "word": "能力", "meaning": "능력"}, {"no": 16, "word": "発音", "meaning": "발음"}, {"no": 17, "word": "返事", "meaning": "대답, 답장"}, {"no": 18, "word": "方針", "meaning": "방침"}, {"no": 19, "word": "見本", "meaning": "견본"}, {"no": 20, "word": "命令", "meaning": "명령"}, {"no": 21, "word": "予定", "meaning": "예정"}, {"no": 22, "word": "連絡", "meaning": "연락"}, {"no": 23, "word": "書留", "meaning": "등기(우편)"}, {"no": 24, "word": "社長", "meaning": "사장"}, {"no": 25, "word": "手段", "meaning": "수단"}, {"no": 26, "word": "参加", "meaning": "참가"}, {"no": 27, "word": "扱う", "meaning": "다루다"}, {"no": 28, "word": "受け入れる", "meaning": "받아들이다"}, {"no": 29, "word": "置く", "meaning": "두다, 놓다"}, {"no": 30, "word": "答える", "meaning": "대답하다"}, {"no": 31, "word": "しゃべる", "meaning": "수다떨다, 말하다"}, {"no": 32, "word": "進める", "meaning": "진행시키다"}, {"no": 33, "word": "努める", "meaning": "노력하다, 힘쓰다"}, {"no": 34, "word": "慣れる", "meaning": "익숙해지다"}, {"no": 35, "word": "始める", "meaning": "시작하다"}, {"no": 36, "word": "引き受ける", "meaning": "떠맡다, 인수하다"}, {"no": 37, "word": "増やす", "meaning": "늘리다"}, {"no": 38, "word": "辞める", "meaning": "그만두다"}, {"no": 39, "word": "きつい", "meaning": "빡빡하다, 힘들다"}, {"no": 40, "word": "短い", "meaning": "짧다"}, {"no": 41, "word": "自由", "meaning": "자유"}, {"no": 42, "word": "重大", "meaning": "중대"}]}, {"day": 15, "topic": "정보 통신과 언론", "words": [{"no": 1, "word": "あて先", "meaning": "수신처, 받는 곳"}, {"no": 2, "word": "引用", "meaning": "인용"}, {"no": 3, "word": "お知らせ", "meaning": "알림, 공지"}, {"no": 4, "word": "関心", "meaning": "관심"}, {"no": 5, "word": "記事", "meaning": "기사"}, {"no": 6, "word": "掲示板", "meaning": "게시판"}, {"no": 7, "word": "広告", "meaning": "광고"}, {"no": 8, "word": "言葉", "meaning": "말, 언어"}, {"no": 9, "word": "雑誌", "meaning": "잡지"}, {"no": 10, "word": "週刊誌", "meaning": "주간지"}, {"no": 11, "word": "出版", "meaning": "출판"}, {"no": 12, "word": "小説", "meaning": "소설"}, {"no": 13, "word": "新商品", "meaning": "신상품"}, {"no": 14, "word": "台詞", "meaning": "대사"}, {"no": 15, "word": "宣伝", "meaning": "선전"}, {"no": 16, "word": "専門", "meaning": "전문"}, {"no": 17, "word": "頂点", "meaning": "정점"}, {"no": 18, "word": "出来事", "meaning": "사건, 일어난 일"}, {"no": 19, "word": "登場", "meaning": "등장"}, {"no": 20, "word": "内容", "meaning": "내용"}, {"no": 21, "word": "拝啓", "meaning": "근계(편지 서두 인사말)"}, {"no": 22, "word": "発売", "meaning": "발매"}, {"no": 23, "word": "発表", "meaning": "발표"}, {"no": 24, "word": "番組", "meaning": "방송 프로그램"}, {"no": 25, "word": "筆者", "meaning": "필자"}, {"no": 26, "word": "評価", "meaning": "평가"}, {"no": 27, "word": "文章", "meaning": "문장"}, {"no": 28, "word": "編集", "meaning": "편집"}, {"no": 29, "word": "放送", "meaning": "방송"}, {"no": 30, "word": "見出し", "meaning": "제목, 헤드라인"}, {"no": 31, "word": "物語", "meaning": "이야기"}, {"no": 32, "word": "予報", "meaning": "예보"}, {"no": 33, "word": "論文", "meaning": "논문"}, {"no": 34, "word": "話題", "meaning": "화제"}, {"no": 35, "word": "確かめる", "meaning": "확인하다"}, {"no": 36, "word": "通じる", "meaning": "통하다"}, {"no": 37, "word": "伝える", "meaning": "전하다"}, {"no": 38, "word": "つながる", "meaning": "연결되다"}, {"no": 39, "word": "載せる", "meaning": "싣다, 게재하다"}, {"no": 40, "word": "呼びかける", "meaning": "호소하다, 부르다"}, {"no": 41, "word": "主", "meaning": "주됨, 주인"}, {"no": 42, "word": "詳しい", "meaning": "상세하다"}]}, {"day": 16, "topic": "과학과 기술", "words": [{"no": 1, "word": "完成", "meaning": "완성"}, {"no": 2, "word": "観測", "meaning": "관측"}, {"no": 3, "word": "機械", "meaning": "기계"}, {"no": 4, "word": "技術", "meaning": "기술"}, {"no": 5, "word": "機能", "meaning": "기능"}, {"no": 6, "word": "携帯", "meaning": "휴대(휴대폰)"}, {"no": 7, "word": "研究所", "meaning": "연구소"}, {"no": 8, "word": "現代", "meaning": "현대"}, {"no": 9, "word": "最新", "meaning": "최신"}, {"no": 10, "word": "再生", "meaning": "재생"}, {"no": 11, "word": "実験", "meaning": "실험"}, {"no": 12, "word": "充電", "meaning": "충전"}, {"no": 13, "word": "修理", "meaning": "수리"}, {"no": 14, "word": "進歩", "meaning": "진보"}, {"no": 15, "word": "人類", "meaning": "인류"}, {"no": 16, "word": "専門家", "meaning": "전문가"}, {"no": 17, "word": "操作", "meaning": "조작"}, {"no": 18, "word": "知恵", "meaning": "지혜"}, {"no": 19, "word": "地球", "meaning": "지구"}, {"no": 20, "word": "月", "meaning": "달"}, {"no": 21, "word": "電気", "meaning": "전기"}, {"no": 22, "word": "電柱", "meaning": "전봇대"}, {"no": 23, "word": "発見", "meaning": "발견"}, {"no": 24, "word": "発達", "meaning": "발달"}, {"no": 25, "word": "発明", "meaning": "발명"}, {"no": 26, "word": "普及", "meaning": "보급"}, {"no": 27, "word": "方法", "meaning": "방법"}, {"no": 28, "word": "回る", "meaning": "돌다"}]}, {"day": 17, "topic": "사건·사고와 대처", "words": [{"no": 1, "word": "火事", "meaning": "화재"}, {"no": 2, "word": "原因", "meaning": "원인"}, {"no": 3, "word": "故障", "meaning": "고장"}, {"no": 4, "word": "事件", "meaning": "사건"}, {"no": 5, "word": "事故", "meaning": "사고"}, {"no": 6, "word": "消防署", "meaning": "소방서"}, {"no": 7, "word": "停電", "meaning": "정전"}, {"no": 8, "word": "臭い", "meaning": "냄새나다"}, {"no": 9, "word": "犯人", "meaning": "범인"}, {"no": 10, "word": "被害", "meaning": "피해"}, {"no": 11, "word": "不正", "meaning": "부정"}, {"no": 12, "word": "疑う", "meaning": "의심하다"}, {"no": 13, "word": "打つ", "meaning": "치다, 때리다"}, {"no": 14, "word": "奪う", "meaning": "빼앗다"}, {"no": 15, "word": "追う", "meaning": "쫓다"}, {"no": 16, "word": "落ちる", "meaning": "떨어지다"}, {"no": 17, "word": "おぼれる", "meaning": "물에 빠지다, 익사하다"}, {"no": 18, "word": "崩れる", "meaning": "무너지다"}, {"no": 19, "word": "探す", "meaning": "찾다"}, {"no": 20, "word": "叫ぶ", "meaning": "외치다"}, {"no": 21, "word": "刺す", "meaning": "찌르다"}, {"no": 22, "word": "縛る", "meaning": "묶다"}, {"no": 23, "word": "倒れる", "meaning": "쓰러지다"}, {"no": 24, "word": "無くす", "meaning": "잃어버리다, 없애다"}, {"no": 25, "word": "盗む", "meaning": "훔치다"}, {"no": 26, "word": "拾う", "meaning": "줍다"}, {"no": 27, "word": "防ぐ", "meaning": "막다, 방지하다"}, {"no": 28, "word": "危ない", "meaning": "위험하다"}]}, {"day": 18, "topic": "경제생활과 산업", "words": [{"no": 1, "word": "売り切れ", "meaning": "품절"}, {"no": 2, "word": "営業", "meaning": "영업"}, {"no": 3, "word": "大型", "meaning": "대형"}, {"no": 4, "word": "回収", "meaning": "회수"}, {"no": 5, "word": "会費", "meaning": "회비"}, {"no": 6, "word": "価格", "meaning": "가격"}, {"no": 7, "word": "苦労", "meaning": "고생"}, {"no": 8, "word": "経済", "meaning": "경제"}, {"no": 9, "word": "券", "meaning": "표, 티켓"}, {"no": 10, "word": "工場", "meaning": "공장"}, {"no": 11, "word": "産業", "meaning": "산업"}, {"no": 12, "word": "支店", "meaning": "지점"}, {"no": 13, "word": "借金", "meaning": "빚"}, {"no": 14, "word": "商業", "meaning": "상업"}, {"no": 15, "word": "消費", "meaning": "소비"}, {"no": 16, "word": "商品", "meaning": "상품"}, {"no": 17, "word": "生産", "meaning": "생산"}, {"no": 18, "word": "節約", "meaning": "절약"}, {"no": 19, "word": "前後", "meaning": "전후"}, {"no": 20, "word": "全部", "meaning": "전부"}, {"no": 21, "word": "代金", "meaning": "대금"}, {"no": 22, "word": "注文", "meaning": "주문"}, {"no": 23, "word": "貯金", "meaning": "저금"}, {"no": 24, "word": "土地", "meaning": "토지"}, {"no": 25, "word": "値段", "meaning": "가격, 값"}, {"no": 26, "word": "物価", "meaning": "물가"}, {"no": 27, "word": "閉店", "meaning": "폐점"}, {"no": 28, "word": "無料", "meaning": "무료"}, {"no": 29, "word": "家賃", "meaning": "집세"}, {"no": 30, "word": "輸出", "meaning": "수출"}, {"no": 31, "word": "料金", "meaning": "요금"}, {"no": 32, "word": "割合", "meaning": "비율"}, {"no": 33, "word": "上がる", "meaning": "오르다"}, {"no": 34, "word": "集める", "meaning": "모으다"}, {"no": 35, "word": "要る", "meaning": "필요하다"}, {"no": 36, "word": "売れる", "meaning": "팔리다"}, {"no": 37, "word": "返す", "meaning": "돌려주다"}, {"no": 38, "word": "支える", "meaning": "지탱하다"}, {"no": 39, "word": "支払う", "meaning": "지불하다"}, {"no": 40, "word": "勧める", "meaning": "권하다"}, {"no": 41, "word": "貯める", "meaning": "모으다, 저축하다"}, {"no": 42, "word": "足りる", "meaning": "충분하다"}, {"no": 43, "word": "並ぶ", "meaning": "줄서다, 늘어서다"}, {"no": 44, "word": "振り込む", "meaning": "입금하다"}, {"no": 45, "word": "持つ", "meaning": "가지다, 들다"}, {"no": 46, "word": "惜しい", "meaning": "아깝다"}, {"no": 47, "word": "少ない", "meaning": "적다"}, {"no": 48, "word": "得", "meaning": "이득"}, {"no": 49, "word": "豊富", "meaning": "풍부"}]}, {"day": 19, "topic": "정치·법률·사회", "words": [{"no": 1, "word": "嘘", "meaning": "거짓말"}, {"no": 2, "word": "解決", "meaning": "해결"}, {"no": 3, "word": "疑問", "meaning": "의문"}, {"no": 4, "word": "傾向", "meaning": "경향"}, {"no": 5, "word": "憲法", "meaning": "헌법"}, {"no": 6, "word": "原料", "meaning": "원료"}, {"no": 7, "word": "交換", "meaning": "교환"}, {"no": 8, "word": "公務員", "meaning": "공무원"}, {"no": 9, "word": "高齢化", "meaning": "고령화"}, {"no": 10, "word": "国民", "meaning": "국민"}, {"no": 11, "word": "個人", "meaning": "개인"}, {"no": 12, "word": "子育て", "meaning": "육아"}, {"no": 13, "word": "差別", "meaning": "차별"}, {"no": 14, "word": "賛成", "meaning": "찬성"}, {"no": 15, "word": "時代", "meaning": "시대"}, {"no": 16, "word": "失業", "meaning": "실업"}, {"no": 17, "word": "社会", "meaning": "사회"}, {"no": 18, "word": "住民", "meaning": "주민"}, {"no": 19, "word": "少子化", "meaning": "저출산"}, {"no": 20, "word": "少数", "meaning": "소수"}, {"no": 21, "word": "処理", "meaning": "처리"}, {"no": 22, "word": "人口", "meaning": "인구"}, {"no": 23, "word": "政治", "meaning": "정치"}, {"no": 24, "word": "生徒", "meaning": "학생(학생, 생도)"}, {"no": 25, "word": "政府", "meaning": "정부"}, {"no": 26, "word": "増加", "meaning": "증가"}, {"no": 27, "word": "代表", "meaning": "대표"}, {"no": 28, "word": "調査", "meaning": "조사"}, {"no": 29, "word": "根", "meaning": "뿌리"}, {"no": 30, "word": "発展", "meaning": "발전"}, {"no": 31, "word": "犯罪", "meaning": "범죄"}, {"no": 32, "word": "否定", "meaning": "부정"}, {"no": 33, "word": "弁護", "meaning": "변호"}, {"no": 34, "word": "法律", "meaning": "법률"}, {"no": 35, "word": "本人", "meaning": "본인"}, {"no": 36, "word": "免許", "meaning": "면허"}, {"no": 37, "word": "問題", "meaning": "문제"}, {"no": 38, "word": "占める", "meaning": "차지하다"}, {"no": 39, "word": "握る", "meaning": "쥐다, 잡다"}, {"no": 40, "word": "見直す", "meaning": "재검토하다"}, {"no": 41, "word": "めぐる", "meaning": "돌다, 둘러싸다"}, {"no": 42, "word": "重要", "meaning": "중요"}]}, {"day": 20, "topic": "국제 사회와 스포츠", "words": [{"no": 1, "word": "永遠", "meaning": "영원"}, {"no": 2, "word": "海外", "meaning": "해외"}, {"no": 3, "word": "交流", "meaning": "교류"}, {"no": 4, "word": "国際", "meaning": "국제"}, {"no": 5, "word": "首相", "meaning": "수상, 총리"}, {"no": 6, "word": "首都", "meaning": "수도"}, {"no": 7, "word": "西洋", "meaning": "서양"}, {"no": 8, "word": "戦争", "meaning": "전쟁"}, {"no": 9, "word": "それぞれ", "meaning": "각각"}, {"no": 10, "word": "違い", "meaning": "차이"}, {"no": 11, "word": "手続き", "meaning": "수속, 절차"}, {"no": 12, "word": "話し合い", "meaning": "대화, 논의"}, {"no": 13, "word": "平和", "meaning": "평화"}, {"no": 14, "word": "貿易", "meaning": "무역"}, {"no": 15, "word": "世の中", "meaning": "세상"}, {"no": 16, "word": "来日", "meaning": "일본 방문(외국인의)"}, {"no": 17, "word": "合図", "meaning": "신호"}, {"no": 18, "word": "応援", "meaning": "응원"}, {"no": 19, "word": "活動", "meaning": "활동"}, {"no": 20, "word": "記録", "meaning": "기록"}, {"no": 21, "word": "最多", "meaning": "최다"}, {"no": 22, "word": "試合", "meaning": "시합"}, {"no": 23, "word": "選手", "meaning": "선수"}, {"no": 24, "word": "優勝", "meaning": "우승"}, {"no": 25, "word": "練習", "meaning": "연습"}, {"no": 26, "word": "開催", "meaning": "개최"}, {"no": 27, "word": "基本", "meaning": "기본"}, {"no": 28, "word": "出場", "meaning": "출전, 출장"}, {"no": 29, "word": "弱点", "meaning": "약점"}, {"no": 30, "word": "野球", "meaning": "야구"}, {"no": 31, "word": "水泳", "meaning": "수영"}, {"no": 32, "word": "大会", "meaning": "대회"}, {"no": 33, "word": "卓球", "meaning": "탁구"}, {"no": 34, "word": "追いかける", "meaning": "뒤쫓다"}, {"no": 35, "word": "追いつく", "meaning": "따라잡다"}, {"no": 36, "word": "行う", "meaning": "행하다, 실시하다"}, {"no": 37, "word": "勝つ", "meaning": "이기다"}, {"no": 38, "word": "頑張る", "meaning": "노력하다, 힘내다"}, {"no": 39, "word": "決まる", "meaning": "정해지다"}, {"no": 40, "word": "ける", "meaning": "차다"}, {"no": 41, "word": "接する", "meaning": "접하다"}, {"no": 42, "word": "申し込む", "meaning": "신청하다"}]}, {"day": 21, "topic": "공연 예술과 문화", "words": [{"no": 1, "word": "映画館", "meaning": "영화관"}, {"no": 2, "word": "演奏", "meaning": "연주"}, {"no": 3, "word": "応募", "meaning": "응모"}, {"no": 4, "word": "大勢", "meaning": "많은 사람"}, {"no": 5, "word": "お正月", "meaning": "설날"}, {"no": 6, "word": "踊り", "meaning": "춤"}, {"no": 7, "word": "お盆", "meaning": "오봉(백중, 추석과 유사한 명절)"}, {"no": 8, "word": "会場", "meaning": "행사장"}, {"no": 9, "word": "楽器", "meaning": "악기"}, {"no": 10, "word": "観客", "meaning": "관객"}, {"no": 11, "word": "関係者", "meaning": "관계자"}, {"no": 12, "word": "感想", "meaning": "감상"}, {"no": 13, "word": "着物", "meaning": "기모노, 옷"}, {"no": 14, "word": "曲", "meaning": "곡"}, {"no": 15, "word": "芸術", "meaning": "예술"}, {"no": 16, "word": "才能", "meaning": "재능"}, {"no": 17, "word": "作品", "meaning": "작품"}, {"no": 18, "word": "司会", "meaning": "사회(진행)"}, {"no": 19, "word": "芝居", "meaning": "연극"}, {"no": 20, "word": "順番", "meaning": "순서"}, {"no": 21, "word": "新作", "meaning": "신작"}, {"no": 22, "word": "神社", "meaning": "신사"}, {"no": 23, "word": "制作", "meaning": "제작"}, {"no": 24, "word": "席", "meaning": "자리"}, {"no": 25, "word": "畳", "meaning": "다다미"}, {"no": 26, "word": "展覧会", "meaning": "전람회"}, {"no": 27, "word": "美術館", "meaning": "미술관"}, {"no": 28, "word": "表現", "meaning": "표현"}, {"no": 29, "word": "舞台", "meaning": "무대"}, {"no": 30, "word": "文化", "meaning": "문화"}, {"no": 31, "word": "漫画", "meaning": "만화"}, {"no": 32, "word": "無名", "meaning": "무명"}, {"no": 33, "word": "役者", "meaning": "배우"}, {"no": 34, "word": "様式", "meaning": "양식"}, {"no": 35, "word": "和室", "meaning": "일본식 방"}, {"no": 36, "word": "あふれる", "meaning": "넘치다"}, {"no": 37, "word": "感じる", "meaning": "느끼다"}, {"no": 38, "word": "触る", "meaning": "만지다"}, {"no": 39, "word": "示す", "meaning": "보이다, 나타내다"}, {"no": 40, "word": "作る", "meaning": "만들다"}, {"no": 41, "word": "触れる", "meaning": "접촉하다, 닿다"}, {"no": 42, "word": "素晴らしい", "meaning": "훌륭하다"}]}, {"day": 22, "topic": "여행과 취미", "words": [{"no": 1, "word": "案内", "meaning": "안내"}, {"no": 2, "word": "往復", "meaning": "왕복"}, {"no": 3, "word": "温泉", "meaning": "온천"}, {"no": 4, "word": "観光", "meaning": "관광"}, {"no": 5, "word": "機会", "meaning": "기회"}, {"no": 6, "word": "記入", "meaning": "기입"}, {"no": 7, "word": "空港", "meaning": "공항"}, {"no": 8, "word": "経験", "meaning": "경험"}, {"no": 9, "word": "見物", "meaning": "구경"}, {"no": 10, "word": "国内", "meaning": "국내"}, {"no": 11, "word": "宿泊", "meaning": "숙박"}, {"no": 12, "word": "出国", "meaning": "출국"}, {"no": 13, "word": "世界", "meaning": "세계"}, {"no": 14, "word": "楽しみ", "meaning": "즐거움, 기대"}, {"no": 15, "word": "知識", "meaning": "지식"}, {"no": 16, "word": "超過", "meaning": "초과"}, {"no": 17, "word": "地理", "meaning": "지리"}, {"no": 18, "word": "問い合わせ", "meaning": "문의"}, {"no": 19, "word": "都会", "meaning": "도시"}, {"no": 20, "word": "特色", "meaning": "특색"}, {"no": 21, "word": "登山", "meaning": "등산"}, {"no": 22, "word": "荷物", "meaning": "짐"}, {"no": 23, "word": "人気", "meaning": "인기"}, {"no": 24, "word": "場所", "meaning": "장소"}, {"no": 25, "word": "必要", "meaning": "필요"}, {"no": 26, "word": "祭り", "meaning": "축제"}, {"no": 27, "word": "土産", "meaning": "선물, 특산품"}, {"no": 28, "word": "行き先", "meaning": "목적지, 행선지"}, {"no": 29, "word": "予約", "meaning": "예약"}, {"no": 30, "word": "両替", "meaning": "환전"}, {"no": 31, "word": "旅行", "meaning": "여행"}, {"no": 32, "word": "諦める", "meaning": "포기하다"}, {"no": 33, "word": "預ける", "meaning": "맡기다"}, {"no": 34, "word": "当たる", "meaning": "맞다, 당첨되다"}, {"no": 35, "word": "編む", "meaning": "뜨다, 엮다"}, {"no": 36, "word": "泳ぐ", "meaning": "헤엄치다"}, {"no": 37, "word": "折る", "meaning": "접다, 꺾다"}, {"no": 38, "word": "こしかける", "meaning": "걸터앉다"}, {"no": 39, "word": "釣る", "meaning": "낚다"}, {"no": 40, "word": "泊まる", "meaning": "묵다, 숙박하다"}, {"no": 41, "word": "眺める", "meaning": "바라보다"}, {"no": 42, "word": "狙う", "meaning": "노리다"}, {"no": 43, "word": "まとめる", "meaning": "정리하다"}, {"no": 44, "word": "渡す", "meaning": "건네다"}, {"no": 45, "word": "得意", "meaning": "잘함, 자신있음"}, {"no": 46, "word": "夢中", "meaning": "몰두, 열중"}, {"no": 47, "word": "あわただしい", "meaning": "분주하다"}, {"no": 48, "word": "うまい", "meaning": "맛있다, 잘하다"}, {"no": 49, "word": "軽い", "meaning": "가볍다"}]}, {"day": 23, "topic": "교통과 안전", "words": [{"no": 1, "word": "安全", "meaning": "안전"}, {"no": 2, "word": "運転", "meaning": "운전"}, {"no": 3, "word": "横断", "meaning": "횡단"}, {"no": 4, "word": "改札", "meaning": "개찰구"}, {"no": 5, "word": "各駅", "meaning": "각 역(역마다)"}, {"no": 6, "word": "危険", "meaning": "위험"}, {"no": 7, "word": "急行", "meaning": "급행"}, {"no": 8, "word": "経由", "meaning": "경유"}, {"no": 9, "word": "工事", "meaning": "공사"}, {"no": 10, "word": "交通", "meaning": "교통"}, {"no": 11, "word": "混雑", "meaning": "혼잡"}, {"no": 12, "word": "仕方", "meaning": "방법, 어쩔 수 없음"}, {"no": 13, "word": "自動車", "meaning": "자동차"}, {"no": 14, "word": "渋滞", "meaning": "정체, 지체"}, {"no": 15, "word": "情報", "meaning": "정보"}, {"no": 16, "word": "速度", "meaning": "속도"}, {"no": 17, "word": "注意", "meaning": "주의"}, {"no": 18, "word": "駐車", "meaning": "주차"}, {"no": 19, "word": "通過", "meaning": "통과"}, {"no": 20, "word": "出口", "meaning": "출구"}, {"no": 21, "word": "電源", "meaning": "전원"}, {"no": 22, "word": "道路", "meaning": "도로"}, {"no": 23, "word": "複雑", "meaning": "복잡"}, {"no": 24, "word": "部品", "meaning": "부품"}, {"no": 25, "word": "便利", "meaning": "편리"}, {"no": 26, "word": "降りる", "meaning": "내리다"}, {"no": 27, "word": "消す", "meaning": "끄다, 지우다"}, {"no": 28, "word": "転ぶ", "meaning": "넘어지다"}, {"no": 29, "word": "壊れる", "meaning": "고장나다, 부서지다"}, {"no": 30, "word": "滑る", "meaning": "미끄러지다"}, {"no": 31, "word": "違う", "meaning": "다르다, 틀리다"}, {"no": 32, "word": "通り過ぎる", "meaning": "지나치다"}, {"no": 33, "word": "止める", "meaning": "멈추다"}, {"no": 34, "word": "直す", "meaning": "고치다"}, {"no": 35, "word": "乗せる", "meaning": "태우다"}, {"no": 36, "word": "乗り換える", "meaning": "갈아타다"}, {"no": 37, "word": "乗り越す", "meaning": "지나쳐서 타다(내릴 역을 지나침)"}, {"no": 38, "word": "引き返す", "meaning": "되돌아가다"}, {"no": 39, "word": "ぶつかる", "meaning": "부딪히다"}, {"no": 40, "word": "迷う", "meaning": "헤매다, 망설이다"}, {"no": 41, "word": "分かれる", "meaning": "나뉘다"}, {"no": 42, "word": "速い", "meaning": "빠르다"}]}, {"day": 24, "topic": "날씨와 자연환경 (1)", "words": [{"no": 1, "word": "嵐", "meaning": "폭풍"}, {"no": 2, "word": "岩", "meaning": "바위"}, {"no": 3, "word": "枝", "meaning": "가지"}, {"no": 4, "word": "音", "meaning": "소리"}, {"no": 5, "word": "香り", "meaning": "향기"}, {"no": 6, "word": "火山", "meaning": "화산"}, {"no": 7, "word": "観察", "meaning": "관찰"}, {"no": 8, "word": "気温", "meaning": "기온"}, {"no": 9, "word": "季節", "meaning": "계절"}, {"no": 10, "word": "空気", "meaning": "공기"}, {"no": 11, "word": "雲", "meaning": "구름"}, {"no": 12, "word": "公害", "meaning": "공해"}, {"no": 13, "word": "坂", "meaning": "비탈, 언덕"}, {"no": 14, "word": "資源", "meaning": "자원"}, {"no": 15, "word": "自然", "meaning": "자연"}, {"no": 16, "word": "湿度", "meaning": "습도"}, {"no": 17, "word": "島", "meaning": "섬"}, {"no": 18, "word": "植物", "meaning": "식물"}, {"no": 19, "word": "台風", "meaning": "태풍"}, {"no": 20, "word": "調節", "meaning": "조절"}, {"no": 21, "word": "鳥", "meaning": "새"}, {"no": 22, "word": "波", "meaning": "파도"}, {"no": 23, "word": "葉", "meaning": "잎"}, {"no": 24, "word": "発生", "meaning": "발생"}, {"no": 25, "word": "光", "meaning": "빛"}, {"no": 26, "word": "緑", "meaning": "녹색, 초록"}, {"no": 27, "word": "森", "meaning": "숲"}, {"no": 28, "word": "開く", "meaning": "열리다"}, {"no": 29, "word": "輝く", "meaning": "빛나다"}, {"no": 30, "word": "聞こえる", "meaning": "들리다"}, {"no": 31, "word": "咲く", "meaning": "피다"}, {"no": 32, "word": "達する", "meaning": "도달하다"}, {"no": 33, "word": "溶ける", "meaning": "녹다"}, {"no": 34, "word": "晴れる", "meaning": "맑다, 개다"}, {"no": 35, "word": "止む", "meaning": "그치다"}, {"no": 36, "word": "浅い", "meaning": "얕다"}, {"no": 37, "word": "暑い", "meaning": "덥다"}, {"no": 38, "word": "険しい", "meaning": "험하다"}, {"no": 39, "word": "早い", "meaning": "빠르다, 이르다"}, {"no": 40, "word": "眩しい", "meaning": "눈부시다"}, {"no": 41, "word": "快適", "meaning": "쾌적"}, {"no": 42, "word": "静か", "meaning": "조용함"}]}, {"day": 25, "topic": "날씨와 자연환경 (2)", "words": [{"no": 1, "word": "泉", "meaning": "샘"}, {"no": 2, "word": "影響", "meaning": "영향"}, {"no": 3, "word": "丘", "meaning": "언덕"}, {"no": 4, "word": "海岸", "meaning": "해안"}, {"no": 5, "word": "各地", "meaning": "각지"}, {"no": 6, "word": "雷", "meaning": "천둥, 번개"}, {"no": 7, "word": "乾燥", "meaning": "건조"}, {"no": 8, "word": "気候", "meaning": "기후"}, {"no": 9, "word": "霧", "meaning": "안개"}, {"no": 10, "word": "草", "meaning": "풀"}, {"no": 11, "word": "景色", "meaning": "경치"}, {"no": 12, "word": "小鳥", "meaning": "작은 새"}, {"no": 13, "word": "桜", "meaning": "벚꽃"}, {"no": 14, "word": "地震", "meaning": "지진"}, {"no": 15, "word": "湿気", "meaning": "습기"}, {"no": 16, "word": "芝生", "meaning": "잔디"}, {"no": 17, "word": "霜", "meaning": "서리"}, {"no": 18, "word": "空", "meaning": "하늘"}, {"no": 19, "word": "種", "meaning": "씨앗, 종류"}, {"no": 20, "word": "土", "meaning": "흙"}, {"no": 21, "word": "夏", "meaning": "여름"}, {"no": 22, "word": "後", "meaning": "뒤, 후"}, {"no": 23, "word": "灰色", "meaning": "회색"}, {"no": 24, "word": "林", "meaning": "숲, 수풀"}, {"no": 25, "word": "星", "meaning": "별"}, {"no": 26, "word": "虫", "meaning": "벌레"}, {"no": 27, "word": "野生", "meaning": "야생"}, {"no": 28, "word": "浮かぶ", "meaning": "뜨다"}, {"no": 29, "word": "枯れる", "meaning": "시들다"}, {"no": 30, "word": "暮れる", "meaning": "저물다"}, {"no": 31, "word": "下げる", "meaning": "내리다"}, {"no": 32, "word": "散る", "meaning": "지다, 흩어지다"}, {"no": 33, "word": "流れる", "meaning": "흐르다"}, {"no": 34, "word": "増す", "meaning": "늘다, 증가하다"}, {"no": 35, "word": "見える", "meaning": "보이다"}, {"no": 36, "word": "暖かい", "meaning": "따뜻하다"}, {"no": 37, "word": "暗い", "meaning": "어둡다"}, {"no": 38, "word": "涼しい", "meaning": "시원하다"}, {"no": 39, "word": "激しい", "meaning": "격렬하다"}, {"no": 40, "word": "深い", "meaning": "깊다"}, {"no": 41, "word": "様々", "meaning": "다양함"}, {"no": 42, "word": "変", "meaning": "이상함"}]}, {"day": 26, "topic": "건강과 의료 (1)", "words": [{"no": 1, "word": "汗", "meaning": "땀"}, {"no": 2, "word": "悪化", "meaning": "악화"}, {"no": 3, "word": "命", "meaning": "목숨, 생명"}, {"no": 4, "word": "運動", "meaning": "운동"}, {"no": 5, "word": "顔", "meaning": "얼굴"}, {"no": 6, "word": "肩", "meaning": "어깨"}, {"no": 7, "word": "感覚", "meaning": "감각"}, {"no": 8, "word": "休憩", "meaning": "휴식"}, {"no": 9, "word": "具合", "meaning": "상태, 컨디션"}, {"no": 10, "word": "薬", "meaning": "약"}, {"no": 11, "word": "怪我", "meaning": "부상, 다침"}, {"no": 12, "word": "血液", "meaning": "혈액"}, {"no": 13, "word": "検査", "meaning": "검사"}, {"no": 14, "word": "呼吸", "meaning": "호흡"}, {"no": 15, "word": "手術", "meaning": "수술"}, {"no": 16, "word": "食欲", "meaning": "식욕"}, {"no": 17, "word": "身長", "meaning": "신장, 키"}, {"no": 18, "word": "頭痛", "meaning": "두통"}, {"no": 19, "word": "制限", "meaning": "제한"}, {"no": 20, "word": "背中", "meaning": "등"}, {"no": 21, "word": "体重", "meaning": "체중"}, {"no": 22, "word": "体力", "meaning": "체력"}, {"no": 23, "word": "手足", "meaning": "손발"}, {"no": 24, "word": "熱", "meaning": "열"}, {"no": 25, "word": "歯", "meaning": "이, 치아"}, {"no": 26, "word": "病気", "meaning": "병"}, {"no": 27, "word": "保険", "meaning": "보험"}, {"no": 28, "word": "見舞い", "meaning": "병문안"}, {"no": 29, "word": "火傷", "meaning": "화상"}, {"no": 30, "word": "冷房", "meaning": "냉방"}, {"no": 31, "word": "表れる", "meaning": "나타나다"}, {"no": 32, "word": "思い出す", "meaning": "떠올리다, 생각나다"}, {"no": 33, "word": "効く", "meaning": "효과가 있다, 듣다"}, {"no": 34, "word": "苦しむ", "meaning": "괴로워하다"}, {"no": 35, "word": "疲れる", "meaning": "피곤하다"}, {"no": 36, "word": "生える", "meaning": "나다, 자라다"}, {"no": 37, "word": "控える", "meaning": "삼가다, 자제하다"}, {"no": 38, "word": "痛い", "meaning": "아프다"}, {"no": 39, "word": "かゆい", "meaning": "가렵다"}, {"no": 40, "word": "だるい", "meaning": "나른하다"}, {"no": 41, "word": "ひどい", "meaning": "심하다"}, {"no": 42, "word": "順調", "meaning": "순조로움"}]}, {"day": 27, "topic": "건강과 의료 (2)", "words": [{"no": 1, "word": "頭", "meaning": "머리"}, {"no": 2, "word": "意識", "meaning": "의식"}, {"no": 3, "word": "腕", "meaning": "팔"}, {"no": 4, "word": "解消", "meaning": "해소"}, {"no": 5, "word": "風邪", "meaning": "감기"}, {"no": 6, "word": "我慢", "meaning": "참음, 인내"}, {"no": 7, "word": "体", "meaning": "몸"}, {"no": 8, "word": "傷", "meaning": "상처"}, {"no": 9, "word": "禁煙", "meaning": "금연"}, {"no": 10, "word": "くしゃみ", "meaning": "재채기"}, {"no": 11, "word": "首", "meaning": "목"}, {"no": 12, "word": "外科", "meaning": "외과"}, {"no": 13, "word": "健康", "meaning": "건강"}, {"no": 14, "word": "効果", "meaning": "효과"}, {"no": 15, "word": "腰", "meaning": "허리"}, {"no": 16, "word": "消化", "meaning": "소화"}, {"no": 17, "word": "心臓", "meaning": "심장"}, {"no": 18, "word": "睡眠", "meaning": "수면"}, {"no": 19, "word": "背", "meaning": "등, 키"}, {"no": 20, "word": "正常", "meaning": "정상"}, {"no": 21, "word": "退院", "meaning": "퇴원"}, {"no": 22, "word": "体操", "meaning": "체조"}, {"no": 23, "word": "力", "meaning": "힘"}, {"no": 24, "word": "長生き", "meaning": "장수"}, {"no": 25, "word": "喉", "meaning": "목구멍"}, {"no": 26, "word": "皮膚", "meaning": "피부"}, {"no": 27, "word": "不眠症", "meaning": "불면증"}, {"no": 28, "word": "保健", "meaning": "보건"}, {"no": 29, "word": "胸", "meaning": "가슴"}, {"no": 30, "word": "指", "meaning": "손가락"}, {"no": 31, "word": "生きる", "meaning": "살다"}, {"no": 32, "word": "くたびれる", "meaning": "지치다"}, {"no": 33, "word": "しびれる", "meaning": "저리다"}, {"no": 34, "word": "治る", "meaning": "낫다"}, {"no": 35, "word": "測る", "meaning": "재다, 측정하다"}, {"no": 36, "word": "減る", "meaning": "줄다"}, {"no": 37, "word": "薄い", "meaning": "얇다, 연하다"}, {"no": 38, "word": "苦しい", "meaning": "괴롭다"}, {"no": 39, "word": "温い", "meaning": "미지근하다"}, {"no": 40, "word": "弱い", "meaning": "약하다"}, {"no": 41, "word": "丈夫", "meaning": "튼튼함"}, {"no": 42, "word": "当然", "meaning": "당연"}]}, {"day": 28, "topic": "시간·공간·거리 (1)", "words": [{"no": 1, "word": "辺り", "meaning": "주변, 근처"}, {"no": 2, "word": "以降", "meaning": "이후"}, {"no": 3, "word": "位置", "meaning": "위치"}, {"no": 4, "word": "裏", "meaning": "뒤, 이면"}, {"no": 5, "word": "延長", "meaning": "연장"}, {"no": 6, "word": "過去", "meaning": "과거"}, {"no": 7, "word": "完了", "meaning": "완료"}, {"no": 8, "word": "期限", "meaning": "기한"}, {"no": 9, "word": "近所", "meaning": "근처, 이웃"}, {"no": 10, "word": "下旬", "meaning": "하순"}, {"no": 11, "word": "郊外", "meaning": "교외"}, {"no": 12, "word": "際", "meaning": "때, 즈음"}, {"no": 13, "word": "最終", "meaning": "최종"}, {"no": 14, "word": "最中", "meaning": "한창인 때"}, {"no": 15, "word": "昨夜", "meaning": "어젯밤"}, {"no": 16, "word": "締め切り", "meaning": "마감"}, {"no": 17, "word": "終了", "meaning": "종료"}, {"no": 18, "word": "隅", "meaning": "구석"}, {"no": 19, "word": "先日", "meaning": "일전에, 며칠 전"}, {"no": 20, "word": "倉庫", "meaning": "창고"}, {"no": 21, "word": "地域", "meaning": "지역"}, {"no": 22, "word": "地方", "meaning": "지방"}, {"no": 23, "word": "定休日", "meaning": "정기 휴일"}, {"no": 24, "word": "ななめ", "meaning": "비스듬함, 사선"}, {"no": 25, "word": "年中", "meaning": "연중"}, {"no": 26, "word": "半年", "meaning": "반년"}, {"no": 27, "word": "方角", "meaning": "방위, 방향"}, {"no": 28, "word": "未来", "meaning": "미래"}, {"no": 29, "word": "翌日", "meaning": "다음날"}, {"no": 30, "word": "夜中", "meaning": "한밤중"}, {"no": 31, "word": "空く", "meaning": "비다"}, {"no": 32, "word": "急ぐ", "meaning": "서두르다"}, {"no": 33, "word": "終わる", "meaning": "끝나다"}, {"no": 34, "word": "過ぎる", "meaning": "지나다"}, {"no": 35, "word": "済む", "meaning": "끝나다, 해결되다"}, {"no": 36, "word": "経つ", "meaning": "(시간이) 지나다"}, {"no": 37, "word": "近づく", "meaning": "가까워지다"}, {"no": 38, "word": "広がる", "meaning": "넓어지다, 퍼지다"}, {"no": 39, "word": "寄る", "meaning": "들르다"}, {"no": 40, "word": "幼い", "meaning": "어리다"}, {"no": 41, "word": "狭い", "meaning": "좁다"}, {"no": 42, "word": "長い", "meaning": "길다"}]}, {"day": 29, "topic": "시간·공간·거리 (2)", "words": [{"no": 1, "word": "池", "meaning": "연못"}, {"no": 2, "word": "以前", "meaning": "이전"}, {"no": 3, "word": "移転", "meaning": "이전(장소 이동)"}, {"no": 4, "word": "延期", "meaning": "연기"}, {"no": 5, "word": "折", "meaning": "때, 기회"}, {"no": 6, "word": "空", "meaning": "빈, 비어있음"}, {"no": 7, "word": "期間", "meaning": "기간"}, {"no": 8, "word": "休日", "meaning": "휴일"}, {"no": 9, "word": "今朝", "meaning": "오늘 아침"}, {"no": 10, "word": "現在", "meaning": "현재"}, {"no": 11, "word": "今後", "meaning": "앞으로, 금후"}, {"no": 12, "word": "最近", "meaning": "최근"}, {"no": 13, "word": "最初", "meaning": "최초, 처음"}, {"no": 14, "word": "最低", "meaning": "최저"}, {"no": 15, "word": "時刻", "meaning": "시각"}, {"no": 16, "word": "終点", "meaning": "종점"}, {"no": 17, "word": "深夜", "meaning": "심야"}, {"no": 18, "word": "前回", "meaning": "지난번"}, {"no": 19, "word": "前日", "meaning": "전날"}, {"no": 20, "word": "外", "meaning": "밖"}, {"no": 21, "word": "側", "meaning": "옆, 측"}, {"no": 22, "word": "遅刻", "meaning": "지각"}, {"no": 23, "word": "長期", "meaning": "장기"}, {"no": 24, "word": "当日", "meaning": "당일"}, {"no": 25, "word": "西口", "meaning": "서쪽 출구"}, {"no": 26, "word": "橋", "meaning": "다리"}, {"no": 27, "word": "平日", "meaning": "평일"}, {"no": 28, "word": "方向", "meaning": "방향"}, {"no": 29, "word": "休み", "meaning": "휴일, 쉼"}, {"no": 30, "word": "翌年", "meaning": "다음해"}, {"no": 31, "word": "廊下", "meaning": "복도"}, {"no": 32, "word": "明ける", "meaning": "날이 밝다, (기간이) 끝나다"}, {"no": 33, "word": "遅れる", "meaning": "늦다"}, {"no": 34, "word": "かかる", "meaning": "걸리다"}, {"no": 35, "word": "空く", "meaning": "비다"}, {"no": 36, "word": "たまる", "meaning": "쌓이다, 모이다"}, {"no": 37, "word": "続ける", "meaning": "계속하다"}, {"no": 38, "word": "間に合う", "meaning": "시간에 맞추다"}, {"no": 39, "word": "遅い", "meaning": "늦다, 느리다"}, {"no": 40, "word": "遠い", "meaning": "멀다"}, {"no": 41, "word": "もったいない", "meaning": "아깝다"}, {"no": 42, "word": "十分", "meaning": "충분함"}]}, {"day": 30, "topic": "부사", "words": [{"no": 1, "word": "しばらく", "meaning": "잠시, 잠깐"}, {"no": 2, "word": "早めに", "meaning": "일찌감치, 좀 일찍"}, {"no": 3, "word": "どきどき", "meaning": "두근두근"}, {"no": 4, "word": "さっそく", "meaning": "즉시, 바로"}, {"no": 5, "word": "しっかり", "meaning": "확실히, 단단히"}, {"no": 6, "word": "そろそろ", "meaning": "슬슬"}, {"no": 7, "word": "がっかり", "meaning": "실망, 낙담하는 모양"}, {"no": 8, "word": "必ずしも", "meaning": "반드시(~은 아니다)"}, {"no": 9, "word": "そっと", "meaning": "살짝, 가만히"}, {"no": 10, "word": "主に", "meaning": "주로"}, {"no": 11, "word": "突然", "meaning": "갑자기"}, {"no": 12, "word": "なるべく", "meaning": "가능한 한, 되도록"}, {"no": 13, "word": "さっき", "meaning": "아까, 조금 전"}, {"no": 14, "word": "大変", "meaning": "매우, 몹시"}, {"no": 15, "word": "だいたい", "meaning": "대개, 대략"}, {"no": 16, "word": "全て", "meaning": "모두, 전부"}, {"no": 17, "word": "そっくり", "meaning": "꼭 닮음, 그대로"}, {"no": 18, "word": "相変わらず", "meaning": "여전히, 변함없이"}, {"no": 19, "word": "うっかり", "meaning": "무심코, 깜빡"}, {"no": 20, "word": "急に", "meaning": "갑자기"}, {"no": 21, "word": "全然", "meaning": "전혀"}, {"no": 22, "word": "全く", "meaning": "전혀, 완전히"}, {"no": 23, "word": "もちろん", "meaning": "물론"}, {"no": 24, "word": "絶対", "meaning": "절대"}, {"no": 25, "word": "ぴったり", "meaning": "딱 맞음, 꼭"}, {"no": 26, "word": "いきいき", "meaning": "생기 있게, 활기차게"}, {"no": 27, "word": "いらいら", "meaning": "초조함, 짜증남"}, {"no": 28, "word": "うとうと", "meaning": "꾸벅꾸벅(조는 모양)"}, {"no": 29, "word": "うろうろ", "meaning": "이리저리, 어슬렁어슬렁"}, {"no": 30, "word": "からから", "meaning": "바싹 마른 모양, 텅 빈 모양"}, {"no": 31, "word": "がらがら", "meaning": "텅 비어 있음(사람이 적음), 덜그럭덜그럭"}, {"no": 32, "word": "そわそわ", "meaning": "안절부절"}, {"no": 33, "word": "にこにこ", "meaning": "싱글벙글, 생글생글"}, {"no": 34, "word": "のろのろ", "meaning": "느릿느릿"}, {"no": 35, "word": "ばらばら", "meaning": "뿔뿔이, 제각각"}, {"no": 36, "word": "ぶつぶつ", "meaning": "투덜투덜, 중얼중얼"}, {"no": 37, "word": "ふらふら", "meaning": "비틀비틀, 휘청휘청"}, {"no": 38, "word": "ぶらぶら", "meaning": "어슬렁어슬렁, 빈둥빈둥"}, {"no": 39, "word": "ぺこぺこ", "meaning": "배고픈 모양, 굽실굽실"}, {"no": 40, "word": "ぺらぺら", "meaning": "술술(외국어 등을 잘함), 얇은 모양"}, {"no": 41, "word": "まごまご", "meaning": "허둥지둥, 우물쭈물"}, {"no": 42, "word": "わくわく", "meaning": "두근두근, 설렘"}]}];
-let app,auth,db,user,saveTimer;
+const SB=createClient(
+  'https://ioxcmfqsjeazsnendokz.supabase.co',
+  'sb_publishable_I8SeMFLOOcdXfmkaO7rAOg_jOMzhRv0'
+);
 
-// ── THEME ──────────────────────────────────────────────
-const savedTheme=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-document.documentElement.setAttribute('data-theme',savedTheme);
+// ── THEME ──
+const th=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+document.documentElement.setAttribute('data-theme',th);
 window.toggleTheme=()=>{
   const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
   document.documentElement.setAttribute('data-theme',t);
   localStorage.setItem('theme',t);
 };
 
-// ── FIREBASE ───────────────────────────────────────────
-function parseConfig(raw){const m=raw.match(/\{[\s\S]*\}/);if(!m)throw new Error('형식 오류');return eval('('+m[0]+')')}
-function initFB(cfg){app=initializeApp(cfg);auth=getAuth(app);db=getFirestore(app)}
-
-window.saveConfig=function(){
-  const raw=document.getElementById('config-input').value.trim();
-  const err=document.getElementById('config-err');
-  try{const c=parseConfig(raw);localStorage.setItem('fb_config',JSON.stringify(c));initFB(c);startAuth();showScreen('auth');err.style.display='none'}
-  catch(e){err.textContent=e.message;err.style.display='block'}
-};
-window.resetConfig=function(){localStorage.removeItem('fb_config');showScreen('setup')};
-
-// ── STATE ──────────────────────────────────────────────
+// ── STATE ──
 const DEF=()=>({passedDays:[],flashProgress:{},blankProgress:{},wrongWords:[]});
-let ST=DEF();
+let ST=DEF(),currentUser=null,saveTimer=null;
 
-async function loadState(uid){
+async function loadProgress(uid){
   showLoader(true);
-  const snap=await getDoc(doc(db,'users',uid));
-  if(snap.exists()){const d=snap.data();ST={passedDays:d.passedDays||[],flashProgress:d.flashProgress||{},blankProgress:d.blankProgress||{},wrongWords:d.wrongWords||[]}}
-  else{ST=DEF();await setDoc(doc(db,'users',uid),{...ST,name:user.displayName||'',email:user.email,createdAt:new Date().toISOString()})}
+  const{data,error}=await SB.from('user_progress').select('*').eq('user_id',uid).maybeSingle();
+  if(data){
+    ST={
+      passedDays:data.passed_days||[],
+      flashProgress:data.flash_progress||{},
+      blankProgress:data.blank_progress||{},
+      wrongWords:data.wrong_words||[]
+    };
+  }else{
+    ST=DEF();
+    await SB.from('user_progress').insert({user_id:uid,...toRow()});
+  }
   showLoader(false);
 }
-async function saveState(){
-  if(!user)return;setSyncBusy(true);
-  try{await setDoc(doc(db,'users',user.uid),{passedDays:ST.passedDays,flashProgress:ST.flashProgress,blankProgress:ST.blankProgress,wrongWords:ST.wrongWords},{merge:true});setSyncBusy(false)}
-  catch(e){setSyncBusy(false)}
+function toRow(){return{passed_days:ST.passedDays,flash_progress:ST.flashProgress,blank_progress:ST.blankProgress,wrong_words:ST.wrongWords,updated_at:new Date().toISOString()}}
+async function saveProgress(){
+  if(!currentUser)return;
+  setSyncBusy(true);
+  await SB.from('user_progress').upsert({user_id:currentUser.id,...toRow()},{onConflict:'user_id'});
+  setSyncBusy(false);
 }
-function schedule(){clearTimeout(saveTimer);saveTimer=setTimeout(saveState,1200)}
+function schedule(){clearTimeout(saveTimer);saveTimer=setTimeout(saveProgress,1200)}
 function setSyncBusy(v){document.getElementById('sync').classList.toggle('busy',v)}
 
-// ── AUTH ───────────────────────────────────────────────
-function startAuth(){
-  onAuthStateChanged(auth,async u=>{
-    if(u){user=u;await loadState(u.uid);showHome()}
-    else{user=null;ST=DEF();showScreen('auth')}
-  });
-}
-window.switchTab=function(t){
+// ── AUTH ──
+SB.auth.onAuthStateChange(async(event,session)=>{
+  if(session?.user){
+    currentUser=session.user;
+    await loadProgress(currentUser.id);
+    showHome();
+  }else{
+    currentUser=null;ST=DEF();
+    showScreen('auth');
+  }
+});
+
+window.switchTab=t=>{
   ['login','signup'].forEach(x=>{
-    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('tab-'+x).classList.toggle('on',x===t);
     document.getElementById('form-'+x).style.display=x===t?'block':'none';
   });
 };
-const ERRS={'auth/user-not-found':'등록되지 않은 이메일이에요','auth/wrong-password':'비밀번호가 틀렸어요','auth/email-already-in-use':'이미 사용 중인 이메일이에요','auth/invalid-email':'이메일 형식 오류','auth/weak-password':'비밀번호는 6자 이상','auth/invalid-credential':'이메일 또는 비밀번호가 올바르지 않아요'};
-window.doLogin=async function(){
-  const e=document.getElementById('login-email').value.trim(),p=document.getElementById('login-pw').value;
-  const err=document.getElementById('login-err'),btn=document.getElementById('login-btn');
-  if(!e||!p){err.textContent='이메일과 비밀번호를 입력해주세요';err.style.display='block';return}
-  btn.disabled=true;btn.textContent='로그인 중...';
-  try{await signInWithEmailAndPassword(auth,e,p);err.style.display='none'}
-  catch(ex){err.textContent=ERRS[ex.code]||'로그인 실패';err.style.display='block'}
-  finally{btn.disabled=false;btn.textContent='로그인'}
-};
-window.doSignup=async function(){
-  const n=document.getElementById('signup-name').value.trim(),e=document.getElementById('signup-email').value.trim(),p=document.getElementById('signup-pw').value;
-  const err=document.getElementById('signup-err'),btn=document.getElementById('signup-btn');
-  if(!n||!e||!p){err.textContent='모든 항목을 입력해주세요';err.style.display='block';return}
-  btn.disabled=true;btn.textContent='가입 중...';
-  try{const c=await createUserWithEmailAndPassword(auth,e,p);await updateProfile(c.user,{displayName:n});err.style.display='none'}
-  catch(ex){err.textContent=ERRS[ex.code]||'가입 실패';err.style.display='block'}
-  finally{btn.disabled=false;btn.textContent='회원가입'}
-};
-window.doLogout=async function(){if(confirm('로그아웃 하시겠어요?'))await signOut(auth)};
 
-// ── HELPERS ────────────────────────────────────────────
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');window.scrollTo(0,0)}
-function showLoader(v){document.getElementById('loader').classList.toggle('show',v)}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+window.doLogin=async()=>{
+  const e=v('li-email'),p=v('li-pw'),err=el('li-err'),btn=el('li-btn');
+  if(!e||!p){showErr(err,'이메일과 비밀번호를 입력해주세요');return}
+  btn.disabled=true;btn.textContent='로그인 중...';
+  const{error}=await SB.auth.signInWithPassword({email:e,password:p});
+  if(error){showErr(err,error.message==='Invalid login credentials'?'이메일 또는 비밀번호가 올바르지 않아요':error.message)}
+  else err.style.display='none';
+  btn.disabled=false;btn.textContent='로그인';
+};
+
+window.doSignup=async()=>{
+  const n=v('su-name'),e=v('su-email'),p=v('su-pw');
+  const err=el('su-err'),info=el('su-info'),btn=el('su-btn');
+  if(!n||!e||!p){showErr(err,'모든 항목을 입력해주세요');return}
+  if(p.length<6){showErr(err,'비밀번호는 6자 이상이어야 해요');return}
+  btn.disabled=true;btn.textContent='가입 중...';
+  const{data,error}=await SB.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});
+  if(error){showErr(err,error.message)}
+  else if(data.user&&!data.session){
+    err.style.display='none';
+    info.textContent='📧 이메일로 확인 링크를 보냈어요. 확인 후 로그인해주세요!';
+    info.style.display='block';
+  }else{err.style.display='none';info.style.display='none'}
+  btn.disabled=false;btn.textContent='회원가입';
+};
+
+window.doLogout=async()=>{if(confirm('로그아웃 하시겠어요?'))await SB.auth.signOut()};
+
+// ── HELPERS ──
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));el('screen-'+id).classList.add('active');scrollTo(0,0)}
+function showLoader(v){el('loader').classList.toggle('show',v)}
+function toast(msg){const t=el('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function showErr(el,msg){el.textContent=msg;el.style.display='block'}
+const el=id=>document.getElementById(id);
+const v=id=>el(id).value.trim();
 const day=n=>N3[n-1];
 const unlocked=d=>d===1||ST.passedDays.includes(d-1)||ST.passedDays.includes(d);
 const flashDone=d=>(ST.flashProgress[d]||0)>=day(d).words.length;
 const blankDone=d=>(ST.blankProgress[d]||0)>=day(d).words.length;
 const studyDone=d=>flashDone(d)&&blankDone(d);
 const passed=d=>ST.passedDays.includes(d);
+function pct(idx,tot){return`${((idx+1)/tot*100).toFixed(0)}%`}
+function setProgress(id,idx,tot){el(id).style.width=pct(idx,tot)}
 
-// ── HOME ───────────────────────────────────────────────
-window.showHome=function(){
-  const name=user?.displayName||'학생';
+// ── HOME ──
+window.showHome=()=>{
+  const name=currentUser?.user_metadata?.full_name||'학생';
   const h=new Date().getHours();
-  document.getElementById('home-greeting').textContent=h<12?`좋은 아침, ${name}님 ☀️`:h<18?`안녕하세요, ${name}님 👋`:`수고하셨어요, ${name}님 🌙`;
+  el('home-hi').textContent=h<12?`좋은 아침, ${name}님 ☀️`:h<18?`안녕하세요, ${name}님 👋`:`수고하셨어요, ${name}님 🌙`;
   const dow=new Date().getDay();
-  document.getElementById('home-sub').textContent=(dow===0||dow===6)?'주말 — 이번 주 학습 내용 복습하기':'평일 학습 — Day 1개씩 꾸준히!';
-  document.getElementById('s-days').textContent=ST.passedDays.length;
-  document.getElementById('s-words').textContent=ST.passedDays.reduce((s,d)=>s+day(d).words.length,0);
-  document.getElementById('s-wrong').textContent=ST.wrongWords.length;
-  const list=document.getElementById('day-list');list.innerHTML='';
+  el('home-sub').textContent=(dow===0||dow===6)?'주말 — 이번 주 학습 내용 복습하기':'평일 학습 — Day 1개씩 꾸준히!';
+  el('s-days').textContent=ST.passedDays.length;
+  el('s-words').textContent=ST.passedDays.reduce((s,d)=>s+day(d).words.length,0);
+  el('s-wrong').textContent=ST.wrongWords.length;
+  const list=el('day-list');list.innerHTML='';
   N3.forEach((d,i)=>{
     const n=i+1,u=unlocked(n),p=passed(n),fd=flashDone(n),sd=studyDone(n);
-    let pill,pillCls,badgeCls;
-    if(p){pill='완료 ✓';pillCls='done';badgeCls='done'}
-    else if(u&&sd){pill='테스트';pillCls='test';badgeCls='active'}
-    else if(u&&fd){pill='복습';pillCls='go';badgeCls='active'}
-    else if(u){pill='시작';pillCls='go';badgeCls='active'}
-    else{pill='잠김';pillCls='lock';badgeCls='locked'}
+    let pill,pillC,badgeC;
+    if(p){pill='완료 ✓';pillC='done';badgeC='done'}
+    else if(u&&sd){pill='테스트';pillC='test';badgeC='go'}
+    else if(u&&fd){pill='복습';pillC='go';badgeC='go'}
+    else if(u){pill='시작';pillC='go';badgeC='go'}
+    else{pill='잠김';pillC='lock';badgeC='lock'}
     const btn=document.createElement('button');
     btn.className='day-card'+(u?'':' locked');
-    btn.innerHTML=`<div class="day-num-badge ${badgeCls}"><span class="num">${n}</span><span class="d-label">DAY</span></div><div class="day-info"><div class="day-name">${d.topic}</div><div class="day-meta">${d.words.length}단어</div></div><span class="day-pill ${pillCls}">${pill}</span>`;
+    btn.innerHTML=`<div class="day-badge ${badgeC}"><span class="dn">${n}</span><span class="dl">DAY</span></div><div class="day-info"><div class="day-nm">${d.topic}</div><div class="day-wc">${d.words.length}단어</div></div><span class="pill ${pillC}">${pill}</span>`;
     if(u)btn.onclick=()=>startDay(n);
     list.appendChild(btn);
   });
   showScreen('home');
 };
 
-// ── DAY START ──────────────────────────────────────────
+// ── START DAY ──
 function startDay(n){
   if(!unlocked(n)){toast('이전 Day를 먼저 완료하세요');return}
   if(passed(n)){startFlash(n,true);return}
@@ -581,36 +525,36 @@ function startDay(n){
 지금 시작할까요?`))startQuiz(n);
 }
 
-// ── FLASHCARD ──────────────────────────────────────────
+// ── FLASHCARD ──
 let FC={};
 function startFlash(n,rev){
   const d=day(n);FC={n,words:d.words,idx:rev?0:(ST.flashProgress[n]||0),flipped:false,rev};
-  document.getElementById('flash-title').textContent=`Day ${n} · ${d.topic}`;
+  el('fc-title').textContent=`Day ${n} · ${d.topic}`;
   showScreen('flash');renderFC();
 }
 function renderFC(){
   const w=FC.words[FC.idx],tot=FC.words.length;
-  document.getElementById('fc-count').textContent=`${FC.idx+1} / ${tot}`;
-  document.getElementById('fc-prog').style.width=`${((FC.idx+1)/tot)*100}%`;
-  document.getElementById('fc-word').textContent=w.word;
-  document.getElementById('fc-meaning').textContent=w.meaning;
-  document.getElementById('fc-meaning').style.display='none';
-  document.getElementById('fc-tap').style.display='block';
-  document.getElementById('write-box').style.display='none';
-  document.getElementById('fc-actions').style.display='none';
-  document.getElementById('fc-next').style.display='none';
-  document.getElementById('flashcard').classList.remove('flipped');
+  el('fc-cnt').textContent=`${FC.idx+1} / ${tot}`;
+  setProgress('fc-prog',FC.idx,tot);
+  el('fc-word').textContent=w.word;
+  el('fc-meaning').textContent=w.meaning;
+  el('fc-meaning').style.display='none';
+  el('fc-tap').style.display='block';
+  el('write-box').style.display='none';
+  el('fc-btns').style.display='none';
+  el('fc-next').style.display='none';
+  el('fc-card').classList.remove('flipped');
   FC.flipped=false;
 }
-window.flipCard=function(){
+window.flipCard=()=>{
   if(FC.flipped)return;FC.flipped=true;
-  document.getElementById('fc-meaning').style.display='block';
-  document.getElementById('fc-tap').style.display='none';
-  document.getElementById('write-box').style.display='block';
-  document.getElementById('fc-next').style.display='block';
-  document.getElementById('flashcard').classList.add('flipped');
+  el('fc-meaning').style.display='block';
+  el('fc-tap').style.display='none';
+  el('write-box').style.display='block';
+  el('fc-next').style.display='block';
+  el('fc-card').classList.add('flipped');
 };
-window.nextCard=function(){
+window.nextCard=()=>{
   if(!FC.flipped){flipCard();return}
   FC.idx++;
   if(!FC.rev){ST.flashProgress[FC.n]=FC.idx;schedule()}
@@ -620,60 +564,58 @@ window.nextCard=function(){
     setTimeout(()=>startBlank(FC.n),700);
   }else renderFC();
 };
-window.prevCard=function(){if(FC.idx>0){FC.idx--;renderFC()}};
+window.prevCard=()=>{if(FC.idx>0){FC.idx--;renderFC()}};
 
-// ── BLANK REVIEW ───────────────────────────────────────
+// ── BLANK ──
 let BL={};
 function startBlank(n){
-  const d=day(n);BL={n,words:[...d.words].sort(()=>Math.random()-.5),idx:0,mode:''};
-  document.getElementById('blank-title').textContent=`Day ${n} 백지 복습`;
+  const d=day(n);BL={n,words:[...d.words].sort(()=>Math.random()-.5),idx:0};
+  el('bl-title').textContent=`Day ${n} 백지 복습`;
   showScreen('blank');renderBL();
 }
 function renderBL(){
   const w=BL.words[BL.idx],tot=BL.words.length;
-  document.getElementById('bl-count').textContent=`${BL.idx+1} / ${tot}`;
-  document.getElementById('bl-prog').style.width=`${((BL.idx+1)/tot)*100}%`;
+  el('bl-cnt').textContent=`${BL.idx+1} / ${tot}`;
+  setProgress('bl-prog',BL.idx,tot);
   const m=Math.random()>.5?'kr':'jp';BL.mode=m;
-  const show=document.getElementById('bl-show'),ans=document.getElementById('bl-ans');
+  const show=el('bl-show'),ans=el('bl-ans');
   if(m==='kr'){
-    document.getElementById('bl-prompt').textContent='뜻을 보고 → 일본어를 떠올려보세요';
+    el('bl-prompt').textContent='뜻을 보고 → 일본어를 떠올려보세요';
     show.textContent=w.meaning;show.classList.remove('jp');
-    ans.textContent=w.word;ans.className='blank-ans jp';
+    ans.textContent=w.word;ans.className='bl-ans jp';
   }else{
-    document.getElementById('bl-prompt').textContent='일본어를 보고 → 뜻을 떠올려보세요';
+    el('bl-prompt').textContent='일본어를 보고 → 뜻을 떠올려보세요';
     show.textContent=w.word;show.classList.add('jp');
-    ans.textContent=w.meaning;ans.className='blank-ans';
+    ans.textContent=w.meaning;ans.className='bl-ans';
   }
   ans.style.display='none';
-  document.getElementById('self-row').style.display='none';
-  document.getElementById('bl-reveal').style.display='block';
+  el('self-row').style.display='none';
+  el('bl-reveal').style.display='block';
 }
-window.revealBlank=function(){
-  document.getElementById('bl-ans').style.display='block';
-  document.getElementById('self-row').style.display='flex';
-  document.getElementById('bl-reveal').style.display='none';
+window.revealBlank=()=>{
+  el('bl-ans').style.display='block';
+  el('self-row').style.display='flex';
+  el('bl-reveal').style.display='none';
 };
-window.blankResult=function(ok){
+window.blankRes=ok=>{
   if(!ok)addWrong(BL.n,BL.words[BL.idx]);
   BL.idx++;ST.blankProgress[BL.n]=BL.idx;schedule();
   if(BL.idx>=BL.words.length){
     toast('백지 복습 완료! 🎉');
     setTimeout(()=>{if(confirm(`Day ${BL.n} 학습 완료!
-
 누적 테스트를 통과하면 다음 Day가 열립니다.
 지금 시작할까요?`))startQuiz(BL.n);else showHome()},500);
   }else renderBL();
 };
 
-// ── QUIZ ───────────────────────────────────────────────
+// ── QUIZ ──
 let QZ={};
 function startQuiz(n){
   let pool=[];for(let d=1;d<=n;d++)day(d).words.forEach(w=>pool.push({...w,dn:d}));
   pool=pool.sort(()=>Math.random()-.5).slice(0,20);
   QZ={n,qs:pool,idx:0,ok:0,wrong:[],ans:false};
-  document.getElementById('quiz-title').textContent=`Day 1~${n} 누적 테스트`;
-  document.getElementById('quiz-body').style.display='flex';
-  document.getElementById('quiz-result').style.display='none';
+  el('qz-title').textContent=`Day 1~${n} 누적 테스트`;
+  el('qz-body').style.display='flex';el('qz-result').style.display='none';
   showScreen('quiz');renderQZ();
 }
 function buildOpts(correct,n){
@@ -684,99 +626,76 @@ function buildOpts(correct,n){
 }
 function renderQZ(){
   const q=QZ.qs[QZ.idx],tot=QZ.qs.length;
-  document.getElementById('qz-count').textContent=`${QZ.idx+1} / ${tot}`;
-  document.getElementById('qz-prog').style.width=`${((QZ.idx+1)/tot)*100}%`;
-  document.getElementById('qz-word').textContent=q.word;
-  document.getElementById('qz-next').style.display='none';
-  QZ.ans=false;
-  const optsEl=document.getElementById('opts');optsEl.innerHTML='';
+  el('qz-cnt').textContent=`${QZ.idx+1} / ${tot}`;
+  setProgress('qz-prog',QZ.idx,tot);
+  el('qz-word').textContent=q.word;
+  el('qz-next').style.display='none';QZ.ans=false;
+  const optsEl=el('opts');optsEl.innerHTML='';
   buildOpts(q,QZ.n).forEach(o=>{
     const b=document.createElement('button');b.className='opt';b.textContent=o;
     b.onclick=()=>{
       if(QZ.ans)return;QZ.ans=true;
       const ok=o===q.meaning;
-      document.querySelectorAll('.opt').forEach(x=>{
-        x.onclick=null;
-        if(x.textContent===q.meaning)x.classList.add('correct');
-        else if(x===b&&!ok)x.classList.add('wrong');
-        else x.classList.add('reveal');
-      });
+      document.querySelectorAll('.opt').forEach(x=>{x.onclick=null;if(x.textContent===q.meaning)x.classList.add('correct');else if(x===b&&!ok)x.classList.add('wrong');else x.classList.add('reveal')});
       if(ok)QZ.ok++;else{QZ.wrong.push(q);addWrong(q.dn,q)}
-      const nb=document.getElementById('qz-next');nb.style.display='block';
+      const nb=el('qz-next');nb.style.display='block';
       nb.textContent=QZ.idx===QZ.qs.length-1?'결과 보기 →':'다음 →';
     };
     optsEl.appendChild(b);
   });
 }
-window.nextQuiz=function(){QZ.idx++;if(QZ.idx>=QZ.qs.length)showResult();else renderQZ()};
+window.nextQ=()=>{QZ.idx++;if(QZ.idx>=QZ.qs.length)showResult();else renderQZ()};
 function showResult(){
-  const pct=Math.round((QZ.ok/QZ.qs.length)*100),ok=pct>=70;
-  document.getElementById('quiz-body').style.display='none';
-  document.getElementById('quiz-result').style.display='flex';
-  const sc=document.getElementById('r-score');
-  sc.textContent=`${pct}점`;sc.style.color=ok?'var(--success)':'var(--danger)';
-  document.getElementById('r-msg').textContent=ok?'통과! 🎉 다음 Day가 열렸어요!':'70점 이상이어야 통과에요';
-  document.getElementById('r-sub').textContent=`${QZ.ok}/${QZ.qs.length} 정답 · 오답 ${QZ.wrong.length}개 저장됨`;
-  document.getElementById('r-pass').style.display=ok?'block':'none';
+  const pct2=Math.round(QZ.ok/QZ.qs.length*100),ok=pct2>=70;
+  el('qz-body').style.display='none';el('qz-result').style.display='flex';
+  const sc=el('r-score');sc.textContent=`${pct2}점`;sc.style.color=ok?'var(--ok)':'var(--err)';
+  el('r-msg').textContent=ok?'통과! 🎉 다음 Day가 열렸어요!':'70점 이상이어야 통과에요';
+  el('r-sub').textContent=`${QZ.ok}/${QZ.qs.length} 정답 · 오답 ${QZ.wrong.length}개 저장됨`;
+  el('r-pass').style.display=ok?'block':'none';
   if(ok&&!ST.passedDays.includes(QZ.n)){ST.passedDays.push(QZ.n);schedule()}
 }
-window.passQuiz=function(){toast(`Day ${QZ.n+1} 오픈! 🎉`);showHome()};
-window.retryQuiz=function(){startQuiz(QZ.n)};
+window.passQuiz=()=>{toast(`Day ${QZ.n+1} 오픈! 🎉`);showHome()};
+window.retryQuiz=()=>startQuiz(QZ.n);
 
-// ── WRONG WORDS ────────────────────────────────────────
-function addWrong(dn,w){
-  if(!ST.wrongWords.some(x=>x.dn===dn&&x.no===w.no)){
-    ST.wrongWords.push({dn,no:w.no,word:w.word,meaning:w.meaning});schedule();
-  }
-}
+// ── WRONG ──
+function addWrong(dn,w){if(!ST.wrongWords.some(x=>x.dn===dn&&x.no===w.no)){ST.wrongWords.push({dn,no:w.no,word:w.word,meaning:w.meaning});schedule()}}
 function removeWrong(dn,no){ST.wrongWords=ST.wrongWords.filter(w=>!(w.dn===dn&&w.no===no));schedule()}
-
-window.showWrong=function(){
-  const body=document.getElementById('wrong-body');
-  if(!ST.wrongWords.length){
-    body.innerHTML=`<div class="empty"><span class="ico">🎉</span>오답노트가 비어있어요!<br>모든 단어를 잘 알고 있네요.</div>`;
-  }else{
-    body.innerHTML=`
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div class="section-header" style="margin:0">오답 ${ST.wrongWords.length}개</div>
-        <button class="btn btn-accent btn-sm" onclick="startWF()">플래시카드 학습</button>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        ${ST.wrongWords.map(w=>`<div class="wrong-card"><div><div class="wrong-jp jp">${w.word}</div><div class="wrong-kr">${w.meaning}</div><div class="wrong-day-tag">Day ${w.dn}</div></div></div>`).join('')}
-      </div>`;
-  }
+window.showWrong=()=>{
+  const body=el('wrong-body');
+  if(!ST.wrongWords.length){body.innerHTML=`<div class="empty"><span class="ico">🎉</span>오답노트가 비어있어요!</div>`}
+  else{body.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div class="sec-hd" style="margin:0">오답 ${ST.wrongWords.length}개</div><button class="btn btn-accent btn-sm" onclick="startWF()">플래시카드 학습</button></div><div style="display:flex;flex-direction:column;gap:10px">${ST.wrongWords.map(w=>`<div class="wrong-card"><div><div class="wjp jp">${w.word}</div><div class="wkr">${w.meaning}</div><div class="wday">Day ${w.dn}</div></div></div>`).join('')}</div>`}
   showScreen('wrong');
 };
 
-// ── WRONG FLASH ────────────────────────────────────────
+// ── WRONG FLASH ──
 let WF={};
-window.startWF=function(words,phase){
+window.startWF=(words,phase)=>{
   const ws=words||[...ST.wrongWords].sort(()=>Math.random()-.5);
   if(!ws.length){toast('단어가 없어요');return}
   WF={words:ws,idx:0,flipped:false,isWeekend:!!words};
-  document.getElementById('wf-phase').textContent=phase||'오답 플래시카드';
+  el('wf-phase').textContent=phase||'오답 플래시카드';
   showScreen('wf');renderWF();
 };
 function renderWF(){
   const w=WF.words[WF.idx],tot=WF.words.length;
-  document.getElementById('wf-count').textContent=`${WF.idx+1} / ${tot}`;
-  document.getElementById('wf-prog').style.width=`${((WF.idx+1)/tot)*100}%`;
-  document.getElementById('wf-word').textContent=w.word;
-  document.getElementById('wf-meaning').textContent=w.meaning;
-  document.getElementById('wf-meaning').style.display='none';
-  document.getElementById('wf-tap').style.display='block';
-  document.getElementById('wf-btns').style.display='none';
-  document.getElementById('wf-card').classList.remove('flipped');
+  el('wf-cnt').textContent=`${WF.idx+1} / ${tot}`;
+  el('wf-prog').style.width=pct(WF.idx,tot);
+  el('wf-word').textContent=w.word;
+  el('wf-meaning').textContent=w.meaning;
+  el('wf-meaning').style.display='none';
+  el('wf-tap').style.display='block';
+  el('wf-btns').style.display='none';
+  el('wf-card').classList.remove('flipped');
   WF.flipped=false;
 }
-window.wfFlip=function(){
+window.wfFlip=()=>{
   if(WF.flipped)return;WF.flipped=true;
-  document.getElementById('wf-meaning').style.display='block';
-  document.getElementById('wf-tap').style.display='none';
-  document.getElementById('wf-btns').style.display='flex';
-  document.getElementById('wf-card').classList.add('flipped');
+  el('wf-meaning').style.display='block';
+  el('wf-tap').style.display='none';
+  el('wf-btns').style.display='flex';
+  el('wf-card').classList.add('flipped');
 };
-window.wfResult=function(ok){
+window.wfRes=ok=>{
   const w=WF.words[WF.idx];
   if(ok){removeWrong(w.dn,w.no);toast('✅ 오답노트에서 삭제!')}
   WF.idx++;
@@ -784,42 +703,21 @@ window.wfResult=function(ok){
   else renderWF();
 };
 
-// ── WEEKEND ────────────────────────────────────────────
-window.showWeekend=function(){
-  const p=ST.passedDays,body=document.getElementById('weekend-body');
-  if(!p.length){body.innerHTML=`<div class="empty"><span class="ico">📚</span>아직 완료한 Day가 없어요.<br>평일에 학습을 시작해보세요!</div>`;showScreen('weekend');return}
+// ── WEEKEND ──
+window.showWeekend=()=>{
+  const p=ST.passedDays,body=el('weekend-body');
+  if(!p.length){body.innerHTML=`<div class="empty"><span class="ico">📚</span>아직 완료한 Day가 없어요.</div>`;showScreen('weekend');return}
   const wk=p.slice(-5),tot=wk.reduce((s,d)=>s+day(d).words.length,0);
-  body.innerHTML=`
-    <div class="review-info">📋 이번 주 학습: ${wk.map(d=>'Day'+d).join(', ')}<br>복습 단어 ${tot}개</div>
-    <div class="section-header">복습 방법 선택</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-accent" onclick="weekendFlash(${JSON.stringify(wk)})">📖 플래시카드 복습</button>
-      <button class="btn btn-muted" onclick="startQuiz(${p[p.length-1]})">🎯 객관식 테스트</button>
-      <div class="section-header" style="margin-top:8px">전체 누적 복습</div>
-      <button class="btn btn-muted" onclick="startQuiz(${p[p.length-1]})">🔁 전체 누적 테스트</button>
-    </div>`;
+  body.innerHTML=`<div class="review-info">📋 이번 주: ${wk.map(d=>'Day'+d).join(', ')} · ${tot}단어</div><div class="sec-hd">복습 방법</div><div style="display:flex;flex-direction:column;gap:10px"><button class="btn btn-accent" onclick="weekendFlash(${JSON.stringify(wk)})">📖 플래시카드 복습</button><button class="btn btn-muted" onclick="startQuiz(${p[p.length-1]})">🎯 객관식 테스트</button><button class="btn btn-muted" style="margin-top:8px" onclick="startQuiz(${p[p.length-1]})">🔁 전체 누적 테스트</button></div>`;
   showScreen('weekend');
 };
-window.weekendFlash=function(ns){
+window.weekendFlash=ns=>{
   let ws=[];ns.forEach(d=>day(d).words.forEach(w=>ws.push({...w,dn:d})));
   window.startWF(ws.sort(()=>Math.random()-.5),'주말 복습 플래시카드');
 };
 
-window.exitToHome=function(){if(confirm('학습을 중단할까요?
+window.exitHome=()=>{if(confirm('학습을 중단할까요?
 (진행 상황은 저장됩니다)'))showHome()};
-
-// ── BOOT ───────────────────────────────────────────────
-const FIREBASE_CONFIG={
-  apiKey:"AIzaSyARmbbkQqjLLSUjCZOoOTcLNa2omAebaWM",
-  authDomain:"n3-study-c4ac6.firebaseapp.com",
-  projectId:"n3-study-c4ac6",
-  storageBucket:"n3-study-c4ac6.firebasestorage.app",
-  messagingSenderId:"479929156319",
-  appId:"1:479929156319:web:ddd1fbbbf5ebddaa165f6a",
-  measurementId:"G-7SWH99VC78"
-};
-initFB(FIREBASE_CONFIG);
-startAuth();
 </script>
 </body>
 </html>
