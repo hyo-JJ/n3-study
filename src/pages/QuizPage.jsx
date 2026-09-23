@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Topbar } from '../components/Layout'
-import { useProgress } from '../hooks/useProgress'
+import { useProgress, today } from '../hooks/useProgress'
 import { useToast } from '../components/Toast'
 import { getLevelDays } from '../lib/data'
 
@@ -71,9 +71,9 @@ export default function QuizPage() {
   const handlePass = () => {
     update(level, st => {
       if (st.passedDays.includes(dayNum)) return st
-      return { ...st, passedDays: [...st.passedDays, dayNum] }
+      return { ...st, passedDays: [...st.passedDays, dayNum], passedAt: { ...st.passedAt, [dayNum]: today() } }
     })
-    toast(`Day ${dayNum + 1} 오픈! 🎉`)
+    toast(`Day ${dayNum} 완료! Day ${dayNum + 1}은 내일 열려요 🎉`)
     navigate('/home')
   }
 
@@ -92,10 +92,10 @@ export default function QuizPage() {
         <div className="fc-wrap">
           <div className="result-card">
             <div className="r-score" style={{ color: passed ? 'var(--ok)' : 'var(--err)' }}>{pct}점</div>
-            <div className="r-msg">{passed ? '통과! 🎉 다음 Day가 열렸어요!' : '70점 이상이어야 통과에요'}</div>
+            <div className="r-msg">{passed ? '통과! 🎉 다음 Day는 내일 열려요!' : '70점 이상이어야 통과에요'}</div>
             <div className="r-sub">{correct}/{total} 정답 · 오답 {wrongList.length}개 저장됨</div>
           </div>
-          {passed && <button className="btn btn-accent" onClick={handlePass} style={{ marginBottom: 10 }}>다음 Day 진입하기 🎉</button>}
+          {passed && <button className="btn btn-accent" onClick={handlePass} style={{ marginBottom: 10 }}>Day 완료하기 🎉</button>}
           <button className="btn btn-muted" onClick={retry} style={{ marginBottom: 10 }}>다시 도전하기 🔄</button>
           <button className="btn btn-outline" onClick={() => navigate('/home')}>홈으로</button>
         </div>

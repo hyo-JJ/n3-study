@@ -9,7 +9,14 @@ const DEFAULT = () => ({
   flashProgress: {},
   blankProgress: {},
   wrongWords: [],
+  passedAt: {}, // { [dayNum]: 'YYYY-MM-DD' } — 하루 1 Day 제한용
 })
+
+// 로컬 기준 오늘 날짜 (YYYY-MM-DD)
+export const today = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
 
 export function ProgressProvider({ children }) {
   const user = useAuth()
@@ -38,9 +45,12 @@ export function ProgressProvider({ children }) {
       if (data) {
         const map = {}
         data.forEach(row => {
+          // passedAt은 별도 컬럼 없이 flash_progress._passedAt에 함께 저장
+          const { _passedAt, ...flashProgress } = row.flash_progress ?? {}
           map[row.level] = {
             passedDays: row.passed_days ?? [],
-            flashProgress: row.flash_progress ?? {},
+            flashProgress,
+            passedAt: _passedAt ?? {},
             blankProgress: row.blank_progress ?? {},
             wrongWords: row.wrong_words ?? [],
           }
@@ -61,7 +71,7 @@ export function ProgressProvider({ children }) {
         user_id: user.id,
         level,
         passed_days: st.passedDays,
-        flash_progress: st.flashProgress,
+        flash_progress: { ...st.flashProgress, _passedAt: st.passedAt ?? {} },
         blank_progress: st.blankProgress,
         wrong_words: st.wrongWords,
         updated_at: new Date().toISOString(),

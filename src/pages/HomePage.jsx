@@ -2,13 +2,15 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Topbar, BottomNav } from '../components/Layout'
 import { useAuth } from '../hooks/useAuth'
-import { useProgress } from '../hooks/useProgress'
+import { useProgress, today } from '../hooks/useProgress'
 import { LEVELS } from '../lib/data'
+import { useToast } from '../components/Toast'
 
 export default function HomePage() {
   const user = useAuth()
   const { getLevel } = useProgress()
   const navigate = useNavigate()
+  const toast = useToast()
   const [activeLevel, setActiveLevel] = useState('N3')
 
   const name = user?.user_metadata?.full_name || '학생'
@@ -20,7 +22,10 @@ export default function HomePage() {
   const st = getLevel(activeLevel)
   const days = LEVELS[activeLevel]?.days ?? []
 
-  const unlocked = (d) => d === 1 || st.passedDays.includes(d - 1) || st.passedDays.includes(d)
+  // 하루에 Day 1개: 이전 Day를 오늘 통과했다면 다음 Day는 내일 열림
+  const passedToday = (d) => st.passedAt?.[d] === today()
+  const unlocked = (d) => d === 1 || st.passedDays.includes(d) || (st.passedDays.includes(d - 1) && !passedToday(d - 1))
+  const tomorrow = (d) => !unlocked(d) && st.passedDays.includes(d - 1)
   const flashDone = (d) => (st.flashProgress[d] || 0) >= days[d - 1]?.words.length
   const blankDone = (d) => (st.blankProgress[d] || 0) >= days[d - 1]?.words.length
   const passed = (d) => st.passedDays.includes(d)
@@ -29,7 +34,10 @@ export default function HomePage() {
 
   const handleDay = (dayNum) => {
     const u = unlocked(dayNum)
-    if (!u) return
+    if (!u) {
+      if (tomorrow(dayNum)) toast('오늘 학습은 끝! 이 Day는 내일 열려요 🌙')
+      return
+    }
     const p = passed(dayNum)
     const fd = flashDone(dayNum)
     const bd = blankDone(dayNum)
@@ -71,6 +79,7 @@ export default function HomePage() {
             else if (u && fd && bd) { pill = '테스트'; pillC = 'test'; badgeC = 'go' }
             else if (u && fd) { pill = '복습'; pillC = 'go'; badgeC = 'go' }
             else if (u)      { pill = '시작'; pillC = 'go'; badgeC = 'go' }
+            else if (tomorrow(n)) { pill = '내일 열림'; pillC = 'lock'; badgeC = 'lock' }
             else             { pill = '잠김'; pillC = 'lock'; badgeC = 'lock' }
             return (
               <button key={n} className={`day-card${u ? '' : ' locked'}`} onClick={() => handleDay(n)}>
