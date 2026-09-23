@@ -14,12 +14,20 @@ export default function AuthPage() {
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
+  // 내부적으로 가짜 이메일을 쓰므로 Supabase 에러에 '이메일' 문구가 노출되지 않게 코드 기준으로 변환
   const ERRS = {
-    'Invalid login credentials': '아이디 또는 비밀번호가 올바르지 않아요',
-    'User already registered': '이미 사용 중인 아이디예요',
-    'Password should be at least 6 characters': '비밀번호는 6자 이상이어야 해요',
+    invalid_credentials: '아이디 또는 비밀번호가 올바르지 않아요',
+    user_already_exists: '이미 사용 중인 아이디예요',
+    email_exists: '이미 사용 중인 아이디예요',
+    weak_password: '비밀번호는 6자 이상이어야 해요',
+    email_address_invalid: '사용할 수 없는 아이디예요',
+    email_not_confirmed: '가입 승인이 아직 완료되지 않았어요. 관리자에게 문의해주세요',
+    email_provider_disabled: '현재 회원가입을 받을 수 없어요. 관리자에게 문의해주세요',
+    signup_disabled: '현재 회원가입을 받을 수 없어요. 관리자에게 문의해주세요',
+    over_email_send_rate_limit: '잠시 후 다시 시도해주세요',
+    over_request_rate_limit: '잠시 후 다시 시도해주세요',
   }
-  const errMsg = (e) => ERRS[e.message] || e.message
+  const errMsg = (e) => ERRS[e.code] || '문제가 발생했어요. 잠시 후 다시 시도해주세요'
 
   const doLogin = async () => {
     if (!form.username || !form.pw) return setErr('아이디와 비밀번호를 입력해주세요')
