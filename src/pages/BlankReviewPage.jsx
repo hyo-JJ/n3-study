@@ -165,10 +165,7 @@ export default function BlankReviewPage() {
         ) : result.ok ? (
           <button className="btn btn-ok" onClick={() => next(true)}>정답! 다음 →</button>
         ) : (
-          <div className="btn-row">
-            <button className="btn btn-muted" onClick={() => next(true)}>맞은 걸로 할게요</button>
-            <button className="btn btn-accent" onClick={() => next(false)}>다음 →</button>
-          </div>
+          <button className="btn btn-accent" onClick={() => next(false)}>다음 →</button>
         )}
       </div>
     </div>
