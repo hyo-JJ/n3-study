@@ -32,6 +32,16 @@ const toRow = (userId, level, st, my) => ({
   updated_at: new Date().toISOString(),
 })
 
+// 서버 저장이 끝나기 전에 새로고침·종료돼도 날아가지 않도록 기기에 즉시 백업
+// dirty: 아직 서버에 반영 안 된 행(level) 목록 — MY는 N3 행에 포함
+const backupKey = (userId) => `progress:${userId}`
+const readBackup = (userId) => {
+  try { return JSON.parse(localStorage.getItem(backupKey(userId))) ?? null } catch { return null }
+}
+const writeBackup = (userId, data, dirty) => {
+  try { localStorage.setItem(backupKey(userId), JSON.stringify({ data, dirty: [...dirty] })) } catch {}
+}
+
 export function ProgressProvider({ children }) {
   const user = useAuth()
   const userId = user?.id
@@ -40,6 +50,7 @@ export function ProgressProvider({ children }) {
   const [syncing, setSyncing] = useState(false)
   const saveTimer = useRef(null)
   const pending = useRef(new Set()) // 아직 서버에 안 보낸 레벨
+  const dirty = useRef(new Set()) // 서버 저장이 확인되지 않은 레벨 (백업에 기록)
   const latest = useRef({}) // 저장 시점의 최신 진행 상황
 
   const getLevel = useCallback((level) => progress[level] ?? DEFAULT(), [progress])
@@ -71,9 +82,20 @@ export function ProgressProvider({ children }) {
           wrongWords: row.wrong_words ?? [],
         }
       })
+      // 지난번에 서버에 못 보낸 기록이 기기에 남아 있으면 그걸 우선 쓰고 다시 저장
+      const backup = readBackup(userId)
+      const unsynced = (backup?.dirty ?? []).filter(level => backup.data?.[level])
+      unsynced.forEach(level => {
+        map[level] = backup.data[level]
+        if (level === 'N3' && backup.data[MY]) map[MY] = backup.data[MY]
+      })
+      dirty.current = new Set(unsynced)
+      pending.current = new Set(unsynced)
       latest.current = map
+      writeBackup(userId, map, dirty.current)
       setProgress(map)
       setLoaded(true)
+      if (unsynced.length) saveTimer.current = setTimeout(() => flushRef.current(), 0)
     }
     load()
     return () => { cancelled = true }
@@ -86,19 +108,38 @@ export function ProgressProvider({ children }) {
     pending.current = new Set()
     const all = latest.current
     setSyncing(true)
-    await supabase.from('user_progress').upsert(
-      levels.map(level => toRow(userId, level, all[level] ?? DEFAULT(), level === 'N3' ? all[MY] : undefined)),
-      { onConflict: 'user_id,level' },
-    )
+    // 레벨별로 따로 저장 — 한 행이 실패해도 나머지는 저장되도록
+    const failed = []
+    await Promise.all(levels.map(async level => {
+      const { error } = await supabase.from('user_progress').upsert(
+        toRow(userId, level, all[level] ?? DEFAULT(), level === 'N3' ? all[MY] : undefined),
+        { onConflict: 'user_id,level' },
+      )
+      if (error) { console.error('진행 상황 저장 실패', level, error); failed.push(level) }
+      // 저장 중에 또 바뀐 레벨은 다음 저장 때 반영되므로 dirty 유지
+      else if (!pending.current.has(level)) dirty.current.delete(level)
+    }))
+    writeBackup(userId, latest.current, dirty.current)
     setSyncing(false)
+    // 실패한 레벨은 잠시 뒤 다시 시도 (백업이 있어 새로고침해도 유지됨)
+    if (failed.length) {
+      failed.forEach(level => pending.current.add(level))
+      clearTimeout(saveTimer.current)
+      saveTimer.current = setTimeout(() => flushRef.current(), 5000)
+    }
   }, [userId])
+  const flushRef = useRef(flush)
+  flushRef.current = flush
 
   // Debounced save — 레벨별로 모아뒀다가 한 번에 저장
   const save = useCallback((level) => {
-    pending.current.add(level === MY ? 'N3' : level)
+    const row = level === MY ? 'N3' : level
+    pending.current.add(row)
+    dirty.current.add(row)
+    writeBackup(userId, latest.current, dirty.current)
     clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(flush, 1200)
-  }, [flush])
+  }, [flush, userId])
 
   // 학습 중간에 앱을 나가도(탭 전환·닫기) 저장 대기 중인 진행 상황을 바로 저장
   useEffect(() => {
