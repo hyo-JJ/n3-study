@@ -201,3 +201,7 @@ button{font-family:'Noto Sans KR',sans-serif}
 .loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:16px}
 .spin{width:36px;height:36px;border:3px solid var(--sep2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* 플래시카드 — 단어장 담기 */
+.fc-save{align-self:center;margin-top:12px;min-height:40px;padding:0 16px;border-radius:20px;border:2px solid #111;background:#fff;color:#111;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:2px 2px 0 #111}
+.fc-save:active{transform:translate(2px,2px);box-shadow:none}

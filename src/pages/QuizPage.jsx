@@ -4,6 +4,7 @@ import { Topbar } from '../components/Layout'
 import { useProgress, today } from '../hooks/useProgress'
 import { useToast } from '../components/Toast'
 import { getLevelDays, LEVELS } from '../lib/data'
+import { levelHome } from '../lib/study'
 
 const QUIZ_COUNT = 20
 
@@ -78,7 +79,7 @@ export default function QuizPage() {
     toast(!hasNext ? `Day ${dayNum} 완료! ${level} 전체 완주 🎉`
       : dailyLimit ? `Day ${dayNum} 완료! Day ${dayNum + 1}은 내일 열려요 🎉`
       : `Day ${dayNum} 완료! Day ${dayNum + 1} 오픈 🎉`)
-    navigate('/home')
+    navigate(levelHome(level))
   }
 
   const retry = () => {
@@ -86,13 +87,13 @@ export default function QuizPage() {
   }
 
   const exitConfirm = () => {
-    if (confirm('테스트를 중단할까요?')) navigate('/home')
+    if (confirm('테스트를 중단할까요?')) navigate(levelHome(level))
   }
 
   if (done) {
     return (
       <div className="screen">
-        <Topbar title={`Day 1~${dayNum} 누적 테스트`} onBack={() => navigate('/home')} />
+        <Topbar title={`Day 1~${dayNum} 누적 테스트`} onBack={() => navigate(levelHome(level))} />
         <div className="fc-wrap">
           <div className="result-card">
             <div className="r-score" style={{ color: passed ? 'var(--ok)' : 'var(--err)' }}>{pct}점</div>
@@ -101,7 +102,7 @@ export default function QuizPage() {
           </div>
           {passed && <button className="btn btn-accent" onClick={handlePass} style={{ marginBottom: 10 }}>Day 완료하기 🎉</button>}
           <button className="btn btn-muted" onClick={retry} style={{ marginBottom: 10 }}>다시 도전하기 🔄</button>
-          <button className="btn btn-outline" onClick={() => navigate('/home')}>홈으로</button>
+          <button className="btn btn-outline" onClick={() => navigate(levelHome(level))}>Day 목록으로</button>
         </div>
       </div>
     )

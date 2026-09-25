@@ -58,6 +58,7 @@ function WrongFlash({ words, onDone, phase }) {
 
 export default function WrongNotesPage() {
   const { getLevel } = useProgress()
+  const navigate = useNavigate()
   const [studying, setStudying] = useState(false)
   const [activeLevel, setActiveLevel] = useActiveLevel()
   const st = getLevel(activeLevel)
@@ -74,7 +75,7 @@ export default function WrongNotesPage() {
 
   return (
     <div className="screen">
-      <Topbar title="오답노트" />
+      <Topbar title="오답노트" onBack={() => navigate('/review')} />
       <div className="scroll">
         <div className="level-tabs">
           {Object.entries(LEVELS).map(([key, val]) => (

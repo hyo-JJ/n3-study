@@ -10,6 +10,11 @@ import BlankReviewPage from './pages/BlankReviewPage'
 import QuizPage from './pages/QuizPage'
 import WrongNotesPage from './pages/WrongNotesPage'
 import WeekendPage from './pages/WeekendPage'
+import LevelPage from './pages/LevelPage'
+import ReviewPage from './pages/ReviewPage'
+import JlptPage from './pages/JlptPage'
+import GamePage from './pages/GamePage'
+import MyWordsPage from './pages/MyWordsPage'
 
 function AppRoutes() {
   const user = useAuth()
@@ -35,6 +40,11 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/study/:level" element={<LevelPage />} />
+        <Route path="/review" element={<ReviewPage />} />
+        <Route path="/jlpt" element={<JlptPage />} />
+        <Route path="/game" element={<GamePage />} />
+        <Route path="/mywords" element={<MyWordsPage />} />
         <Route path="/learn/:level/:day/flash" element={<FlashcardPage />} />
         <Route path="/learn/:level/:day/blank" element={<BlankReviewPage />} />
         <Route path="/quiz/:level/:day" element={<QuizPage />} />

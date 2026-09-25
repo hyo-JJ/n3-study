@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Topbar } from '../components/Layout'
 import { useProgress } from '../hooks/useProgress'
 import { useToast } from '../components/Toast'
+import { levelHome } from '../lib/study'
 import { getDay, LEVELS } from '../lib/data'
 import Furigana from '../components/Furigana'
 
@@ -82,7 +83,7 @@ export default function BlankReviewPage() {
         if (confirm(`Day ${dayNum} 학습 완료!\n누적 테스트를 통과하면 ${when}다음 Day가 열립니다.\n지금 시작할까요?`)) {
           navigate(`/quiz/${level}/${dayNum}`)
         } else {
-          navigate('/home')
+          navigate(levelHome(level))
         }
       }, 500)
       return
@@ -101,7 +102,7 @@ export default function BlankReviewPage() {
   }
 
   const exitConfirm = () => {
-    if (confirm('학습을 중단할까요?\n(백지 복습은 처음부터 다시 시작해요)')) navigate('/home')
+    if (confirm('학습을 중단할까요?\n(백지 복습은 처음부터 다시 시작해요)')) navigate(levelHome(level))
   }
 
   const canCheck = isWrite

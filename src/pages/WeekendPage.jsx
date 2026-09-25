@@ -25,7 +25,7 @@ export default function WeekendPage() {
   if (!passed.length) {
     return (
       <div className="screen">
-        <Topbar title="주말 복습" />
+        <Topbar title="주말 복습" onBack={() => navigate('/review')} />
         <div className="scroll">
           {tabs}
           <div className="empty"><span className="ico">📚</span>아직 완료한 Day가 없어요.<br />평일에 학습을 시작해보세요!</div>
@@ -41,7 +41,7 @@ export default function WeekendPage() {
 
   return (
     <div className="screen">
-      <Topbar title="주말 복습" />
+      <Topbar title="주말 복습" onBack={() => navigate('/review')} />
       <div className="scroll">
         {tabs}
         <div className="review-info">
