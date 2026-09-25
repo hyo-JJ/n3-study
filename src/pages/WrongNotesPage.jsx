@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Topbar, BottomNav } from '../components/Layout'
 import { useProgress } from '../hooks/useProgress'
 import { useToast } from '../components/Toast'
+import { useActiveLevel } from '../hooks/useActiveLevel'
+import { LEVELS } from '../lib/data'
 
 function WrongFlash({ words, onDone, phase }) {
   const { update } = useProgress()
@@ -57,7 +59,7 @@ function WrongFlash({ words, onDone, phase }) {
 export default function WrongNotesPage() {
   const { getLevel } = useProgress()
   const [studying, setStudying] = useState(false)
-  const [activeLevel, setActiveLevel] = useState('N3')
+  const [activeLevel, setActiveLevel] = useActiveLevel()
   const st = getLevel(activeLevel)
 
   if (studying && st.wrongWords.length > 0) {
@@ -74,6 +76,13 @@ export default function WrongNotesPage() {
     <div className="screen">
       <Topbar title="오답노트" />
       <div className="scroll">
+        <div className="level-tabs">
+          {Object.entries(LEVELS).map(([key, val]) => (
+            <button key={key} className={`level-tab${activeLevel === key ? ' active' : ''}`} onClick={() => setActiveLevel(key)}>
+              {val.label}
+            </button>
+          ))}
+        </div>
         {st.wrongWords.length === 0 ? (
           <div className="empty">
             <span className="ico">🎉</span>

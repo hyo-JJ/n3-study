@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Topbar } from '../components/Layout'
 import { useProgress } from '../hooks/useProgress'
 import { useToast } from '../components/Toast'
-import { getDay } from '../lib/data'
+import { getDay, LEVELS } from '../lib/data'
+import Furigana from '../components/Furigana'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
 
@@ -53,9 +54,10 @@ export default function BlankReviewPage() {
   const check = () => {
     if (result) { next(result.ok); return }
     if (isWrite) {
-      const wordOk = kanaOnly
-        ? normKana(input.word) === normKana(word.word)
-        : input.word.replace(/\s/g, '') === word.word
+      // "早い/速い"처럼 표기가 여러 개면 하나만 맞아도 정답
+      const wordOk = word.word.split('/').some(w => kanaOnly
+        ? normKana(input.word) === normKana(w)
+        : input.word.replace(/\s/g, '') === w)
       const readingOk = kanaOnly || normKana(input.reading) === normKana(word.reading)
       setResult({ ok: wordOk && readingOk, readingOk, wordOk })
     } else {
@@ -76,7 +78,8 @@ export default function BlankReviewPage() {
       update(level, st => ({ ...st, blankProgress: { ...st.blankProgress, [dayNum]: dayData.words.length } }))
       toast('백지 복습 완료! 🎉')
       setTimeout(() => {
-        if (confirm(`Day ${dayNum} 학습 완료!\n누적 테스트를 통과하면 내일 다음 Day가 열립니다.\n지금 시작할까요?`)) {
+        const when = LEVELS[level]?.dailyLimit ? '내일 ' : ''
+        if (confirm(`Day ${dayNum} 학습 완료!\n누적 테스트를 통과하면 ${when}다음 Day가 열립니다.\n지금 시작할까요?`)) {
           navigate(`/quiz/${level}/${dayNum}`)
         } else {
           navigate('/home')
@@ -128,7 +131,7 @@ export default function BlankReviewPage() {
           {result && (
             <div className="blank-ans" style={{ color: result.ok ? 'var(--ok)' : 'var(--err)' }}>
               {isWrite ? (
-                <span className="jp">{word.word}{word.reading && <span style={{ fontSize: 18, marginLeft: 8 }}>({word.reading})</span>}</span>
+                <span className="jp"><Furigana word={word.word} reading={word.reading} /></span>
               ) : (
                 <>{word.meaning}{word.reading && <span className="jp" style={{ fontSize: 16, marginLeft: 8, color: 'var(--label3)' }}>{word.reading}</span>}</>
               )}

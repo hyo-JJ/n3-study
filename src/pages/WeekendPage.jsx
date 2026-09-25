@@ -1,21 +1,33 @@
 import { useNavigate } from 'react-router-dom'
 import { Topbar, BottomNav } from '../components/Layout'
 import { useProgress } from '../hooks/useProgress'
-import { getLevelDays } from '../lib/data'
+import { getLevelDays, LEVELS } from '../lib/data'
+import { useActiveLevel } from '../hooks/useActiveLevel'
 
 export default function WeekendPage() {
   const navigate = useNavigate()
   const { getLevel } = useProgress()
-  const level = 'N3'
+  const [level, setLevel] = useActiveLevel()
   const st = getLevel(level)
   const days = getLevelDays(level)
   const passed = st.passedDays
+
+  const tabs = (
+    <div className="level-tabs">
+      {Object.entries(LEVELS).map(([key, val]) => (
+        <button key={key} className={`level-tab${level === key ? ' active' : ''}`} onClick={() => setLevel(key)}>
+          {val.label}
+        </button>
+      ))}
+    </div>
+  )
 
   if (!passed.length) {
     return (
       <div className="screen">
         <Topbar title="주말 복습" />
         <div className="scroll">
+          {tabs}
           <div className="empty"><span className="ico">📚</span>아직 완료한 Day가 없어요.<br />평일에 학습을 시작해보세요!</div>
         </div>
         <BottomNav />
@@ -31,6 +43,7 @@ export default function WeekendPage() {
     <div className="screen">
       <Topbar title="주말 복습" />
       <div className="scroll">
+        {tabs}
         <div className="review-info">
           📋 이번 주: {weekDays.map(d => `Day${d}`).join(', ')}<br />복습 단어 {totalWords}개
         </div>
