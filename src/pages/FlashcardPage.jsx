@@ -5,6 +5,7 @@ import { useProgress } from '../hooks/useProgress'
 import { useToast } from '../components/Toast'
 import { getDay } from '../lib/data'
 import WritePad from '../components/WritePad'
+import Furigana from '../components/Furigana'
 
 export default function FlashcardPage() {
   const { level, day } = useParams()
@@ -62,8 +63,7 @@ export default function FlashcardPage() {
         <div className="prog"><div className="prog-fill" style={{ width: pct }} /></div>
 
         <div className={`flashcard${flipped ? ' flipped' : ''}`} onClick={flip}>
-          {flipped && word.reading && <div className="fc-reading jp">{word.reading}</div>}
-          <div className="fc-word jp">{word.word}</div>
+          <div className="fc-word jp"><Furigana word={word.word} reading={word.reading} show={flipped} /></div>
           {flipped && <div className="fc-meaning">{word.meaning}</div>}
           {!flipped && <div className="fc-tap">탭해서 뜻 확인</div>}
         </div>
