@@ -161,3 +161,48 @@
 .nb .pill.test{background:var(--nb-pink);color:#111}
 .nb .pill.go{background:var(--nb-yellow);color:#111}
 .nb .pill.lock{background:var(--nb-bg);color:var(--nb-mute)}
+
+/* 게임 타이머 */
+.nb-hurry{color:var(--nb-err);animation:pulse .9s infinite}
+.nb-bar>i.nb-drain{width:100%;transition:none;animation:nb-drain linear forwards}
+@keyframes nb-drain{from{width:100%}to{width:0}}
+
+/* 쓰기 연습지 (인쇄·PDF) — 다크 모드여도 종이는 항상 흰색 */
+.ws-page{min-height:100dvh;background:var(--nb-bg);color:var(--nb-ink);padding:calc(var(--st) + 12px) 12px 40px}
+.ws-bar{display:flex;align-items:center;gap:10px;max-width:760px;margin:0 auto 10px}
+.ws-bar .grow{flex:1;min-width:0}
+.ws-bar .s{font-size:12.5px;color:var(--nb-sub)}
+.ws-opts{max-width:760px;margin:0 auto 14px;display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;font-weight:700}
+.ws-opts label{display:flex;align-items:center;gap:6px}
+.ws-opts p{width:100%;font-size:12.5px;font-weight:500;color:var(--nb-sub);line-height:1.6}
+.ws-sheet{--cell:32px;max-width:760px;margin:0 auto;background:#fff;color:#111;padding:20px 16px;border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.ws-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:6px}
+.ws-title{font-size:17px;font-weight:800}
+.ws-sub{font-size:11.5px;color:#666;margin-top:2px}
+.ws-name{font-size:12px;white-space:nowrap}
+.ws-word{padding:10px 0;border-bottom:1px dashed #bbb;break-inside:avoid;page-break-inside:avoid}
+.ws-info{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.ws-no{font-size:11px;font-weight:800;color:#888;min-width:18px}
+.ws-jp{font-family:'Noto Sans JP',sans-serif;font-size:20px;font-weight:700}
+.ws-rd{font-family:'Noto Sans JP',sans-serif;font-size:13px;color:#555}
+.ws-mean{font-size:13px;color:#333}
+.ws-grid{display:flex;flex-wrap:wrap;gap:8px}
+.ws-rep{display:inline-flex}
+.ws-cell{width:var(--cell);height:var(--cell);border:1px solid #999;margin-left:-1px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans JP',sans-serif;font-size:calc(var(--cell) * .68);color:#c8c8c8;background:linear-gradient(#e2e2e2,#e2e2e2) center/100% 1px no-repeat,linear-gradient(90deg,#e2e2e2,#e2e2e2) center/1px 100% no-repeat}
+.ws-rep .ws-cell:first-child{margin-left:0}
+@media print{
+  @page{size:A4;margin:12mm}
+  html,body,#root{height:auto!important;background:#fff!important}
+  .no-print{display:none!important}
+  .ws-page{padding:0;background:#fff;min-height:0}
+  .ws-sheet{--cell:11mm;max-width:none;box-shadow:none;border-radius:0;padding:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* 문법 카드 펼치기·외움 체크 */
+.gm-top{display:flex;align-items:flex-start;gap:10px}
+.gm-head{flex:1;min-width:0;background:none;border:none;padding:0;text-align:left;color:inherit;font-family:inherit;cursor:pointer;touch-action:manipulation}
+.gm-check{width:36px;height:36px;flex-shrink:0;border:var(--nb-bw) solid var(--nb-line);border-radius:10px;background:var(--nb-card);color:var(--nb-mute);font-size:18px;font-weight:900;cursor:pointer;touch-action:manipulation}
+.gm-check.on{background:var(--nb-green);color:#111}
+.gm.done{opacity:.7}
+.gm-d{font-size:13.5px;line-height:1.65;color:var(--nb-ink);margin-top:8px;word-break:keep-all}

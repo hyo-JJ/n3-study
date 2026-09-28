@@ -15,6 +15,7 @@ import ReviewPage from './pages/ReviewPage'
 import JlptPage from './pages/JlptPage'
 import GamePage from './pages/GamePage'
 import MyWordsPage from './pages/MyWordsPage'
+import PrintPage from './pages/PrintPage'
 
 function AppRoutes() {
   const user = useAuth()
@@ -50,6 +51,7 @@ function AppRoutes() {
         <Route path="/quiz/:level/:day" element={<QuizPage />} />
         <Route path="/wrong" element={<WrongNotesPage />} />
         <Route path="/weekend" element={<WeekendPage />} />
+        <Route path="/print" element={<PrintPage />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </ProgressProvider>

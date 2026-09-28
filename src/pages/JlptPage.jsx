@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { NbHeader, BottomNav } from '../components/Layout'
 import { useActiveLevel } from '../hooks/useActiveLevel'
+import { useProgress } from '../hooks/useProgress'
 import { EXAM_INFO, QUESTION_TYPES, STRATEGY, GRAMMAR, nextExam } from '../lib/data/jlpt'
 
 const TABS = ['시험 안내', '문제 유형', '문법', '문법 퀴즈']
@@ -109,27 +110,75 @@ function Types() {
   )
 }
 
+// 외운 문법 체크 — 나만의 기록(MY)에 레벨:문법 키로 저장
+function useGrammarDone() {
+  const { my, updateMy } = useProgress()
+  const done = my.grammarDone ?? {}
+  const toggle = (lv, p) => updateMy(m => {
+    const next = { ...(m.grammarDone ?? {}) }
+    if (next[`${lv}:${p}`]) delete next[`${lv}:${p}`]; else next[`${lv}:${p}`] = 1
+    return { ...m, grammarDone: next }
+  })
+  return [(lv, p) => !!done[`${lv}:${p}`], toggle]
+}
+
 function Grammar() {
   const [lv, setLv] = useGrammarLevel()
   const [q, setQ] = useState('')
-  const list = GRAMMAR[lv].filter(g => !q || (g.p + g.m + g.ex + g.ko).includes(q.trim()))
+  const [cat, setCat] = useState('전체')
+  const [onlyTodo, setOnlyTodo] = useState(false)
+  const [open, setOpen] = useState(null)
+  const [isDone, toggleDone] = useGrammarDone()
+
+  const all = GRAMMAR[lv]
+  const cats = [...new Set(all.map(g => g.cat).filter(Boolean))]
+  const doneCount = all.filter(g => isDone(lv, g.p)).length
+  const list = all.filter(g =>
+    (cat === '전체' || g.cat === cat) &&
+    (!onlyTodo || !isDone(lv, g.p)) &&
+    (!q || [g.p, g.m, g.c, g.d, g.ex, g.ko].join(' ').includes(q.trim())))
+  const changeLv = (l) => { setLv(l); setCat('전체'); setOpen(null) }
+
   return (
     <>
-      <LevelTabs value={lv} onChange={setLv} />
-      <input className="nb-input" placeholder="문법·뜻으로 찾기 (예: 때문에, ように)" value={q} onChange={e => setQ(e.target.value)} style={{ marginBottom: 14 }} />
+      <LevelTabs value={lv} onChange={changeLv} />
+      <div className="nb-card" style={{ marginBottom: 14, padding: 12 }}>
+        <div className="nb-hud" style={{ marginBottom: 0 }}><span>외운 문법</span><span>{doneCount} / {all.length}</span></div>
+        <div className="nb-bar"><i style={{ width: `${doneCount / all.length * 100}%` }} /></div>
+        <p className="nb-p" style={{ fontSize: 12 }}>문법을 눌러 설명·예문을 보고, 다 외웠으면 ✓ 를 눌러요.</p>
+      </div>
+      <input className="nb-input" placeholder="문법·뜻으로 찾기 (예: 때문에, ように)" value={q} onChange={e => setQ(e.target.value)} style={{ marginBottom: 10 }} />
+      <div className="nb-tabs" style={{ marginBottom: 10 }}>
+        <button className={`nb-tab${onlyTodo ? ' on' : ''}`} onClick={() => setOnlyTodo(v => !v)}>안 외운 것만</button>
+        {cats.length > 1 && ['전체', ...cats].map(c => <button key={c} className={`nb-tab${cat === c ? ' on' : ''}`} onClick={() => setCat(c)}>{c}</button>)}
+      </div>
       <div className="nb-list">
-        {list.map(g => (
-          <div key={g.p} className="nb-card gm" style={{ marginTop: 0 }}>
-            <div className="gm-p">{g.p}</div>
-            <div className="gm-m">{g.m}</div>
-            <div className="gm-c">접속: {g.c}</div>
-            <div className="gm-ex">
-              <div className="jp"><Example ex={g.ex} /></div>
-              <div className="gm-ko">{g.ko}</div>
+        {list.map(g => {
+          const done = isDone(lv, g.p)
+          const isOpen = open === g.p || !!q.trim()
+          return (
+            <div key={g.p} className={`nb-card gm${done ? ' done' : ''}`} style={{ marginTop: 0 }}>
+              <div className="gm-top">
+                <button className="gm-head" onClick={() => setOpen(isOpen && open === g.p ? null : g.p)}>
+                  <div className="gm-p">{g.p}</div>
+                  <div className="gm-m">{g.m}</div>
+                </button>
+                <button className={`gm-check${done ? ' on' : ''}`} onClick={() => toggleDone(lv, g.p)} aria-label="외웠어요">✓</button>
+              </div>
+              {isOpen && (
+                <>
+                  <div className="gm-c">접속: {g.c}</div>
+                  {g.d && <p className="gm-d">{g.d}</p>}
+                  <div className="gm-ex">
+                    <div className="jp"><Example ex={g.ex} /></div>
+                    <div className="gm-ko">{g.ko}</div>
+                  </div>
+                </>
+              )}
             </div>
-          </div>
-        ))}
-        {!list.length && <div className="nb-empty">찾는 문법이 없어요.</div>}
+          )
+        })}
+        {!list.length && <div className="nb-empty">{onlyTodo && !q ? '이 분류는 다 외웠어요! 🎉' : '찾는 문법이 없어요.'}</div>}
       </div>
     </>
   )
@@ -140,9 +189,12 @@ const QUIZ_N = 10
 function GrammarQuiz() {
   const [lv, setLv] = useGrammarLevel()
   const [round, setRound] = useState(0)
+  const [isDone] = useGrammarDone()
   const qs = useMemo(() => {
     const pool = GRAMMAR[lv]
-    return shuffle(pool).slice(0, QUIZ_N).map(g => {
+    // 아직 안 외운 문법을 먼저, 모자라면 외운 문법으로 채우기
+    const picks = [...shuffle(pool.filter(g => !isDone(lv, g.p))), ...shuffle(pool.filter(g => isDone(lv, g.p)))].slice(0, QUIZ_N)
+    return shuffle(picks).map(g => {
       const ans = answerOf(g)
       const others = shuffle(pool.filter(x => answerOf(x) !== ans)).slice(0, 3).map(answerOf)
       return { g, ans, opts: shuffle([ans, ...others]) }
@@ -190,6 +242,7 @@ function GrammarQuiz() {
           <div className="nb-card" style={{ marginTop: 16 }}>
             <b className="jp">{g.p}</b> — {g.m}
             <div className="gm-c">접속: {g.c}</div>
+            {g.d && <p className="gm-d">{g.d}</p>}
           </div>
           <div className="gap" />
           <button className="nb-btn" onClick={() => { setIdx(i => i + 1); setPicked(null) }}>{idx === qs.length - 1 ? '결과 보기' : '다음 →'}</button>

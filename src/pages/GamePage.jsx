@@ -9,8 +9,16 @@ const MIN_WORDS = 8
 const GAMES = [
   { id: 'speed', name: '스피드 퀴즈', desc: '60초 동안 뜻을 최대한 많이 맞히기', c: 'var(--nb-pink)', unit: '개', better: 'high' },
   { id: 'match', name: '짝 맞추기', desc: '단어와 뜻 6쌍을 빨리 짝지어요', c: 'var(--nb-sky)', unit: '초', better: 'low' },
-  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (10문제)', c: 'var(--nb-lime)', unit: '점', better: 'high' },
+  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (10문제 · 문제당 10초)', c: 'var(--nb-lime)', unit: '점', better: 'high' },
 ]
+
+// 문제가 바뀐 직후엔 잠깐 입력을 막아, 연달아 누른 손가락이 다음 문제 보기를 누르지 않게 한다
+const TAP_LOCK_MS = 450
+function useTapLock(key) {
+  const readyAt = useRef(0)
+  useEffect(() => { readyAt.current = Date.now() + TAP_LOCK_MS }, [key])
+  return () => Date.now() >= readyAt.current
+}
 
 // 틀린 단어는 오답노트로 (앱 단어일 때만)
 function useAddWrong() {
@@ -59,6 +67,7 @@ function SpeedQuiz({ pool, game, onExit }) {
   const [result, setResult] = useState(null)
   const [, record] = useBest(game.id, game.better)
   const addWrong = useAddWrong()
+  const canTap = useTapLock(q)
 
   const makeQ = () => {
     const w = pool[Math.floor(Math.random() * pool.length)]
@@ -76,7 +85,7 @@ function SpeedQuiz({ pool, game, onExit }) {
   if (result) return <Result game={game} {...result} onAgain={() => setRound(r => r + 1)} onExit={onExit} />
   if (!q) return null
   const pick = (o) => {
-    if (flash) return
+    if (flash || !canTap()) return
     const ok = o === q.w.meaning
     if (ok) setScore(s => s + 1); else addWrong(q.w)
     setFlash({ o, ok })
@@ -151,6 +160,9 @@ function Match({ pool, game, onExit }) {
 }
 
 const READING_N = 10
+const READING_SEC = 10 // 문제당 제한 시간
+const NEXT_MS = { ok: 1200, no: 2500 } // 정답 확인 후 다음 문제까지
+const TIMEOUT = Symbol('timeout')
 
 function ReadingQuiz({ pool, game, onExit }) {
   const [round, setRound] = useState(0)
@@ -166,31 +178,58 @@ function ReadingQuiz({ pool, game, onExit }) {
   }, [pool, round])
   const [idx, setIdx] = useState(0)
   const [picked, setPicked] = useState(null)
+  const [left, setLeft] = useState(READING_SEC)
   const [score, setScore] = useState(0)
   const [result, setResult] = useState(null)
   const [, record] = useBest(game.id, game.better)
   const addWrong = useAddWrong()
-
-  useEffect(() => { setIdx(0); setPicked(null); setScore(0); setResult(null) }, [round])
-  if (result) return <Result game={game} {...result} onAgain={() => setRound(r => r + 1)} onExit={onExit} />
+  const canTap = useTapLock(`${round}-${idx}`)
   const q = qs[idx]
+
+  useEffect(() => { setIdx(0); setPicked(null); setLeft(READING_SEC); setScore(0); setResult(null) }, [round])
+
+  // 제한 시간 카운트다운 — 0초가 되면 오답 처리
+  useEffect(() => {
+    if (result || picked || !q) return
+    if (left <= 0) { setPicked(TIMEOUT); addWrong(q.w); return }
+    const t = setTimeout(() => setLeft(v => v - 1), 1000)
+    return () => clearTimeout(t)
+  }, [left, picked, result, q])
+
+  // 답을 확인할 시간을 준 뒤 자동으로 다음 문제
+  const ok = picked === q?.w.reading
+  useEffect(() => {
+    if (!picked || result) return
+    const t = setTimeout(() => {
+      if (idx === qs.length - 1) {
+        const v = Math.round(score / qs.length * 100)
+        setResult({ value: v, isNew: record(v) })
+        return
+      }
+      setIdx(i => i + 1); setPicked(null); setLeft(READING_SEC)
+    }, ok ? NEXT_MS.ok : NEXT_MS.no)
+    return () => clearTimeout(t)
+  }, [picked])
+
+  if (result) return <Result game={game} {...result} onAgain={() => setRound(r => r + 1)} onExit={onExit} />
   if (!q) return null
   const pick = (o) => {
-    if (picked) return
+    if (picked || !canTap()) return
     setPicked(o)
     if (o === q.w.reading) setScore(s => s + 1); else addWrong(q.w)
   }
-  const next = () => {
-    if (idx === qs.length - 1) { const v = Math.round(score / qs.length * 100); setResult({ value: v, isNew: record(v) }); return }
-    setIdx(i => i + 1); setPicked(null)
-  }
+  const wait = ok ? NEXT_MS.ok : NEXT_MS.no
   return (
     <>
-      <div className="nb-hud"><span>{idx + 1} / {qs.length}</span><span>정답 {score}</span></div>
-      <div className="nb-bar" style={{ '--c': game.c }}><i style={{ width: `${(idx + 1) / qs.length * 100}%` }} /></div>
+      <div className="nb-hud"><span>{idx + 1} / {qs.length} · 정답 {score}</span><span className={!picked && left <= 3 ? 'nb-hurry' : ''}>⏱ {picked ? '-' : left}초</span></div>
+      {picked ? (
+        <div className="nb-bar" style={{ '--c': 'var(--nb-sky)' }}><i key={idx} className="nb-drain" style={{ animationDuration: `${wait}ms` }} /></div>
+      ) : (
+        <div className="nb-bar" style={{ '--c': left <= 3 ? 'var(--nb-pink)' : game.c }}><i style={{ width: `${left / READING_SEC * 100}%` }} /></div>
+      )}
       <div className="nb-card nb-q" style={{ marginTop: 12 }}>
         <div className="big">{q.w.word}</div>
-        {picked && <div className="hint">{q.w.meaning}</div>}
+        <div className="hint">{picked ? q.w.meaning : '읽는 법을 골라요'}</div>
       </div>
       <div className="nb-opts">
         {q.opts.map(o => {
@@ -199,7 +238,12 @@ function ReadingQuiz({ pool, game, onExit }) {
           return <button key={o} className={c} onClick={() => pick(o)}>{o}</button>
         })}
       </div>
-      {picked && <><div className="gap" /><button className="nb-btn" style={{ '--c': game.c }} onClick={next}>{idx === qs.length - 1 ? '결과 보기' : '다음 →'}</button></>}
+      {picked && (
+        <p className="nb-p" style={{ marginTop: 14, textAlign: 'center', fontWeight: 800 }}>
+          {picked === TIMEOUT ? '⏰ 시간 초과! ' : ok ? '⭕ 정답! ' : '❌ 오답! '}
+          {idx === qs.length - 1 ? '곧 결과가 나와요' : '곧 다음 문제로 넘어가요'}
+        </p>
+      )}
     </>
   )
 }

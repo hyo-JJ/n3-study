@@ -93,7 +93,10 @@ export default function WrongNotesPage() {
           <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div className="sec-hd" style={{ margin: 0 }}>오답 {st.wrongWords.length}개</div>
-              <button className="btn btn-accent btn-sm" onClick={() => setStudying(true)}>플래시카드 학습</button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-outline btn-sm" onClick={() => navigate('/print', { state: { title: `${activeLevel} 오답노트`, words: st.wrongWords.map(w => ({ ...w, level: activeLevel })) } })}>✍️ 쓰기 연습지</button>
+                <button className="btn btn-accent btn-sm" onClick={() => setStudying(true)}>플래시카드</button>
+              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {st.wrongWords.map((w, i) => (

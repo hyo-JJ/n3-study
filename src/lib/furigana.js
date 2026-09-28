@@ -1,7 +1,7 @@
 // 단어를 [{ text, rt }] 조각으로 나눠 한자 위에만 읽는 법을 붙인다.
 // 예) お互い / おたがい → [お] [互:たが] [い]
 //     挨拶 / あいさつ → [挨拶:あいさつ] (숙어는 글자별로 나눌 수 없어 통째로)
-const KANJI = /[㐀-鿿豈-﫿々〆ヶ]/
+export const KANJI = /[㐀-鿿豈-﫿々〆ヶ]/
 const toHira = (s) => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60))
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
