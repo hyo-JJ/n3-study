@@ -11,6 +11,26 @@ import { GRAMMAR, nextExam } from '../lib/data/jlpt'
 import { levelSummary, dayRoute, learnedWords } from '../lib/study'
 import { LAST_BASIC } from './LevelPage'
 import * as Ico from '../components/Icons'
+import { useInstall } from '../lib/install'
+
+// 홈 화면에 앱 아이콘으로 설치하라는 안내 (설치했거나 닫으면 안 보임)
+function InstallCard() {
+  const { mode, install, dismiss } = useInstall()
+  if (!mode) return null
+  return (
+    <div className="nb-card nb-install">
+      <img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="" />
+      <div className="grow">
+        <b>앱으로 설치하기</b>
+        {mode === 'prompt'
+          ? <p className="nb-p">홈 화면에 아이콘을 만들어 앱처럼 바로 열어요.</p>
+          : <p className="nb-p">Safari 아래쪽 <b>공유 버튼(□↑)</b> → <b>홈 화면에 추가</b>를 누르면 앱처럼 쓸 수 있어요.</p>}
+        {mode === 'prompt' && <button className="nb-btn" style={{ marginTop: 8, padding: 10, fontSize: 14 }} onClick={install}>설치</button>}
+      </div>
+      <button className="mw-x" onClick={dismiss} aria-label="닫기">✕</button>
+    </div>
+  )
+}
 
 const lastBasic = () => { try { return localStorage.getItem(LAST_BASIC) === 'N4' ? 'N4' : 'N5' } catch { return 'N5' } }
 
@@ -91,6 +111,8 @@ export default function HomePage() {
           </div>
           <button className="nb-go" onClick={go} aria-label="이어서 학습하기"><Ico.Play />이어하기</button>
         </div>
+
+        <InstallCard />
 
         <h2 className="nb-sec">내 학습 공간</h2>
         <div className="nb-grid">

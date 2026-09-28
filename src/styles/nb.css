@@ -206,3 +206,9 @@
 .gm-check.on{background:var(--nb-green);color:#111}
 .gm.done{opacity:.7}
 .gm-d{font-size:13.5px;line-height:1.65;color:var(--nb-ink);margin-top:8px;word-break:keep-all}
+
+/* 앱 설치 안내 */
+.nb-install{display:flex;align-items:flex-start;gap:12px;margin:-8px 0 26px;padding:14px}
+.nb-install img{width:48px;height:48px;border-radius:12px;border:2px solid var(--nb-line);flex-shrink:0}
+.nb-install .grow{flex:1;min-width:0}
+.nb-install .nb-p{font-size:12.5px;margin-top:2px}
