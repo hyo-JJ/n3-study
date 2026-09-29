@@ -80,17 +80,17 @@ button{font-family:'Noto Sans KR',sans-serif}
 .jp ruby{ruby-position:over}
 .jp rt{font-size:.38em;font-weight:500;color:var(--label3);letter-spacing:0}
 .fc-meaning{font-size:28px;font-weight:600;color:var(--accent);margin-top:20px}
-.flashcard.flipped{flex:0 0 auto;min-height:0;padding:24px 20px}
-.flashcard.flipped .fc-word{font-size:40px}
-.flashcard.flipped .fc-meaning{font-size:22px;margin-top:10px}
+.flashcard.compact{flex:0 0 auto;min-height:0;padding:24px 20px}
+.flashcard.compact .fc-word{font-size:40px}
+.flashcard.compact .fc-meaning{font-size:22px;margin-top:10px}
 
 /* WRITE PAD (획순 쓰기) */
 .wp{background:var(--bg2);border-radius:24px;box-shadow:var(--shadow);padding:16px;margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.wp-chars{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.wp-char{min-width:44px;min-height:44px;border-radius:var(--r2);border:1.5px solid var(--sep2);background:var(--bg2);color:var(--label);font-size:22px;cursor:pointer;touch-action:manipulation}
-.wp-char.active{border-color:var(--accent);background:var(--accent2);color:var(--accent);font-weight:700}
-.wp-board{position:relative;width:100%;max-width:300px;aspect-ratio:1;border:1.5px solid var(--sep2);border-radius:var(--r2);background:var(--bg2);overflow:hidden}
-.wp-svg,.wp-canvas{position:absolute;inset:0;width:100%;height:100%}
+.wp-reveal{animation:wp-open .38s cubic-bezier(.2,.9,.3,1.15) both;transform-origin:top center}
+@keyframes wp-open{from{clip-path:inset(0 0 100% 0);opacity:0;transform:translateY(-10px) scaleY(.92)}to{clip-path:inset(-30px);opacity:1;transform:none}}
+.wp-board{position:relative;display:grid;width:100%;border:1.5px solid var(--sep2);border-radius:var(--r2);background:var(--bg2);overflow:hidden}
+.wp-cell{display:block;width:100%;height:100%;box-shadow:inset -1px -1px 0 var(--sep2)}
+.wp-canvas{position:absolute;inset:0;width:100%;height:100%}
 .wp-canvas{touch-action:none;cursor:crosshair;color:var(--label)}
 .wp-grid{stroke:var(--sep2);stroke-width:.5;stroke-dasharray:2 2}
 .wp-tpl{fill:none;stroke:var(--label4);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:.55}
@@ -203,5 +203,7 @@ button{font-family:'Noto Sans KR',sans-serif}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* 플래시카드 — 단어장 담기 */
-.fc-save{align-self:center;margin-top:12px;min-height:40px;padding:0 16px;border-radius:20px;border:2px solid #111;background:#fff;color:#111;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:2px 2px 0 #111}
+.fc-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.fc-save.on{background:#111;color:#fff}
+.fc-save{align-self:center;min-height:40px;padding:0 16px;border-radius:20px;border:2px solid #111;background:#fff;color:#111;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:2px 2px 0 #111}
 .fc-save:active{transform:translate(2px,2px);box-shadow:none}
