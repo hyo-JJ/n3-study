@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { NbHeader, BottomNav } from '../components/Layout'
 import { useProgress } from '../hooks/useProgress'
+import { useAuth } from '../hooks/useAuth'
 import { learnedWords } from '../lib/study'
+import { gamePoints, addPoints, fetchLeaderboard, setNickname, defaultNickname } from '../lib/ranking'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
 const MIN_WORDS = 8
@@ -41,13 +43,28 @@ function useBest(id, better) {
   return [best, record]
 }
 
-function Result({ game, value, isNew, onAgain, onExit }) {
+function Result({ game, value, isNew, points, onAgain, onExit }) {
+  const user = useAuth()
+  const [rank, setRank] = useState(null) // null = 적립 중, 숫자 = 이번 주 순위, false = 실패
+  const sent = useRef(false)
+  useEffect(() => {
+    if (sent.current) return
+    sent.current = true
+    addPoints(user, points)
+      .then(ok => ok ? fetchLeaderboard(user, true) : Promise.reject())
+      .then(rows => setRank(rows.find(r => r.user_id === user.id)?.rank ?? false))
+      .catch(() => setRank(false))
+  }, [])
   return (
     <>
       <div className="nb-card nb-q">
         <div className="hint" style={{ marginTop: 0 }}>{game.name}</div>
         <div className="big">{value}{game.unit}</div>
         <div className="hint">{isNew ? '🏆 최고 기록 달성!' : '틀린 단어는 오답노트에 담았어요'}</div>
+        <div className="rk-earn">+{points}P</div>
+        <div className="hint">
+          {rank === null ? '포인트 적립 중...' : rank ? `이번 주 랭킹 ${rank}위` : '포인트는 다음에 연결되면 적립돼요'}
+        </div>
       </div>
       <div className="gap" />
       <div className="nb-btns">
@@ -77,7 +94,7 @@ function SpeedQuiz({ pool, game, onExit }) {
   useEffect(() => { setTime(60); setScore(0); setResult(null); setQ(makeQ()) }, [round])
   useEffect(() => {
     if (result) return
-    if (time <= 0) { setResult({ value: score, isNew: record(score) }); return }
+    if (time <= 0) { setResult({ value: score, isNew: record(score), points: gamePoints.speed(score) }); return }
     const t = setTimeout(() => setTime(v => v - 1), 1000)
     return () => clearTimeout(t)
   }, [time, result])
@@ -138,7 +155,7 @@ function Match({ pool, game, onExit }) {
       setGone(g); setSel(null)
       if (g.length === tiles.length) {
         const secs = Math.max(1, Math.round((Date.now() - start.current) / 1000))
-        setResult({ value: secs, isNew: record(secs) })
+        setResult({ value: secs, isNew: record(secs), points: gamePoints.match(tiles.length / 2, secs) })
       }
     } else {
       setBad([sel.k, t.k]); setSel(null)
@@ -203,7 +220,7 @@ function ReadingQuiz({ pool, game, onExit }) {
     const t = setTimeout(() => {
       if (idx === qs.length - 1) {
         const v = Math.round(score / qs.length * 100)
-        setResult({ value: v, isNew: record(v) })
+        setResult({ value: v, isNew: record(v), points: gamePoints.reading(score) })
         return
       }
       setIdx(i => i + 1); setPicked(null); setLeft(READING_SEC)
@@ -248,6 +265,72 @@ function ReadingQuiz({ pool, game, onExit }) {
   )
 }
 
+const MEDALS = ['🥇', '🥈', '🥉']
+
+function Ranking() {
+  const user = useAuth()
+  const [weekly, setWeekly] = useState(true)
+  const [rows, setRows] = useState(null) // null = 불러오는 중, 'error' = 실패
+  const [editing, setEditing] = useState(false)
+  const [nick, setNick] = useState('')
+  const [reload, setReload] = useState(0)
+
+  useEffect(() => {
+    let alive = true
+    setRows(null)
+    fetchLeaderboard(user, weekly).then(d => alive && setRows(d), () => alive && setRows('error'))
+    return () => { alive = false }
+  }, [weekly, reload])
+
+  const list = Array.isArray(rows) ? rows : []
+  const mine = list.find(r => r.user_id === user.id)
+  const startEdit = () => { setNick(mine?.nickname ?? defaultNickname(user)); setEditing(true) }
+  const saveNick = async () => {
+    const v = nick.trim()
+    if (!v || v.length > 12) return alert('닉네임은 1~12자로 입력해주세요')
+    try { await setNickname(v); setEditing(false); setReload(r => r + 1) } catch { alert('닉네임을 바꾸지 못했어요. 잠시 후 다시 시도해주세요') }
+  }
+
+  return (
+    <>
+      <div className="nb-card" style={{ marginBottom: 16 }}>
+        <p className="nb-p">게임에서 <b>맞힌 개수 × 10P</b>가 쌓여요. 짝 맞추기는 빨리 끝낼수록 보너스! 이번 주 랭킹은 매주 월요일에 새로 시작해요.</p>
+        {editing ? (
+          <div className="rk-nick">
+            <input className="nb-input" value={nick} maxLength={12} autoFocus onChange={e => setNick(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveNick()} placeholder="닉네임 (1~12자)" />
+            <button className="nb-btn sm" onClick={saveNick}>저장</button>
+          </div>
+        ) : (
+          <div className="rk-nick">
+            <span className="grow">내 닉네임 <b>{mine?.nickname ?? defaultNickname(user)}</b></span>
+            <button className="nb-btn sm ghost" onClick={startEdit}>바꾸기</button>
+          </div>
+        )}
+      </div>
+
+      <div className="nb-tabs">
+        <button className={`nb-tab${weekly ? ' on' : ''}`} onClick={() => setWeekly(true)}>이번 주</button>
+        <button className={`nb-tab${!weekly ? ' on' : ''}`} onClick={() => setWeekly(false)}>전체 누적</button>
+      </div>
+
+      {rows === null && <div className="nb-empty">불러오는 중...</div>}
+      {rows === 'error' && <div className="nb-empty"><span className="big">📡</span>랭킹을 불러오지 못했어요.<br />잠시 후 다시 시도해주세요.</div>}
+      {Array.isArray(rows) && !list.length && <div className="nb-empty"><span className="big">🏁</span>아직 기록이 없어요.<br />첫 번째 1등이 되어보세요!</div>}
+      {list.length > 0 && (
+        <div className="rk-list">
+          {list.map(r => (
+            <div key={r.user_id} className={`rk-row${r.user_id === user.id ? ' me' : ''}${r.rank <= 3 ? ' top' : ''}`}>
+              <span className="rk-rank">{MEDALS[r.rank - 1] ?? r.rank}</span>
+              <span className="rk-name">{r.nickname}{r.user_id === user.id && <em> (나)</em>}</span>
+              <span className="rk-pt">{r.points.toLocaleString()}P</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
 export default function GamePage() {
   const { getLevel, my } = useProgress()
   const [playing, setPlaying] = useState(null)
@@ -257,22 +340,32 @@ export default function GamePage() {
   }, [getLevel, my.words])
 
   const game = GAMES.find(g => g.id === playing)
+  const ranking = playing === 'rank'
   const exit = () => setPlaying(null)
   const readingCount = pool.filter(w => w.reading).length
 
   return (
     <div className="screen nb">
-      <NbHeader title={game ? game.name : '단어 게임'} onBack={game ? exit : undefined} />
+      <NbHeader title={game ? game.name : ranking ? '게임 랭킹' : '단어 게임'} onBack={game || ranking ? exit : undefined} />
       <div className="scroll">
         {game?.id === 'speed' && <SpeedQuiz pool={pool} game={game} onExit={exit} />}
         {game?.id === 'match' && <Match pool={pool} game={game} onExit={exit} />}
         {game?.id === 'reading' && <ReadingQuiz pool={pool} game={game} onExit={exit} />}
-        {!game && (
+        {ranking && <Ranking />}
+        {!game && !ranking && (
           <>
-            <div className="nb-card" style={{ marginBottom: 20 }}>
+            <div className="nb-card" style={{ marginBottom: 14 }}>
               <b>외운 단어 {pool.length}개</b>로 게임해요
               <p className="nb-p" style={{ marginTop: 4 }}>플래시카드에서 본 단어와 나만의 단어장 단어가 나와요. 틀린 단어는 오답노트에 자동으로 담겨요.</p>
             </div>
+            <button className="nb-card nb-row" style={{ marginBottom: 20, background: 'var(--nb-yellow)', color: '#111' }} onClick={() => setPlaying('rank')}>
+              <span className="nb-ico" style={{ '--c': 'var(--nb-card)', fontSize: 22 }}>🏆</span>
+              <span className="grow">
+                <div className="t">게임 랭킹</div>
+                <div className="s" style={{ color: '#333' }}>맞힌 만큼 포인트를 모아 순위에 도전해요</div>
+              </span>
+              <span style={{ fontSize: 20, fontWeight: 900 }}>→</span>
+            </button>
             {pool.length < MIN_WORDS ? (
               <div className="nb-empty"><span className="big">🎮</span>게임을 하려면 단어가 {MIN_WORDS}개 이상 필요해요.<br />플래시카드로 단어를 조금 더 외우고 와요!</div>
             ) : (

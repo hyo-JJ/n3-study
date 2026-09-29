@@ -212,3 +212,18 @@
 .nb-install img{width:48px;height:48px;border-radius:12px;border:2px solid var(--nb-line);flex-shrink:0}
 .nb-install .grow{flex:1;min-width:0}
 .nb-install .nb-p{font-size:12.5px;margin-top:2px}
+
+/* 게임 랭킹 */
+.rk-earn{display:inline-block;margin-top:12px;font-size:20px;font-weight:900;background:var(--nb-yellow);color:#111;border:var(--nb-bw) solid var(--nb-line);border-radius:10px;padding:4px 12px;box-shadow:var(--nb-sh-sm)}
+.rk-nick{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:14px}
+.rk-nick .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-nick .nb-input{flex:1;min-width:0;padding:9px 12px}
+.rk-list{display:flex;flex-direction:column;gap:10px}
+.rk-row{display:flex;align-items:center;gap:12px;background:var(--nb-card);border:var(--nb-bw) solid var(--nb-line);border-radius:12px;box-shadow:var(--nb-sh-sm);padding:12px 14px}
+.rk-row.top{padding:14px}
+.rk-row.me{background:var(--nb-sky);color:#111}
+.rk-rank{width:32px;flex-shrink:0;text-align:center;font-size:17px;font-weight:900}
+.rk-row.top .rk-rank{font-size:24px}
+.rk-name{flex:1;min-width:0;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-name em{font-style:normal;font-weight:700;font-size:12.5px;opacity:.7}
+.rk-pt{font-size:15px;font-weight:900;white-space:nowrap}
