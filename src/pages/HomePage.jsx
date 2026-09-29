@@ -52,7 +52,7 @@ function Folder({ c, icon, meta, desc, name, isNew, onClick }) {
 
 export default function HomePage() {
   const user = useAuth()
-  const { getLevel, my, syncing } = useProgress()
+  const { getLevel, my, syncing, saveFailed } = useProgress()
   const { toggle, isDark } = useTheme()
   const navigate = useNavigate()
   const toast = useToast()
@@ -91,7 +91,7 @@ export default function HomePage() {
       <div className="nb-head">
         <button className="nb-ibtn" aria-label="테마 바꾸기" onClick={toggle}>{isDark ? <Ico.Sun /> : <Ico.Moon />}</button>
         <span className="sp" />
-        <span className={`nb-dot${syncing ? ' busy' : ''}`} title={syncing ? '저장 중' : '저장됨'} />
+        <span className={`nb-dot${syncing ? ' busy' : saveFailed ? ' fail' : ''}`} title={syncing ? '저장 중' : saveFailed ? '서버 저장 실패 — 이 기기에만 저장됨' : '저장됨'} />
         <button className="nb-ibtn" aria-label="단어장" onClick={() => navigate('/mywords')}><Ico.Star /></button>
         <button className="nb-ibtn" aria-label="로그아웃" onClick={logout}><Ico.User /></button>
       </div>

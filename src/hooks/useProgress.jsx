@@ -42,12 +42,35 @@ const writeBackup = (userId, data, dirty) => {
   try { localStorage.setItem(backupKey(userId), JSON.stringify({ data, dirty: [...dirty] })) } catch {}
 }
 
+// 서버 기록과 기기에만 남은 기록을 합침 — 여러 기기에서 공부해도 더 많이 진행한 쪽이 남도록
+const maxMerge = (a = {}, b = {}) =>
+  Object.fromEntries([...new Set([...Object.keys(a), ...Object.keys(b)])].map(k => [k, Math.max(a[k] || 0, b[k] || 0)]))
+const mergeLevel = (server, local) => {
+  if (!server) return local
+  const wrong = [...server.wrongWords]
+  local.wrongWords.forEach(w => { if (!wrong.some(x => x.dn === w.dn && x.no === w.no)) wrong.push(w) })
+  return {
+    passedDays: [...new Set([...server.passedDays, ...local.passedDays])].sort((a, b) => a - b),
+    flashProgress: maxMerge(server.flashProgress, local.flashProgress),
+    blankProgress: maxMerge(server.blankProgress, local.blankProgress),
+    passedAt: { ...server.passedAt, ...local.passedAt },
+    wrongWords: wrong,
+  }
+}
+const mergeMy = (server, local) => {
+  if (!server) return local
+  const words = [...server.words]
+  local.words.forEach(w => { if (!words.some(x => x.id === w.id)) words.push(w) })
+  return { ...server, ...local, words, best: { ...server.best, ...local.best } }
+}
+
 export function ProgressProvider({ children }) {
   const user = useAuth()
   const userId = user?.id
   const [progress, setProgress] = useState({}) // { N3: {...}, N4: {...} }
   const [loaded, setLoaded] = useState(false)
   const [syncing, setSyncing] = useState(false)
+  const [saveFailed, setSaveFailed] = useState(false) // 서버 저장 실패 — 기기에만 남아 있음
   const saveTimer = useRef(null)
   const pending = useRef(new Set()) // 아직 서버에 안 보낸 레벨
   const dirty = useRef(new Set()) // 서버 저장이 확인되지 않은 레벨 (백업에 기록)
@@ -82,12 +105,12 @@ export function ProgressProvider({ children }) {
           wrongWords: row.wrong_words ?? [],
         }
       })
-      // 지난번에 서버에 못 보낸 기록이 기기에 남아 있으면 그걸 우선 쓰고 다시 저장
+      // 지난번에 서버에 못 보낸 기록이 기기에 남아 있으면 서버 기록과 합쳐서 다시 저장
       const backup = readBackup(userId)
       const unsynced = (backup?.dirty ?? []).filter(level => backup.data?.[level])
       unsynced.forEach(level => {
-        map[level] = backup.data[level]
-        if (level === 'N3' && backup.data[MY]) map[MY] = backup.data[MY]
+        map[level] = mergeLevel(map[level], { ...DEFAULT(), ...backup.data[level] })
+        if (level === 'N3' && backup.data[MY]) map[MY] = mergeMy(map[MY], { ...MY_DEFAULT(), ...backup.data[MY] })
       })
       dirty.current = new Set(unsynced)
       pending.current = new Set(unsynced)
@@ -121,6 +144,7 @@ export function ProgressProvider({ children }) {
     }))
     writeBackup(userId, latest.current, dirty.current)
     setSyncing(false)
+    setSaveFailed(failed.length > 0)
     // 실패한 레벨은 잠시 뒤 다시 시도 (백업이 있어 새로고침해도 유지됨)
     if (failed.length) {
       failed.forEach(level => pending.current.add(level))
@@ -175,7 +199,7 @@ export function ProgressProvider({ children }) {
   }
 
   return (
-    <ProgressContext.Provider value={{ getLevel, update, my, updateMy, syncing }}>
+    <ProgressContext.Provider value={{ getLevel, update, my, updateMy, syncing, saveFailed }}>
       {children}
     </ProgressContext.Provider>
   )

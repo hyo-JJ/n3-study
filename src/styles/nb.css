@@ -27,6 +27,7 @@
 .nb-ibtn svg{width:22px;height:22px}
 .nb-dot{width:8px;height:8px;border-radius:50%;background:var(--nb-ok);border:1.5px solid var(--nb-line)}
 .nb-dot.busy{background:var(--nb-yellow);animation:pulse .9s infinite}
+.nb-dot.fail{background:#E5484D}
 
 .nb-hero{font-size:34px;font-weight:900;line-height:1.12;letter-spacing:-1.2px;margin:18px 0 18px;word-break:keep-all}
 .nb-hero small{display:block;font-size:14px;font-weight:600;color:var(--nb-sub);letter-spacing:0;margin-top:8px}

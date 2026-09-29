@@ -23,6 +23,8 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return
   const url = new URL(req.url)
   const sameApp = url.origin === location.origin && url.pathname.startsWith(new URL(self.registration.scope).pathname)
+  // 새 버전 확인용 파일은 항상 서버에서 직접
+  if (sameApp && url.pathname.endsWith('/version.json')) return
 
   // 화면: 네트워크 먼저 → 실패하면 캐시
   if (req.mode === 'navigate') {
