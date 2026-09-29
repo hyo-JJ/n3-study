@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Topbar, BottomNav } from '../components/Layout'
+import { Pic } from '../components/Icons'
 import { useProgress } from '../hooks/useProgress'
 import { getLevelDays, LEVELS } from '../lib/data'
 import { useActiveLevel } from '../hooks/useActiveLevel'
@@ -28,7 +29,7 @@ export default function WeekendPage() {
         <Topbar title="주말 복습" onBack={() => navigate('/review')} />
         <div className="scroll">
           {tabs}
-          <div className="empty"><span className="ico">📚</span>아직 완료한 Day가 없어요.<br />평일에 학습을 시작해보세요!</div>
+          <div className="empty"><Pic name="book" className="pic-empty" />아직 완료한 Day가 없어요.<br />평일에 학습을 시작해보세요!</div>
         </div>
         <BottomNav />
       </div>

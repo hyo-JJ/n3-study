@@ -1,9 +1,9 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#F2F2F7;--bg2:#fff;--bg3:#EFEFF4;
-  --label:#000;--label2:#3C3C43;--label3:#8E8E93;--label4:#C7C7CC;
-  --sep:#C6C6C8;--sep2:#E5E5EA;
-  --accent:#5856D6;--accent2:#EEEEFF;
+  --bg:#FCF3F8;--bg2:#fff;--bg3:#F6EAF3;
+  --label:#2A1E33;--label2:#4A3B55;--label3:#8E8096;--label4:#CDBFD6;
+  --sep:#E2CFE0;--sep2:#F0E2EE;
+  --accent:#A26BD6;--accent2:#F4E8FF;
   --ok:#34C759;--err:#FF3B30;--warn:#FF9500;
   --shadow:0 2px 12px rgba(0,0,0,.08);
   --r:16px;--r2:12px;
@@ -11,9 +11,9 @@
   --sb:env(safe-area-inset-bottom,0px);
 }
 [data-theme="dark"]{
-  --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;
-  --label:#fff;--label2:#EBEBF5;--label3:#8E8E93;--label4:#48484A;
-  --sep:#38383A;--sep2:#2C2C2E;--accent:#7C7AE8;--accent2:#1E1E3F;
+  --bg:#0F0F0F;--bg2:#1E1E1E;--bg3:#2B2B2B;
+  --label:#F2F2F2;--label2:#D6D6D6;--label3:#8C8C8C;--label4:#4A4A4A;
+  --sep:#3A3A3A;--sep2:#2B2B2B;--accent:#D9D9D9;--accent2:#2B2B2B;
   --shadow:0 2px 12px rgba(0,0,0,.4);
 }
 html,body,#root{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--label);-webkit-overflow-scrolling:touch}
@@ -30,7 +30,9 @@ button{font-family:'Noto Sans KR',sans-serif}
   position:sticky;top:0;z-index:50;
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
 }
-[data-theme="dark"] .topbar{background:rgba(28,28,30,.85)}
+[data-theme="dark"] .topbar{background:rgba(30,30,30,.85)}
+/* 다크 모드는 강조색이 밝은 회색이라 버튼 글씨를 검정으로 */
+[data-theme="dark"] .btn-accent,[data-theme="dark"] .wp-btn.primary{color:#111}
 .topbar-title{font-size:17px;font-weight:700;flex:1;color:var(--label)}
 .topbar-title em{color:var(--accent);font-style:normal}
 .icon-btn{background:none;border:none;color:var(--accent);font-size:15px;font-weight:500;cursor:pointer;touch-action:manipulation;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%}
@@ -161,7 +163,7 @@ button{font-family:'Noto Sans KR',sans-serif}
 
 /* AUTH */
 .auth-screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;padding-top:calc(var(--st)+32px);padding-bottom:calc(var(--sb)+32px);background:var(--bg)}
-.auth-logo{font-size:56px;text-align:center;margin-bottom:10px}
+.auth-logo{display:block;width:96px;height:96px;margin:0 auto 12px}
 .auth-name{font-size:30px;font-weight:800;text-align:center;letter-spacing:-1px;color:var(--label);margin-bottom:4px}
 .auth-name em{color:var(--accent);font-style:normal}
 .auth-sub{font-size:14px;color:var(--label3);text-align:center;margin-bottom:36px}

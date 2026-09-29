@@ -31,7 +31,7 @@ function Study({ words, onDone }) {
       <div className="gap" />
       <div className="nb-btns">
         {idx > 0 && <button className="nb-btn ghost" onClick={() => { setIdx(i => i - 1); setFlipped(false) }}>← 이전</button>}
-        <button className="nb-btn" style={{ '--c': 'var(--nb-purple)', color: '#fff' }} onClick={next}>{!flipped ? '뒤집기' : idx === list.length - 1 ? '끝!' : '다음 →'}</button>
+        <button className="nb-btn" style={{ '--c': 'var(--nb-purple)' }} onClick={next}>{!flipped ? '뒤집기' : idx === list.length - 1 ? '끝!' : '다음 →'}</button>
       </div>
     </>
   )
@@ -80,12 +80,12 @@ export default function MyWordsPage() {
                 <div className="nb-fld"><label className="nb-label">메모 (예문·외우는 팁)</label><input className="nb-input" placeholder="毎日日本語を勉強する。" value={form.memo} onChange={set('memo')} /></div>
                 <div className="nb-btns">
                   <button className="nb-btn ghost" onClick={() => setForm(null)}>취소</button>
-                  <button className="nb-btn" style={{ '--c': 'var(--nb-purple)', color: '#fff' }} disabled={!form.word.trim() || !form.meaning.trim()} onClick={save}>{form.id ? '수정' : '담기'}</button>
+                  <button className="nb-btn" style={{ '--c': 'var(--nb-purple)' }} disabled={!form.word.trim() || !form.meaning.trim()} onClick={save}>{form.id ? '수정' : '담기'}</button>
                 </div>
               </div>
             ) : (
               <div className="nb-btns" style={{ marginBottom: 20 }}>
-                <button className="nb-btn" style={{ '--c': 'var(--nb-purple)', color: '#fff' }} onClick={() => setForm({ ...EMPTY })}><Ico.Plus />단어 추가</button>
+                <button className="nb-btn" style={{ '--c': 'var(--nb-purple)' }} onClick={() => setForm({ ...EMPTY })}><Ico.Plus />단어 추가</button>
                 <button className="nb-btn ghost" disabled={!words.length} onClick={() => setStudying(true)}>외우기 ({words.length})</button>
               </div>
             )}
@@ -98,7 +98,7 @@ export default function MyWordsPage() {
 
             {!words.length ? (
               <div className="nb-empty">
-                <span className="big">💜</span>
+                <Ico.Pic name="star" className="pic-empty" />
                 아직 단어가 없어요.<br />
                 모르는 단어를 직접 추가하거나,<br />플래시카드에서 <b>☆ 단어장에 담기</b>를 눌러 모아보세요.
               </div>

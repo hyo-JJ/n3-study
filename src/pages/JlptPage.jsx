@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { NbHeader, BottomNav } from '../components/Layout'
+import { Pic } from '../components/Icons'
 import { useActiveLevel } from '../hooks/useActiveLevel'
 import { useProgress } from '../hooks/useProgress'
 import { EXAM_INFO, QUESTION_TYPES, STRATEGY, GRAMMAR, nextExam } from '../lib/data/jlpt'
@@ -40,7 +41,7 @@ function ExamInfo() {
         </div>
       </div>
 
-      <h3 className="nb-h">📅 시험 일정</h3>
+      <h3 className="nb-h pic-h"><Pic name="calendar" />시험 일정</h3>
       <div className="nb-card">
         {EXAM_INFO.schedule.map((t, i) => <p key={i} className="nb-p" style={{ marginTop: i ? 8 : 0 }}>• {t}</p>)}
       </div>

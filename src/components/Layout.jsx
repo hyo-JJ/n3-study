@@ -54,10 +54,10 @@ export function BottomNav() {
   const { pathname } = useLocation()
 
   const tabs = [
-    { path: '/home', match: ['/home', '/study'], ico: <Ico.Home />, label: '홈' },
-    { path: '/review', match: ['/review', '/wrong', '/weekend'], ico: <Ico.Book />, label: '복습' },
-    { path: '/game', match: ['/game'], ico: <Ico.Plane />, label: '게임' },
-    { path: '/mywords', match: ['/mywords'], ico: <Ico.Heart />, label: '단어장' },
+    { path: '/home', match: ['/home', '/study'], ico: <Ico.Pic name="torii" />, label: '홈' },
+    { path: '/review', match: ['/review', '/wrong', '/weekend'], ico: <Ico.Pic name="book" />, label: '복습' },
+    { path: '/game', match: ['/game'], ico: <Ico.Pic name="play" />, label: '게임' },
+    { path: '/mywords', match: ['/mywords'], ico: <Ico.Pic name="star" />, label: '단어장' },
   ]
 
   return (

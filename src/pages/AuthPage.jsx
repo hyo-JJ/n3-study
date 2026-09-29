@@ -55,7 +55,7 @@ export default function AuthPage() {
 
   return (
     <div className="auth-screen">
-      <div className="auth-logo">🎌</div>
+      <img className="auth-logo" src={`${import.meta.env.BASE_URL}app-logo.png`} alt="ことば" />
       <div className="auth-name">こと<em>ば</em></div>
       <div className="auth-sub">하루 한 Day, 꾸준히 N3 정복</div>
       <div className="auth-box">

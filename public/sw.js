@@ -1,6 +1,6 @@
 // 앱 설치(PWA)용 서비스 워커 — 인터넷이 없어도 앱 화면이 열리도록 캐시
 // 화면(index.html)은 항상 새 버전을 먼저 받아 오고, 실패할 때만 캐시를 쓴다
-const CACHE = 'kotoba-v1'
+const CACHE = 'kotoba-v2'
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com']
 
 self.addEventListener('install', (e) => {

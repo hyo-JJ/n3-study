@@ -3,15 +3,16 @@ import { NbHeader, BottomNav } from '../components/Layout'
 import { useProgress } from '../hooks/useProgress'
 import { useAuth } from '../hooks/useAuth'
 import { learnedWords } from '../lib/study'
+import { Pic } from '../components/Icons'
 import { gamePoints, addPoints, fetchLeaderboard, setNickname, defaultNickname } from '../lib/ranking'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
 const MIN_WORDS = 8
 
 const GAMES = [
-  { id: 'speed', name: '스피드 퀴즈', desc: '60초 동안 뜻을 최대한 많이 맞히기', c: 'var(--nb-pink)', unit: '개', better: 'high' },
-  { id: 'match', name: '짝 맞추기', desc: '단어와 뜻 6쌍을 빨리 짝지어요', c: 'var(--nb-sky)', unit: '초', better: 'low' },
-  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (10문제 · 문제당 10초)', c: 'var(--nb-lime)', unit: '점', better: 'high' },
+  { id: 'speed', name: '스피드 퀴즈', desc: '60초 동안 뜻을 최대한 많이 맞히기', ico: 'chat', c: 'var(--nb-pink)', unit: '개', better: 'high' },
+  { id: 'match', name: '짝 맞추기', desc: '단어와 뜻 6쌍을 빨리 짝지어요', ico: 'sakura', c: 'var(--nb-sky)', unit: '초', better: 'low' },
+  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (10문제 · 문제당 10초)', ico: 'hiragana', c: 'var(--nb-lime)', unit: '점', better: 'high' },
 ]
 
 // 문제가 바뀐 직후엔 잠깐 입력을 막아, 연달아 누른 손가락이 다음 문제 보기를 누르지 않게 한다
@@ -359,7 +360,7 @@ export default function GamePage() {
               <p className="nb-p" style={{ marginTop: 4 }}>플래시카드에서 본 단어와 나만의 단어장 단어가 나와요. 틀린 단어는 오답노트에 자동으로 담겨요.</p>
             </div>
             <button className="nb-card nb-row" style={{ marginBottom: 20, background: 'var(--nb-yellow)', color: '#111' }} onClick={() => setPlaying('rank')}>
-              <span className="nb-ico" style={{ '--c': 'var(--nb-card)', fontSize: 22 }}>🏆</span>
+              <span className="nb-ico pic-box"><Pic name="crown" /></span>
               <span className="grow">
                 <div className="t">게임 랭킹</div>
                 <div className="s" style={{ color: '#333' }}>맞힌 만큼 포인트를 모아 순위에 도전해요</div>
@@ -367,7 +368,7 @@ export default function GamePage() {
               <span style={{ fontSize: 20, fontWeight: 900 }}>→</span>
             </button>
             {pool.length < MIN_WORDS ? (
-              <div className="nb-empty"><span className="big">🎮</span>게임을 하려면 단어가 {MIN_WORDS}개 이상 필요해요.<br />플래시카드로 단어를 조금 더 외우고 와요!</div>
+              <div className="nb-empty"><Pic name="play" className="pic-empty" />게임을 하려면 단어가 {MIN_WORDS}개 이상 필요해요.<br />플래시카드로 단어를 조금 더 외우고 와요!</div>
             ) : (
               <div className="nb-list">
                 {GAMES.map(g => {
@@ -375,7 +376,7 @@ export default function GamePage() {
                   const disabled = g.id === 'reading' && readingCount < 4
                   return (
                     <button key={g.id} className="nb-card nb-row" style={{ marginTop: 0, opacity: disabled ? .5 : 1 }} disabled={disabled} onClick={() => setPlaying(g.id)}>
-                      <span className="nb-ico" style={{ '--c': g.c }}>▶</span>
+                      <span className="nb-ico pic-box"><Pic name={g.ico} /></span>
                       <span className="grow">
                         <div className="t">{g.name}</div>
                         <div className="s">{g.desc}</div>

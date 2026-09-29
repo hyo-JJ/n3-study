@@ -1,15 +1,22 @@
 /* ───────── 네오브루탈 스타일 (홈·JLPT·게임·단어장·복습) ───────── */
 :root{
-  --nb-bg:#FBF7EE;--nb-card:#fff;--nb-ink:#111;--nb-line:#111;--nb-sub:#5B5B5B;--nb-mute:#8A8A8A;
-  --nb-yellow:#FFD21F;--nb-green:#3BC34A;--nb-pink:#FF5381;--nb-purple:#7D6BF6;
-  --nb-gray:#A3A3A3;--nb-beige:#FFD98E;--nb-lime:#AEE038;--nb-sky:#6CC6FF;
+  --nb-bg:#FCF3F8;--nb-card:#fff;--nb-ink:#2A1E33;--nb-line:#3D2B4F;--nb-sub:#6B5A76;--nb-mute:#9A8AA3;
+  /* 밝은 모드: 핑크·보라 파스텔 (변수 이름은 예전 색 이름 그대로) */
+  --nb-yellow:#FFB8D9;--nb-green:#A8E0BC;--nb-pink:#FF9CC4;--nb-purple:#C3ADFF;
+  --nb-gray:#D3C5DD;--nb-beige:#FFD6E6;--nb-lime:#EBC2F7;--nb-sky:#C9C8FF;
   --nb-ok:#1FA84A;--nb-err:#E5364B;
   --nb-bw:2.5px;--nb-sh:4px 4px 0 var(--nb-line);--nb-sh-sm:3px 3px 0 var(--nb-line);
 }
 [data-theme="dark"]{
-  --nb-bg:#151515;--nb-card:#232323;--nb-ink:#F4F1E8;--nb-line:#E9E5D9;--nb-sub:#BDBDBD;--nb-mute:#8C8C8C;
+  --nb-bg:#0F0F0F;--nb-card:#1E1E1E;--nb-ink:#F2F2F2;--nb-line:#CFCFCF;--nb-sub:#B0B0B0;--nb-mute:#808080;
+  /* 다크 모드: 그레이·블랙 */
+  --nb-yellow:#E6E6E6;--nb-green:#C4C4C4;--nb-pink:#8F8F8F;--nb-purple:#B3B3B3;
+  --nb-gray:#7A7A7A;--nb-beige:#D9D9D9;--nb-lime:#A6A6A6;--nb-sky:#CCCCCC;
   --nb-ok:#4CD472;--nb-err:#FF6B7C;
 }
+/* 정답·오답은 회색만으론 구분이 안 되니 다크 모드에서도 옅은 초록·빨강 유지 */
+[data-theme="dark"] .nb-opt.ok{background:#9FCFAA}
+[data-theme="dark"] .nb-opt.no,[data-theme="dark"] .match-tile.bad{background:#D9959E}
 .nb{background:var(--nb-bg);color:var(--nb-ink)}
 .nb .scroll{padding-top:12px}
 .nb-head{display:flex;align-items:center;gap:10px;padding:calc(var(--st) + 14px) 16px 6px;max-width:600px;width:100%;margin:0 auto}
@@ -50,7 +57,7 @@
 .nb-meta b{color:var(--nb-sub);font-weight:700}
 .nb-desc{font-size:12px;color:var(--nb-sub);margin-top:10px;line-height:1.4;flex:1;word-break:keep-all}
 .nb-name{font-size:16px;font-weight:800;letter-spacing:-.4px;margin-top:8px;word-break:keep-all}
-.nb-new{position:absolute;top:-9px;right:10px;background:var(--nb-pink);color:#fff;font-size:10px;font-weight:900;letter-spacing:.5px;padding:3px 7px;border:2px solid var(--nb-line);border-radius:7px}
+.nb-new{position:absolute;top:-9px;right:10px;background:var(--nb-pink);color:#111;font-size:10px;font-weight:900;letter-spacing:.5px;padding:3px 7px;border:2px solid var(--nb-line);border-radius:7px}
 
 /* 공통 블록 */
 .nb-card{background:var(--nb-card);border:var(--nb-bw) solid var(--nb-line);border-radius:14px;box-shadow:var(--nb-sh);padding:16px}
@@ -90,7 +97,7 @@
 .nb-table th{background:var(--nb-yellow);color:#111;font-weight:800}
 .nb-table td.l{text-align:left}
 .nb-dday{display:flex;align-items:center;gap:14px}
-.nb-dday .n{font-size:34px;font-weight:900;letter-spacing:-1px;background:var(--nb-pink);color:#fff;border:var(--nb-bw) solid var(--nb-line);border-radius:12px;padding:6px 12px;box-shadow:var(--nb-sh-sm)}
+.nb-dday .n{font-size:34px;font-weight:900;letter-spacing:-1px;background:var(--nb-pink);color:#111;border:var(--nb-bw) solid var(--nb-line);border-radius:12px;padding:6px 12px;box-shadow:var(--nb-sh-sm)}
 
 /* 문법 */
 .gm{padding:14px 16px}
@@ -227,3 +234,16 @@
 .rk-name{flex:1;min-width:0;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rk-name em{font-style:normal;font-weight:700;font-size:12.5px;opacity:.7}
 .rk-pt{font-size:15px;font-weight:900;white-space:nowrap}
+
+/* 파스텔 그림 아이콘 */
+.pic{display:block;object-fit:contain;user-select:none;-webkit-user-select:none;pointer-events:none}
+.nb-ico.pic-box{background:var(--nb-card)}
+.nb-ico .pic{width:32px;height:32px}
+.nav-ico .pic{width:26px;height:26px;opacity:.45;filter:grayscale(1);transition:opacity .15s,filter .15s}
+.nav-btn.active .nav-ico .pic{opacity:1;filter:none}
+.pic-empty{width:72px;height:72px;margin:0 auto 12px}
+.pic-h{display:flex;align-items:center;gap:8px}
+.pic-h .pic{width:26px;height:26px}
+/* 다크 모드(그레이·블랙)에서는 아이콘도 회색으로 */
+[data-theme="dark"] .pic{filter:grayscale(1) brightness(1.25)}
+[data-theme="dark"] .nav-btn.active .nav-ico .pic{filter:grayscale(1) brightness(1.25)}

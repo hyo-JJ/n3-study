@@ -40,7 +40,7 @@ function Folder({ c, icon, meta, desc, name, isNew, onClick }) {
       <div className="nb-folder-in">
         {isNew && <span className="nb-new">NEW</span>}
         <div className="nb-folder-top">
-          <span className="nb-ico">{icon}</span>
+          <span className="nb-ico pic-box">{icon}</span>
           <span className="nb-meta">{meta}</span>
         </div>
         <div className="nb-desc">{desc}</div>
@@ -116,27 +116,27 @@ export default function HomePage() {
 
         <h2 className="nb-sec">내 학습 공간</h2>
         <div className="nb-grid">
-          <Folder c="var(--nb-gray)" icon={<Ico.Folder />} name="N3 본 공부"
+          <Folder c="var(--nb-gray)" icon={<Ico.Pic name="fuji" />} name="N3 본 공부"
             meta={<><b>Day {n3.passed}/{n3.total}</b><br />하루 1 Day</>}
             desc={n3.doneToday ? '오늘 몫 끝! 내일 또 만나요' : '단어 → 백지 복습 → 누적 테스트'}
             onClick={() => navigate('/study/N3')} />
-          <Folder c="var(--nb-green)" icon={<Ico.Bolt />} name="N4·N5 단어"
+          <Folder c="var(--nb-green)" icon={<Ico.Pic name="sprout" />} name="N4·N5 단어"
             meta={<><b>N5 {sum.N5.passed}/{sum.N5.total}</b><br /><b>N4 {sum.N4.passed}/{sum.N4.total}</b></>}
             desc="제한 없이 기초를 쭉쭉"
             onClick={() => navigate(`/study/${basic}`)} />
-          <Folder c="var(--nb-beige)" icon={<Ico.Book />} name="복습 공간"
+          <Folder c="var(--nb-beige)" icon={<Ico.Pic name="book" />} name="복습 공간"
             meta={<><b>오답 {wrong}개</b><br />주말 복습</>}
             desc="틀린 단어와 이번 주 단어 다시 보기"
             onClick={() => navigate('/review')} />
-          <Folder c="var(--nb-lime)" icon={<Ico.Cup />} name="JLPT 공부"
+          <Folder c="var(--nb-lime)" icon={<Ico.Pic name="pencil" />} name="JLPT 공부"
             meta={<><b>시험 D-{dday}</b><br />문법 {grammarCount}개</>}
             desc="시험 안내 · 문제 유형 · 문법 퀴즈"
             onClick={() => navigate('/jlpt')} />
-          <Folder c="var(--nb-pink)" icon={<Ico.Plane />} name="단어 게임"
+          <Folder c="var(--nb-pink)" icon={<Ico.Pic name="play" />} name="단어 게임"
             meta={<><b>외운 단어 {learned}개</b><br />게임 3종</>}
             desc="스피드 퀴즈 · 짝 맞추기 · 요미카타"
             onClick={() => navigate('/game')} />
-          <Folder c="var(--nb-purple)" icon={<Ico.Heart />} name="나만의 단어장" isNew
+          <Folder c="var(--nb-purple)" icon={<Ico.Pic name="star" />} name="나만의 단어장" isNew
             meta={<><b>{my.words.length}단어</b><br />직접 추가</>}
             desc="나만 쓰는 단어장, 따로 모아 외우기"
             onClick={() => navigate('/mywords')} />
