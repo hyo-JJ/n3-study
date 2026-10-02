@@ -1,4 +1,4 @@
-"""AI Hub '일상생활 및 구어체 한-일 번역 병렬 말뭉치'에서 AI 회화 튜터용 예문을 골라 CSV로 만든다.
+"""AI Hub '일상생활 및 구어체 한-일 번역 병렬 말뭉치'에서 상황별 회화 예문을 골라 CSV로 만든다.
 
   python3 scripts/build_tutor_corpus.py
   → data/tutor_corpus.csv (Supabase 대시보드 > Table Editor > corpus > Import data from CSV)

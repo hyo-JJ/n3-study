@@ -285,36 +285,15 @@
 .my-danger{background:var(--nb-err);color:#fff}
 .kj-peek{font-size:13px;color:var(--nb-mute);font-weight:500;margin-left:4px}
 
-/* AI 회화 */
+/* 상황별 회화 */
 .tt-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .tt-sit{display:flex;flex-direction:column;gap:3px;text-align:left;cursor:pointer;font-family:inherit;color:inherit;margin:0!important;padding:14px;touch-action:manipulation}
 .tt-sit:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--nb-line)}
 .tt-sit b{font-size:15.5px}
 .tt-sit span:last-child{font-size:12px;color:var(--nb-sub);line-height:1.4;word-break:keep-all}
 .tt-emoji{font-size:26px}
-.tt-chat{display:flex;flex-direction:column;gap:12px}
-.tt-ai,.tt-me{display:flex;flex-direction:column;max-width:86%}
-.tt-ai{align-self:flex-start}
-.tt-me{align-self:flex-end;align-items:flex-end}
-.tt-bubble{padding:11px 14px;border:var(--nb-bw) solid var(--nb-line);border-radius:14px;background:var(--nb-card);font-size:16px;line-height:1.55;word-break:break-word}
-.tt-ai .tt-bubble{border-top-left-radius:4px;box-shadow:var(--nb-sh-sm)}
-.tt-me .tt-bubble{border-top-right-radius:4px;background:var(--nb-yellow);color:#111}
-.tt-bubble small{display:block;margin-top:4px;font-size:13px;color:var(--nb-sub)}
-.tt-typing{letter-spacing:3px;color:var(--nb-mute)}
-.tt-fix{margin-top:6px;padding:9px 12px;border:2px dashed var(--nb-ok);border-radius:12px;background:var(--nb-card);font-size:14.5px;text-align:left}
-.tt-fix small{display:block;margin-top:3px;font-size:12.5px;color:var(--nb-sub);line-height:1.5}
-.tt-ex{margin-top:6px;font-size:12.5px;color:var(--nb-sub)}
-.tt-ex summary{cursor:pointer;font-weight:700}
-.tt-ex p{margin-top:6px}
-.tt-ex small{display:block}
-.tt-review{margin-top:10px;padding-top:10px;border-top:1.5px dashed var(--nb-mute);font-size:14px}
-.tt-review s{color:var(--nb-mute)}
 .tt-input{display:flex;gap:8px;margin-top:16px}
 .tt-input .nb-input{flex:1;min-width:0}
-.tt-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.tt-hint,.tt-limit{margin-top:12px;font-size:14px;padding:10px 12px;border-radius:12px;border:2px solid var(--nb-line);background:var(--nb-lime);color:#111}
-.tt-limit{background:var(--nb-sky)}
-.tt-err{margin-top:14px;border-color:var(--nb-err)}
 .tt-row{display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer;font-family:inherit;color:inherit;margin:0!important;touch-action:manipulation}
 .tt-row span{font-size:14.5px}
 .tt-row b{font-size:17px}
