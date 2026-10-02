@@ -2,12 +2,15 @@ import { useState, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Topbar } from '../components/Layout'
 import { useProgress, today } from '../hooks/useProgress'
+import { usePlan } from '../hooks/useStudyStyle'
+import { useRecord } from '../hooks/useRecord'
 import { useToast } from '../components/Toast'
 import { getLevelDays, LEVELS } from '../lib/data'
-import { levelHome } from '../lib/study'
+import { levelHome, priorityKeys } from '../lib/study'
+import TestRunner from '../components/learn/TestRunner'
+import { MissList } from '../components/learn/Session'
 import { KANJI } from '../lib/furigana'
 
-const QUIZ_COUNT = 30
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
 
 // 문제 유형: 뜻 고르기 / 요미카타 고르기 / 한자 고르기 / 뜻 보고 단어 고르기
@@ -20,14 +23,14 @@ const TYPES = {
 const hasKanji = (w) => !!w.reading && KANJI.test(w.word)
 const typesFor = (w, kanjiOk) => kanjiOk && hasKanji(w) ? ['meaning', 'reading', 'kanji', 'word'] : ['meaning', 'word']
 
-// 유형이 고르게 섞이도록 30문제 구성 (단어가 30개보다 적으면 같은 단어를 다른 유형으로 한 번 더)
-function makeQuestions(pool, n) {
+// 유형이 고르게 섞이도록 n문제 구성 (단어가 n개보다 적으면 같은 단어를 다른 유형으로 한 번 더)
+// words 순서대로 문제를 만들므로 먼저 나와야 할 단어를 앞에 둔다
+function makeQuestions(words, n) {
   const count = { meaning: 0, reading: 0, kanji: 0, word: 0 }
   const used = new Set()
   const out = []
-  const words = shuffle(pool)
   // 한자 단어가 4개 미만이면 보기를 못 만드니 요미카타·한자 문제는 빼기
-  const kanjiOk = new Set(pool.filter(hasKanji).map(w => w.reading)).size >= 4
+  const kanjiOk = new Set(words.filter(hasKanji).map(w => w.reading)).size >= 4
   for (let pass = 0; pass < 4 && out.length < n; pass++) {
     for (const w of words) {
       if (out.length >= n) break
@@ -40,6 +43,13 @@ function makeQuestions(pool, n) {
     }
   }
   return shuffle(out)
+}
+
+// 복습 방식에 맞춰 먼저 나올 단어(오답·오늘 복습할 Day)를 문제의 절반까지 앞에 두기
+function orderWords(pool, prio, n) {
+  const first = shuffle(pool.filter(w => prio.has(`${w.dn}-${w.no}`))).slice(0, Math.ceil(n / 2))
+  const firstSet = new Set(first)
+  return [...first, ...shuffle(pool.filter(w => !firstSet.has(w)))]
 }
 
 // 오답 보기: 같은 유형의 답을 가진 다른 단어 중에서 (글자 수가 비슷한 것 우선)
@@ -58,7 +68,9 @@ export default function QuizPage() {
   const dayNum = Number(day)
   const navigate = useNavigate()
   const toast = useToast()
-  const { update } = useProgress()
+  const { getLevel, update } = useProgress()
+  const plan = usePlan()
+  const record = useRecord()
   const allDays = getLevelDays(level)
 
   const [round, setRound] = useState(0)
@@ -67,47 +79,53 @@ export default function QuizPage() {
     for (let d = 1; d <= dayNum; d++) allDays[d - 1]?.words.forEach(w => pool.push({ ...w, dn: d }))
     return pool
   }, [dayNum, allDays])
-  const questions = useMemo(() => makeQuestions(pool, QUIZ_COUNT), [pool, round])
+  // 문제 수는 학습 호흡, 먼저 나올 단어는 복습 방식에 맞춤
+  const questions = useMemo(() => {
+    const prio = priorityKeys(plan.review, level, getLevel(level), dayNum)
+    return makeQuestions(orderWords(pool, prio, plan.testSize), plan.testSize).map(q => {
+      const type = TYPES[q.type]
+      return {
+        ...q,
+        key: `${q.dn}-${q.no}-${q.type}`,
+        answer: type.ans(q),
+        opts: makeOptions(q, pool),
+        jp: type.jpOpts,
+        hint: type.hint,
+        missQ: q.type === 'word' ? q.meaning : q.type === 'kanji' ? q.reading : q.word,
+        q: (answered) => (
+          <>
+            {q.type === 'meaning' || q.type === 'reading' ? <div className="quiz-word jp" style={big(q.word)}>{q.word}</div>
+              : q.type === 'kanji' ? <><div className="quiz-word jp" style={big(q.reading)}>{q.reading}</div><div className="quiz-hint">{q.meaning}</div></>
+              : <div className="quiz-word" style={{ fontSize: 30 }}>{q.meaning}</div>}
+            {answered && (
+              <div className="quiz-hint jp" style={{ fontSize: 15, color: 'var(--label2)' }}>
+                {q.word}{q.reading && q.reading !== q.word ? `（${q.reading}）` : ''} · {q.meaning}
+              </div>
+            )}
+          </>
+        ),
+      }
+    })
+  }, [pool, round]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [idx, setIdx] = useState(0)
-  const [correct, setCorrect] = useState(0)
+  const [result, setResult] = useState(null) // { correct, total, misses }
   const [wrongList, setWrongList] = useState([])
-  const [answered, setAnswered] = useState(false)
-  const [selected, setSelected] = useState(null)
-  const [done, setDone] = useState(false)
 
-  const q = questions[idx]
-  const total = questions.length
-
-  const opts = useMemo(() => q ? makeOptions(q, pool) : [], [q, pool])
-  const type = q ? TYPES[q.type] : null
-  const right = q ? type.ans(q) : null
-
-  const answer = (opt) => {
-    if (answered) return
-    setAnswered(true)
-    setSelected(opt)
-    const ok = opt === right
-    if (ok) setCorrect(c => c + 1)
-    else {
-      setWrongList(w => w.some(x => x.dn === q.dn && x.no === q.no) ? w : [...w, q])
-      update(level, st => {
-        const already = st.wrongWords.some(x => x.dn === q.dn && x.no === q.no)
-        if (already) return st
-        return { ...st, wrongWords: [...st.wrongWords, { dn: q.dn, no: q.no, word: q.word, meaning: q.meaning }] }
-      })
-    }
+  const onAnswer = (q, ok) => {
+    if (ok) return
+    setWrongList(w => w.some(x => x.dn === q.dn && x.no === q.no) ? w : [...w, q])
+    update(level, st => {
+      const already = st.wrongWords.some(x => x.dn === q.dn && x.no === q.no)
+      if (already) return st
+      return { ...st, wrongWords: [...st.wrongWords, { dn: q.dn, no: q.no, word: q.word, meaning: q.meaning }] }
+    })
   }
 
-  const next = () => {
-    if (idx === total - 1) { setDone(true); return }
-    setIdx(i => i + 1)
-    setAnswered(false)
-    setSelected(null)
+  const onDone = (r) => {
+    setResult(r)
+    record({ kind: 'test', label: `${level} Day 1~${dayNum} 누적 테스트`, correct: r.correct, total: r.total })
   }
 
-  const pct = Math.round(correct / total * 100)
-  const passed = pct >= 70
   const dailyLimit = LEVELS[level]?.dailyLimit
   const hasNext = dayNum < allDays.length
 
@@ -122,16 +140,15 @@ export default function QuizPage() {
     navigate(levelHome(level))
   }
 
-  const retry = () => {
-    setRound(r => r + 1)
-    setIdx(0); setCorrect(0); setWrongList([]); setAnswered(false); setSelected(null); setDone(false)
-  }
+  const retry = () => { setRound(r => r + 1); setResult(null); setWrongList([]) }
 
   const exitConfirm = () => {
     if (confirm('테스트를 중단할까요?')) navigate(levelHome(level))
   }
 
-  if (done) {
+  if (result) {
+    const pct = Math.round(result.correct / result.total * 100)
+    const passed = pct >= 70
     return (
       <div className="screen">
         <Topbar title={`Day 1~${dayNum} 누적 테스트`} onBack={() => navigate(levelHome(level))} />
@@ -139,8 +156,9 @@ export default function QuizPage() {
           <div className="result-card">
             <div className="r-score" style={{ color: passed ? 'var(--ok)' : 'var(--err)' }}>{pct}점</div>
             <div className="r-msg">{!passed ? '70점 이상이어야 통과에요' : !hasNext ? '통과! 🎉 마지막 Day까지 완주했어요!' : dailyLimit ? '통과! 🎉 다음 Day는 내일 열려요!' : '통과! 🎉 다음 Day가 열렸어요!'}</div>
-            <div className="r-sub">{correct}/{total} 정답 · 틀린 단어 {wrongList.length}개 오답노트에 저장됨</div>
+            <div className="r-sub">{result.correct}/{result.total} 정답 · 틀린 단어 {wrongList.length}개 오답노트에 저장됨</div>
           </div>
+          {plan.feedback === 'delayed' && <MissList misses={result.misses} />}
           {wrongList.length > 0 && (
             <button className="btn btn-outline" style={{ marginBottom: 10 }}
               onClick={() => navigate('/print', { state: { title: `${level} Day 1~${dayNum} 누적 테스트 오답`, words: wrongList } })}>
@@ -155,49 +173,15 @@ export default function QuizPage() {
     )
   }
 
-  if (!q) return null
-  const big = (t) => ({ fontSize: t.length > 8 ? 26 : t.length > 5 ? 34 : undefined, wordBreak: 'keep-all' })
   return (
     <div className="screen">
       <Topbar title={`Day 1~${dayNum} 누적 테스트`} onBack={exitConfirm} />
       <div className="fc-wrap">
-        <div className="fc-meta">
-          <span className="fc-cnt">{idx + 1} / {total}</span>
-          <span className="phase-badge">③ 누적 테스트 · {type.badge}</span>
-        </div>
-        <div className="prog"><div className="prog-fill" style={{ width: `${((idx + 1) / total * 100).toFixed(0)}%` }} /></div>
-
-        <div className="quiz-q">
-          {q.type === 'meaning' || q.type === 'reading' ? <div className="quiz-word jp" style={big(q.word)}>{q.word}</div>
-            : q.type === 'kanji' ? <><div className="quiz-word jp" style={big(q.reading)}>{q.reading}</div><div className="quiz-hint">{q.meaning}</div></>
-            : <div className="quiz-word" style={{ fontSize: 30 }}>{q.meaning}</div>}
-          <div className="quiz-hint">{type.hint}</div>
-          {answered && (
-            <div className="quiz-hint jp" style={{ fontSize: 15, color: 'var(--label2)' }}>
-              {q.word}{q.reading && q.reading !== q.word ? `（${q.reading}）` : ''} · {q.meaning}
-            </div>
-          )}
-        </div>
-
-        <div className="opts">
-          {opts.map(opt => {
-            let cls = type.jpOpts ? 'opt jp' : 'opt'
-            if (answered) {
-              if (opt === right) cls += ' correct'
-              else if (opt === selected) cls += ' wrong'
-              else cls += ' reveal'
-            }
-            return <button key={opt} className={cls} onClick={() => answer(opt)}>{opt}</button>
-          })}
-        </div>
-
-        <div className="gap" />
-        {answered && (
-          <button className="btn btn-accent" onClick={next}>
-            {idx === total - 1 ? '결과 보기 →' : '다음 →'}
-          </button>
-        )}
+        <TestRunner key={round} questions={questions} feedback={plan.feedback}
+          badge={(q) => `③ 누적 테스트 · ${TYPES[q.type].badge}`} onAnswer={onAnswer} onDone={onDone} />
       </div>
     </div>
   )
 }
+
+const big = (t) => ({ fontSize: t.length > 8 ? 26 : t.length > 5 ? 34 : undefined, wordBreak: 'keep-all' })

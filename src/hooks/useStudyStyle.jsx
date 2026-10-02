@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { PACE, COGNITIVE, PROFILE } from '../lib/studyStyle'
+import { PACE, COGNITIVE, PROFILE, planOf } from '../lib/studyStyle'
 import { useAuth } from './useAuth'
 
 const StudyStyleContext = createContext(null)
@@ -38,3 +38,6 @@ export function StudyStyleProvider({ children }) {
 }
 
 export const useStudyStyle = () => useContext(StudyStyleContext)
+
+// 지금 사용자의 학습 설정 (세트 크기·익히기 화면·피드백·복습 방식 등)
+export const usePlan = () => planOf(useContext(StudyStyleContext)?.style)

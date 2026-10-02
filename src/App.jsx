@@ -15,7 +15,9 @@ import LevelPage from './pages/LevelPage'
 import ReviewPage from './pages/ReviewPage'
 import JlptPage from './pages/JlptPage'
 import GamePage from './pages/GamePage'
-import MyWordsPage from './pages/MyWordsPage'
+import KanjiPage from './pages/KanjiPage'
+import KanjiStudyPage from './pages/KanjiStudyPage'
+import MyPage from './pages/MyPage'
 import PrintPage from './pages/PrintPage'
 import StylePage from './pages/StylePage'
 
@@ -54,7 +56,11 @@ function AppRoutes() {
           <Route path="/review" element={<ReviewPage />} />
           <Route path="/jlpt" element={<JlptPage />} />
           <Route path="/game" element={<GamePage />} />
-          <Route path="/mywords" element={<MyWordsPage />} />
+          <Route path="/kanji" element={<KanjiPage />} />
+          <Route path="/kanji/wrong" element={<KanjiStudyPage mode="wrong" />} />
+          <Route path="/kanji/:set/learn" element={<KanjiStudyPage mode="learn" />} />
+          <Route path="/kanji/:set/test" element={<KanjiStudyPage mode="test" />} />
+          <Route path="/my" element={<MyPage />} />
           <Route path="/learn/:level/:day/flash" element={<FlashcardPage />} />
           <Route path="/learn/:level/:day/blank" element={<BlankReviewPage />} />
           <Route path="/quiz/:level/:day" element={<QuizPage />} />

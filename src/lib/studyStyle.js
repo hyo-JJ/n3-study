@@ -22,10 +22,38 @@ export const PROFILE = [
   { key: 'practice', label: '문제 방식', v: { recall: '직접 떠올리기', recognition: '보기에서 고르기', problem: '문제 먼저 풀고 확인', mixed: '혼합' } },
   { key: 'review', label: '복습 방식', v: { spaced: '간격 반복', 'mistake-first': '오답 우선', cumulative: '누적 복습', mixed: '혼합' } },
   { key: 'context', label: '문맥 수준', v: { word: '단어 자체', sentence: '예문 속에서', situation: '실제 상황·대화', mixed: '단어 → 예문 → 상황' } },
-  { key: 'feedback', label: '피드백 방식', v: { immediate: '바로 확인', delayed: '모아서 확인', adaptive: '정답률에 맞춰 조절' } },
+  { key: 'feedback', label: '피드백 방식', v: { immediate: '바로 확인', delayed: '모아서 확인', adaptive: '맞히면 바로 다음, 틀릴 때만 확인' } },
 ]
 
 export const chunkOf = (style) => PACE[style?.pace]?.chunk ?? 0
+
+// 프로필 → 앱 전체 학습 설정 (게임 제외 모든 학습 화면이 이걸 기준으로 동작)
+// 예전 4문항 결과처럼 요소가 없으면 기본값
+export function planOf(style) {
+  const pace = PACE[style?.pace] ? style.pace : 'deep'
+  return {
+    chunk: chunkOf(style), // 한 세트 단어 수 (0 = 끊지 않음)
+    screen: COGNITIVE[style?.cognitive] ? style.cognitive : 'visual', // 익히기 화면: 카드·목록·퀴즈
+    recall: style?.practice === 'recall' || style?.practice === 'mixed', // 보기 없이 직접 떠올리기 연습 추가
+    feedback: ['immediate', 'delayed', 'adaptive'].includes(style?.feedback) ? style.feedback : 'immediate',
+    review: ['spaced', 'mistake-first', 'cumulative', 'mixed'].includes(style?.review) ? style.review : 'cumulative',
+    testSize: { micro: 20, medium: 30, deep: 40 }[pace], // 누적 테스트 문제 수
+    quizSize: { micro: 5, medium: 10, deep: 20 }[pace], // 문법·한자 퀴즈 문제 수
+  }
+}
+
+// 피드백 방식 설명 (화면 표시용)
+export const FEEDBACK = {
+  immediate: '한 문제 풀 때마다 바로 정답을 보여줘요',
+  adaptive: '맞히면 바로 다음 문제로, 틀렸을 때만 정답을 보여줘요',
+  delayed: '문제를 다 푼 뒤에 틀린 것만 모아서 보여줘요',
+}
+export const REVIEW = {
+  spaced: '1·3·7·14·30일 간격으로 돌아오는 Day를 먼저 복습해요',
+  'mistake-first': '틀린 단어를 먼저, 더 자주 복습해요',
+  cumulative: '새 단어와 이전 단어를 함께 누적해서 복습해요',
+  mixed: '간격 복습·오답·누적 복습을 섞어서 해요',
+}
 export const styleName = (s) => `${PACE[s.pace].name} · ${COGNITIVE[s.cognitive].name}`
 
 export const AI_PROMPT = `너는 일본어 학습자의 학습 행동을 분석하고, 개인에게 맞는 JLPT 학습 방법을 설계하는 학습 코치다.

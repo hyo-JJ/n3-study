@@ -336,9 +336,9 @@ export default function GamePage() {
   const { getLevel, my } = useProgress()
   const [playing, setPlaying] = useState(null)
   const pool = useMemo(() => {
-    const all = [...learnedWords(getLevel), ...my.words.filter(w => w.meaning)]
+    const all = learnedWords(getLevel)
     return all.filter((w, i) => all.findIndex(x => x.word === w.word) === i)
-  }, [getLevel, my.words])
+  }, [getLevel])
 
   const game = GAMES.find(g => g.id === playing)
   const ranking = playing === 'rank'
@@ -357,7 +357,7 @@ export default function GamePage() {
           <>
             <div className="nb-card" style={{ marginBottom: 14 }}>
               <b>외운 단어 {pool.length}개</b>로 게임해요
-              <p className="nb-p" style={{ marginTop: 4 }}>플래시카드에서 본 단어와 나만의 단어장 단어가 나와요. 틀린 단어는 오답노트에 자동으로 담겨요.</p>
+              <p className="nb-p" style={{ marginTop: 4 }}>N3·N4·N5에서 익힌 단어가 나와요. 틀린 단어는 오답노트에 자동으로 담겨요.</p>
             </div>
             <button className="nb-card nb-row" style={{ marginBottom: 20, background: 'var(--nb-yellow)', color: '#111' }} onClick={() => setPlaying('rank')}>
               <span className="nb-ico pic-box"><Pic name="crown" /></span>

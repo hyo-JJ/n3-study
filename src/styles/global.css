@@ -221,3 +221,27 @@ button{font-family:'Noto Sans KR',sans-serif}
 .ll-mean{font-size:15px;font-weight:600;color:var(--accent);margin-top:2px;word-break:keep-all}
 .ll-row.hidden .ll-mean{color:var(--label4);font-weight:500;font-size:13px}
 .ll-star{width:40px;height:40px;flex-shrink:0;border:none;background:none;font-size:22px;color:var(--label3);cursor:pointer;touch-action:manipulation}
+.ll-row.known{opacity:.55}
+.ll-detail{font-size:13px;color:var(--label3);margin-top:4px;line-height:1.5}
+.ll-ok{flex-shrink:0;min-width:58px;height:34px;padding:0 10px;border-radius:17px;border:2px solid #111;background:#fff;color:#111;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;touch-action:manipulation}
+.ll-ok.on{background:var(--ok);border-color:var(--ok);color:#fff}
+
+/* 카드·퀴즈 뒷면 추가 정보 (한자 음훈·예시 단어 등) */
+.fc-detail{background:var(--bg2);border-radius:var(--r2);box-shadow:var(--shadow);padding:14px 16px;margin-top:12px;font-size:14px;line-height:1.6;color:var(--label2)}
+
+/* 모아서 확인 — 틀린 문제 목록 */
+.miss{background:var(--bg2);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.miss-h{font-size:15px;font-weight:800;margin-bottom:8px}
+.miss-row{padding:10px 0;border-top:1px solid var(--sep2)}
+.miss-q{font-size:20px;font-weight:700}
+.miss-a{font-size:13.5px;color:var(--label3);margin-top:2px}
+.miss-a b{color:var(--ok)}
+.miss-a s{color:var(--err)}
+
+/* 상용한자 음훈·예시 단어 */
+.kj-detail{display:flex;flex-direction:column;gap:6px;text-align:left}
+.kj-tag{display:inline-block;font-size:11px;font-weight:800;color:var(--accent);background:var(--accent2);border-radius:10px;padding:1px 8px;margin-right:8px}
+.kj-words{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.kj-word{font-size:13.5px;color:var(--label3)}
+.kj-word b{font-size:15px;color:var(--label);margin-right:6px}
+.kj-word .jp:not(b){margin-right:8px}

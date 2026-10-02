@@ -26,7 +26,7 @@ export default function WeekendPage() {
   if (!passed.length) {
     return (
       <div className="screen">
-        <Topbar title="주말 복습" onBack={() => navigate('/review')} />
+        <Topbar title="누적 복습" onBack={() => navigate('/review')} />
         <div className="scroll">
           {tabs}
           <div className="empty"><Pic name="book" className="pic-empty" />아직 완료한 Day가 없어요.<br />평일에 학습을 시작해보세요!</div>
@@ -42,19 +42,19 @@ export default function WeekendPage() {
 
   return (
     <div className="screen">
-      <Topbar title="주말 복습" onBack={() => navigate('/review')} />
+      <Topbar title="누적 복습" onBack={() => navigate('/review')} />
       <div className="scroll">
         {tabs}
         <div className="review-info">
-          📋 이번 주: {weekDays.map(d => `Day${d}`).join(', ')}<br />복습 단어 {totalWords}개
+          📋 최근 끝낸 Day: {weekDays.map(d => `Day${d}`).join(', ')}<br />복습 단어 {totalWords}개
         </div>
         <div className="sec-hd">복습 방법 선택</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <button className="btn btn-accent" onClick={() => navigate(`/learn/${level}/${weekDays[0]}/flash`)}>
-            📖 이번 주 플래시카드 복습
+            📖 최근 Day 다시 익히기 (Day {weekDays[0]}부터)
           </button>
           <button className="btn btn-muted" onClick={() => navigate(`/quiz/${level}/${lastDay}`)}>
-            🎯 이번 주 범위 테스트
+            🎯 최근 범위 테스트
           </button>
           <div className="sec-hd" style={{ marginTop: 12 }}>전체 누적 복습</div>
           <button className="btn btn-muted" onClick={() => navigate(`/quiz/${level}/${lastDay}`)}>

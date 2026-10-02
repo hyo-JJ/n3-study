@@ -1,6 +1,4 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { useAuth } from '../hooks/useAuth'
 import { useProgress } from '../hooks/useProgress'
 import { useTheme } from '../hooks/useTheme'
 import * as Ico from './Icons'
@@ -9,11 +7,6 @@ export function Topbar({ title, onBack }) {
   const navigate = useNavigate()
   const { syncing } = useProgress()
   const { toggle, isDark } = useTheme()
-  const user = useAuth()
-
-  const handleLogout = async () => {
-    if (confirm('로그아웃 하시겠어요?')) await supabase.auth.signOut()
-  }
 
   return (
     <div className="topbar">
@@ -25,7 +18,7 @@ export function Topbar({ title, onBack }) {
       <span className="topbar-title" dangerouslySetInnerHTML={{ __html: title }} />
       <span className={`sync${syncing ? ' busy' : ''}`} />
       <button className="icon-btn" onClick={toggle}>{isDark ? '☀️' : '🌙'}</button>
-      {user && <button className="icon-btn" onClick={handleLogout}>👤</button>}
+      <button className="icon-btn" aria-label="마이페이지" onClick={() => navigate('/my')}>👤</button>
     </div>
   )
 }
@@ -57,7 +50,8 @@ export function BottomNav() {
     { path: '/home', match: ['/home', '/study'], ico: <Ico.Pic name="torii" />, label: '홈' },
     { path: '/review', match: ['/review', '/wrong', '/weekend'], ico: <Ico.Pic name="book" />, label: '복습' },
     { path: '/game', match: ['/game'], ico: <Ico.Pic name="play" />, label: '게임' },
-    { path: '/mywords', match: ['/mywords'], ico: <Ico.Pic name="star" />, label: '단어장' },
+    { path: '/kanji', match: ['/kanji'], ico: <Ico.Pic name="pencil" />, label: '한자' },
+    { path: '/my', match: ['/my', '/style'], ico: <Ico.User />, label: '마이' },
   ]
 
   return (

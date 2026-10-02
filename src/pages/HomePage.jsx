@@ -4,13 +4,13 @@ import { BottomNav } from '../components/Layout'
 import { useAuth } from '../hooks/useAuth'
 import { useProgress } from '../hooks/useProgress'
 import { useTheme } from '../hooks/useTheme'
-import { useStudyStyle } from '../hooks/useStudyStyle'
+import { useStudyStyle, usePlan } from '../hooks/useStudyStyle'
 import { PACE, COGNITIVE, styleName } from '../lib/studyStyle'
 import { useToast } from '../components/Toast'
-import { supabase } from '../lib/supabase'
 import { LEVELS } from '../lib/data'
 import { GRAMMAR, nextExam } from '../lib/data/jlpt'
-import { levelSummary, dayRoute, learnedWords } from '../lib/study'
+import { levelSummary, dayRoute, learnedWords, dueDays } from '../lib/study'
+import { KANJI_LV, KANJI_SETS, KANJI_COUNT } from '../lib/kanji'
 import { LAST_BASIC } from './LevelPage'
 import * as Ico from '../components/Icons'
 import { useInstall } from '../lib/install'
@@ -54,9 +54,10 @@ function Folder({ c, icon, meta, desc, name, isNew, onClick }) {
 
 export default function HomePage() {
   const user = useAuth()
-  const { getLevel, my, syncing, saveFailed } = useProgress()
+  const { getLevel, syncing, saveFailed } = useProgress()
   const { toggle, isDark } = useTheme()
   const { style } = useStudyStyle()
+  const plan = usePlan()
   const navigate = useNavigate()
   const toast = useToast()
 
@@ -87,7 +88,14 @@ export default function HomePage() {
     navigate(dayRoute(target, getLevel(target), sum[target].next))
   }
 
-  const logout = async () => { if (confirm('로그아웃 하시겠어요?')) await supabase.auth.signOut() }
+  // 오늘의 추천 — 복습 방식에 맞춰 새 Day 전에 할 것
+  const due = levels.reduce((s, l) => s + dueDays(getLevel(l)).length, 0)
+  const tip = (plan.review === 'mistake-first' || plan.review === 'mixed') && wrong > 0
+    ? { t: `새 Day 전에 오답 ${wrong}개 먼저`, s: '오답 우선형 — 틀린 단어부터 보면 더 오래 남아요', to: '/wrong' }
+    : (plan.review === 'spaced' || plan.review === 'mixed') && due > 0
+      ? { t: `오늘 간격 복습 ${due}개 Day`, s: '간격 반복형 — 잊어버릴 때쯤 한 번 더 보는 날이에요', to: '/review' }
+      : null
+  const kanji = getLevel(KANJI_LV)
 
   return (
     <div className="screen nb">
@@ -95,8 +103,7 @@ export default function HomePage() {
         <button className="nb-ibtn" aria-label="테마 바꾸기" onClick={toggle}>{isDark ? <Ico.Sun /> : <Ico.Moon />}</button>
         <span className="sp" />
         <span className={`nb-dot${syncing ? ' busy' : saveFailed ? ' fail' : ''}`} title={syncing ? '저장 중' : saveFailed ? '서버 저장 실패 — 이 기기에만 저장됨' : '저장됨'} />
-        <button className="nb-ibtn" aria-label="단어장" onClick={() => navigate('/mywords')}><Ico.Star /></button>
-        <button className="nb-ibtn" aria-label="로그아웃" onClick={logout}><Ico.User /></button>
+        <button className="nb-ibtn" aria-label="마이페이지" onClick={() => navigate('/my')}><Ico.User /></button>
       </div>
       <div className="scroll">
         <h1 className="nb-hero">
@@ -121,6 +128,13 @@ export default function HomePage() {
           <button className="nb-go" onClick={go} aria-label="이어서 학습하기"><Ico.Play />이어하기</button>
         </div>
 
+        {tip && (
+          <button className="nb-card nb-row nb-tip" onClick={() => navigate(tip.to)}>
+            <span className="grow"><div className="t">💡 {tip.t}</div><div className="s">{tip.s}</div></span>
+            <span style={{ fontSize: 20, fontWeight: 900 }}>→</span>
+          </button>
+        )}
+
         <InstallCard />
 
         <h2 className="nb-sec">내 학습 공간</h2>
@@ -134,8 +148,8 @@ export default function HomePage() {
             desc="제한 없이 기초를 쭉쭉"
             onClick={() => navigate(`/study/${basic}`)} />
           <Folder c="var(--nb-beige)" icon={<Ico.Pic name="book" />} name="복습 공간"
-            meta={<><b>오답 {wrong}개</b><br />주말 복습</>}
-            desc="틀린 단어와 이번 주 단어 다시 보기"
+            meta={<><b>오답 {wrong}개</b><br />간격·누적 복습</>}
+            desc="나의 복습 방식에 맞춰 오답·지난 Day 다시 보기"
             onClick={() => navigate('/review')} />
           <Folder c="var(--nb-lime)" icon={<Ico.Pic name="pencil" />} name="JLPT 공부"
             meta={<><b>시험 D-{dday}</b><br />문법 {grammarCount}개</>}
@@ -145,10 +159,10 @@ export default function HomePage() {
             meta={<><b>외운 단어 {learned}개</b><br />게임 3종</>}
             desc="스피드 퀴즈 · 짝 맞추기 · 요미카타"
             onClick={() => navigate('/game')} />
-          <Folder c="var(--nb-purple)" icon={<Ico.Pic name="star" />} name="나만의 단어장" isNew
-            meta={<><b>{my.words.length}단어</b><br />직접 추가</>}
-            desc="나만 쓰는 단어장, 따로 모아 외우기"
-            onClick={() => navigate('/mywords')} />
+          <Folder c="var(--nb-purple)" icon={<Ico.Pic name="hiragana" />} name="상용한자" isNew
+            meta={<><b>{kanji.passedDays.length}/{KANJI_SETS}세트</b><br />{KANJI_COUNT.toLocaleString()}자</>}
+            desc={`${COGNITIVE[style.cognitive].name}으로 20자씩, 음훈·예시 단어까지`}
+            onClick={() => navigate('/kanji')} />
         </div>
       </div>
       <BottomNav />

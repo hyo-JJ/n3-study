@@ -38,3 +38,22 @@ export const learnedWords = (getLevel) =>
   })
 
 export const levelHome = (level) => `/study/${level}`
+
+// 간격 반복 — 통과한 지 1·3·7·14·30일째인 Day가 오늘 복습할 Day
+const INTERVALS = [1, 3, 7, 14, 30]
+const daysSince = (date) => Math.round((new Date(today()) - new Date(date)) / 864e5)
+export const dueDays = (st) => st.passedDays.filter(d => st.passedAt?.[d] && INTERVALS.includes(daysSince(st.passedAt[d])))
+
+// 저장된 오답(단어·뜻 스냅샷) 대신 지금 데이터의 단어 — 뜻을 보충해도 최신으로 보이도록
+export const wordOf = (level, dn, no) => LEVELS[level]?.days[dn - 1]?.words.find(w => w.no === no)
+
+// 복습 방식에 따라 먼저 나올 단어 (dn-no 키 집합)
+// mistake-first: 오답 / spaced: 오늘 복습할 Day / mixed: 둘 다 / cumulative: 없음(고르게)
+export function priorityKeys(review, level, st, maxDay) {
+  const keys = new Set()
+  if (review === 'mistake-first' || review === 'mixed') st.wrongWords.forEach(w => w.dn <= maxDay && keys.add(`${w.dn}-${w.no}`))
+  if (review === 'spaced' || review === 'mixed') {
+    dueDays(st).filter(d => d <= maxDay).forEach(d => LEVELS[level]?.days[d - 1]?.words.forEach(w => keys.add(`${d}-${w.no}`)))
+  }
+  return keys
+}
