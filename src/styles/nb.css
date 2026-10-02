@@ -248,3 +248,11 @@
 /* 다크 모드(그레이·블랙)에서는 아이콘도 회색으로 */
 [data-theme="dark"] .pic{filter:grayscale(1) brightness(1.25)}
 [data-theme="dark"] .nav-btn.active .nav-ico .pic{filter:grayscale(1) brightness(1.25)}
+
+/* 공부 성향 테스트 */
+.st-step{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:800;color:var(--nb-sub);margin-bottom:4px}
+.st-q{font-size:24px;font-weight:900;line-height:1.35;letter-spacing:-.6px;margin:26px 2px 4px;word-break:keep-all}
+.st-opt{display:flex;align-items:center;gap:12px;line-height:1.45;word-break:keep-all}
+.st-letter{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px;height:28px;border:2px solid var(--nb-line);border-radius:8px;background:var(--nb-yellow);color:#111;font-size:13px}
+.nb-style{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:-6px 0 18px}
+.nb-style .nb-p{flex:1;min-width:120px;font-size:13px}

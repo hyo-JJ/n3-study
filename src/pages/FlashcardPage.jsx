@@ -1,112 +1,106 @@
-import { useState, useCallback } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Topbar } from '../components/Layout'
-import { useProgress } from '../hooks/useProgress'
-import { useToast } from '../components/Toast'
-import { levelHome } from '../lib/study'
+import { useStudyStyle } from '../hooks/useStudyStyle'
+import { useLearnStep, BreakCard } from '../hooks/useLearnStep'
 import { getDay } from '../lib/data'
+import { CHUNK } from '../lib/studyStyle'
 import WritePad from '../components/WritePad'
 import Furigana from '../components/Furigana'
+import ListLearn from './learn/ListLearn'
+import QuizLearn from './learn/QuizLearn'
 
+// ① 단어 익히기 — 공부 성향(인지 선호)에 맞는 화면으로
 export default function FlashcardPage() {
   const { level, day } = useParams()
-  const dayNum = Number(day)
-  const dayData = getDay(level, dayNum)
-  const navigate = useNavigate()
-  const toast = useToast()
-  const { getLevel, update, my, updateMy } = useProgress()
-  const st = getLevel(level)
+  const dayData = getDay(level, Number(day))
+  const { style } = useStudyStyle()
+  if (!dayData) return null
+  const props = { level, dayNum: Number(day), dayData }
+  if (style?.cognitive === 'textual') return <ListLearn {...props} />
+  if (style?.cognitive === 'pragmatic') return <QuizLearn {...props} />
+  return <CardLearn {...props} />
+}
 
-  const reviewOnly = st.passedDays.includes(dayNum)
-  const [idx, setIdx] = useState(reviewOnly ? 0 : (st.flashProgress[dayNum] || 0))
+// 카드형: 한 장씩 크게, 탭하면 뜻
+function CardLearn({ level, dayNum, dayData }) {
+  const words = dayData.words
+  const total = words.length
+  const step = useLearnStep(level, dayNum, total)
+  const [idx, setIdx] = useState(step.start)
   const [flipped, setFlipped] = useState(false)
+  const [paused, setPaused] = useState(false)
   // 쓰기 연습을 펼쳐 둔 사람은 다음 카드에서도 계속 펼쳐지도록 기억
   const [writing, setWriting] = useState(() => { try { return localStorage.getItem('fc-writing') === '1' } catch { return false } })
   const toggleWriting = () => {
     setWriting(w => { try { localStorage.setItem('fc-writing', w ? '0' : '1') } catch {} return !w })
   }
 
-  if (!dayData) return null
-  const words = dayData.words
   const word = words[idx]
-  const total = words.length
   const pct = `${((idx + 1) / total * 100).toFixed(0)}%`
 
   const flip = () => setFlipped(true)
 
-  const next = useCallback(() => {
+  const next = () => {
     if (!flipped) { flip(); return }
     const nextIdx = idx + 1
-    if (!reviewOnly) {
-      update(level, st => ({ ...st, flashProgress: { ...st.flashProgress, [dayNum]: nextIdx } }))
-    }
-    if (nextIdx >= total) {
-      if (reviewOnly) { toast('플래시카드 복습 완료! ✅'); navigate(levelHome(level)); return }
-      toast('플래시카드 완료! 백지 복습으로 이동합니다 📝')
-      setTimeout(() => navigate(`/learn/${level}/${dayNum}/blank`), 700)
-    } else {
-      setIdx(nextIdx)
-      setFlipped(false)
-    }
-  }, [flipped, idx, total, reviewOnly, level, dayNum, navigate, toast, update])
+    step.saveProgress(nextIdx)
+    if (nextIdx >= total) { step.finish(); return }
+    setIdx(nextIdx)
+    setFlipped(false)
+    if (step.isBreak(nextIdx)) setPaused(true)
+  }
 
   const prev = () => {
     if (idx > 0) { setIdx(idx - 1); setFlipped(false) }
   }
 
-  const saved = my.words.some(w => w.word === word.word)
-  const toggleSave = () => {
-    if (saved) {
-      updateMy(m => ({ ...m, words: m.words.filter(w => w.word !== word.word) }))
-      toast('단어장에서 뺐어요')
-    } else {
-      const w = { id: `${Date.now()}${Math.random().toString(36).slice(2, 6)}`, at: Date.now(), word: word.word, reading: word.reading ?? '', meaning: word.meaning, memo: '', from: `${level} Day ${dayNum}` }
-      updateMy(m => ({ ...m, words: [w, ...m.words] }))
-      toast('나만의 단어장에 담았어요 💜')
-    }
-  }
-
-  const exitConfirm = () => {
-    if (confirm('학습을 중단할까요?\n(진행 상황은 저장됩니다)')) navigate(levelHome(level))
-  }
+  const saved = step.isSaved(word)
+  const set = `${Math.floor(idx / CHUNK) + 1}/${Math.ceil(total / CHUNK)}세트`
 
   return (
     <div className="screen">
-      <Topbar title={`Day ${dayNum} · ${dayData.topic}`} onBack={exitConfirm} />
+      <Topbar title={`Day ${dayNum} · ${dayData.topic}`} onBack={step.exit} />
       <div className="fc-wrap">
         <div className="fc-meta">
-          <span className="fc-cnt">{idx + 1} / {total}</span>
-          <span className="phase-badge">① 플래시카드</span>
+          <span className="fc-cnt">{idx + 1} / {total}{step.micro && ` · ${set}`}</span>
+          <span className="phase-badge">① 단어 카드</span>
         </div>
         <div className="prog"><div className="prog-fill" style={{ width: pct }} /></div>
 
-        <div className={`flashcard${flipped ? ' flipped' : ''}${flipped && writing ? ' compact' : ''}`} onClick={flip}>
-          <div className="fc-word jp"><Furigana word={word.word} reading={word.reading} show={flipped} /></div>
-          {flipped && <div className="fc-meaning">{word.meaning}</div>}
-          {!flipped && <div className="fc-tap">탭해서 뜻 확인</div>}
-        </div>
-
-        {flipped && (
-          <div className="fc-actions">
-            <button className="fc-save" onClick={toggleSave}>{saved ? '★ 단어장에 담김' : '☆ 단어장에 담기'}</button>
-            <button className={`fc-save${writing ? ' on' : ''}`} onClick={toggleWriting}>{writing ? '✍️ 쓰기 접기' : '✍️ 쓰기 연습'}</button>
-          </div>
-        )}
-
-        {flipped && writing && (
-          <div className="wp-reveal">
-            <WritePad key={idx} word={word.word} />
-          </div>
-        )}
-
-        <div className="gap" />
-        {flipped ? (
-          <div className="btn-row">
-            <button className="btn btn-muted" onClick={prev}>← 이전</button>
-            <button className="btn btn-accent" onClick={next}>다음 →</button>
-          </div>
+        {paused ? (
+          <BreakCard done={idx} total={total} onContinue={() => setPaused(false)} onStop={step.stop} />
         ) : (
-          <button className="btn btn-accent" onClick={next}>뒤집기</button>
+          <>
+            <div className={`flashcard${flipped ? ' flipped' : ''}${flipped && writing ? ' compact' : ''}`} onClick={flip}>
+              <div className="fc-word jp"><Furigana word={word.word} reading={word.reading} show={flipped} /></div>
+              {flipped && <div className="fc-meaning">{word.meaning}</div>}
+              {!flipped && <div className="fc-tap">탭해서 뜻 확인</div>}
+            </div>
+
+            {flipped && (
+              <div className="fc-actions">
+                <button className="fc-save" onClick={() => step.toggleSave(word)}>{saved ? '★ 단어장에 담김' : '☆ 단어장에 담기'}</button>
+                <button className={`fc-save${writing ? ' on' : ''}`} onClick={toggleWriting}>{writing ? '✍️ 쓰기 접기' : '✍️ 쓰기 연습'}</button>
+              </div>
+            )}
+
+            {flipped && writing && (
+              <div className="wp-reveal">
+                <WritePad key={idx} word={word.word} />
+              </div>
+            )}
+
+            <div className="gap" />
+            {flipped ? (
+              <div className="btn-row">
+                <button className="btn btn-muted" onClick={prev}>← 이전</button>
+                <button className="btn btn-accent" onClick={next}>다음 →</button>
+              </div>
+            ) : (
+              <button className="btn btn-accent" onClick={next}>뒤집기</button>
+            )}
+          </>
         )}
       </div>
     </div>

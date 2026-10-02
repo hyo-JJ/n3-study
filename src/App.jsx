@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './hooks/useAuth'
 import { ProgressProvider } from './hooks/useProgress'
 import { ThemeProvider } from './hooks/useTheme'
+import { StudyStyleProvider, useStudyStyle } from './hooks/useStudyStyle'
 import { ToastProvider } from './components/Toast'
 import AuthPage from './pages/AuthPage'
 import HomePage from './pages/HomePage'
@@ -16,9 +17,11 @@ import JlptPage from './pages/JlptPage'
 import GamePage from './pages/GamePage'
 import MyWordsPage from './pages/MyWordsPage'
 import PrintPage from './pages/PrintPage'
+import StylePage from './pages/StylePage'
 
 function AppRoutes() {
   const user = useAuth()
+  const { style } = useStudyStyle()
 
   if (user === undefined) {
     return (
@@ -38,22 +41,30 @@ function AppRoutes() {
 
   return (
     <ProgressProvider>
-      <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/study/:level" element={<LevelPage />} />
-        <Route path="/review" element={<ReviewPage />} />
-        <Route path="/jlpt" element={<JlptPage />} />
-        <Route path="/game" element={<GamePage />} />
-        <Route path="/mywords" element={<MyWordsPage />} />
-        <Route path="/learn/:level/:day/flash" element={<FlashcardPage />} />
-        <Route path="/learn/:level/:day/blank" element={<BlankReviewPage />} />
-        <Route path="/quiz/:level/:day" element={<QuizPage />} />
-        <Route path="/wrong" element={<WrongNotesPage />} />
-        <Route path="/weekend" element={<WeekendPage />} />
-        <Route path="/print" element={<PrintPage />} />
-        <Route path="*" element={<Navigate to="/home" replace />} />
-      </Routes>
+      {!style ? (
+        // 공부 성향을 아직 안 정했으면 성향 테스트부터
+        <Routes>
+          <Route path="*" element={<StylePage />} />
+        </Routes>
+      ) : (
+        <Routes>
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/study/:level" element={<LevelPage />} />
+          <Route path="/review" element={<ReviewPage />} />
+          <Route path="/jlpt" element={<JlptPage />} />
+          <Route path="/game" element={<GamePage />} />
+          <Route path="/mywords" element={<MyWordsPage />} />
+          <Route path="/learn/:level/:day/flash" element={<FlashcardPage />} />
+          <Route path="/learn/:level/:day/blank" element={<BlankReviewPage />} />
+          <Route path="/quiz/:level/:day" element={<QuizPage />} />
+          <Route path="/wrong" element={<WrongNotesPage />} />
+          <Route path="/weekend" element={<WeekendPage />} />
+          <Route path="/print" element={<PrintPage />} />
+          <Route path="/style" element={<StylePage />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
+        </Routes>
+      )}
     </ProgressProvider>
   )
 }
@@ -64,7 +75,9 @@ export default function App() {
       <ToastProvider>
         <HashRouter>
           <AuthProvider>
-            <AppRoutes />
+            <StudyStyleProvider>
+              <AppRoutes />
+            </StudyStyleProvider>
           </AuthProvider>
         </HashRouter>
       </ToastProvider>

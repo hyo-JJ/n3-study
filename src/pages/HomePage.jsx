@@ -4,6 +4,8 @@ import { BottomNav } from '../components/Layout'
 import { useAuth } from '../hooks/useAuth'
 import { useProgress } from '../hooks/useProgress'
 import { useTheme } from '../hooks/useTheme'
+import { useStudyStyle } from '../hooks/useStudyStyle'
+import { PACE, COGNITIVE, styleName } from '../lib/studyStyle'
 import { useToast } from '../components/Toast'
 import { supabase } from '../lib/supabase'
 import { LEVELS } from '../lib/data'
@@ -54,6 +56,7 @@ export default function HomePage() {
   const user = useAuth()
   const { getLevel, my, syncing, saveFailed } = useProgress()
   const { toggle, isDark } = useTheme()
+  const { style } = useStudyStyle()
   const navigate = useNavigate()
   const toast = useToast()
 
@@ -101,6 +104,12 @@ export default function HomePage() {
           <small>{hello}, {name}님 👋</small>
         </h1>
 
+        <div className="nb-style">
+          <span className="nb-chip" style={{ '--c': 'var(--nb-sky)' }}>{PACE[style.pace].emoji}{COGNITIVE[style.cognitive].emoji} {styleName(style)}</span>
+          <span className="nb-p">{PACE[style.pace].short} · {COGNITIVE[style.cognitive].short}</span>
+          <button className="nb-btn ghost sm" onClick={() => navigate('/style')}>공부법 다시 찾기</button>
+        </div>
+
         <div className="nb-status">
           <div className="nb-box">
             <span className="hash">#</span>
@@ -118,7 +127,7 @@ export default function HomePage() {
         <div className="nb-grid">
           <Folder c="var(--nb-gray)" icon={<Ico.Pic name="fuji" />} name="N3 본 공부"
             meta={<><b>Day {n3.passed}/{n3.total}</b><br />하루 1 Day</>}
-            desc={n3.doneToday ? '오늘 몫 끝! 내일 또 만나요' : '단어 → 백지 복습 → 누적 테스트'}
+            desc={n3.doneToday ? '오늘 몫 끝! 내일 또 만나요' : `단어 ${COGNITIVE[style.cognitive].name} → 백지 복습 → 누적 테스트`}
             onClick={() => navigate('/study/N3')} />
           <Folder c="var(--nb-green)" icon={<Ico.Pic name="sprout" />} name="N4·N5 단어"
             meta={<><b>N5 {sum.N5.passed}/{sum.N5.total}</b><br /><b>N4 {sum.N4.passed}/{sum.N4.total}</b></>}

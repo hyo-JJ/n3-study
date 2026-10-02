@@ -209,3 +209,15 @@ button{font-family:'Noto Sans KR',sans-serif}
 .fc-save.on{background:#111;color:#fff}
 .fc-save{align-self:center;min-height:40px;padding:0 16px;border-radius:20px;border:2px solid #111;background:#fff;color:#111;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:2px 2px 0 #111}
 .fc-save:active{transform:translate(2px,2px);box-shadow:none}
+
+/* 목록형 단어 익히기 */
+.ll-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;font-size:13px;color:var(--label3)}
+.ll-list{display:flex;flex-direction:column;gap:8px}
+.ll-row{display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r2);padding:12px 14px;box-shadow:var(--shadow)}
+.ll-row.hidden{cursor:pointer;touch-action:manipulation}
+.ll-no{width:24px;flex-shrink:0;font-size:12px;font-weight:700;color:var(--label4);text-align:center}
+.ll-main{flex:1;min-width:0}
+.ll-word{font-size:24px;font-weight:700;line-height:1.5;color:var(--label);word-break:keep-all}
+.ll-mean{font-size:15px;font-weight:600;color:var(--accent);margin-top:2px;word-break:keep-all}
+.ll-row.hidden .ll-mean{color:var(--label4);font-weight:500;font-size:13px}
+.ll-star{width:40px;height:40px;flex-shrink:0;border:none;background:none;font-size:22px;color:var(--label3);cursor:pointer;touch-action:manipulation}
