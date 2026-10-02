@@ -3,7 +3,7 @@ import { useProgress } from './useProgress'
 import { useStudyStyle } from './useStudyStyle'
 import { useToast } from '../components/Toast'
 import { levelHome } from '../lib/study'
-import { CHUNK } from '../lib/studyStyle'
+import { chunkOf } from '../lib/studyStyle'
 
 // ① 단어 익히기 단계 공통 — 카드형·목록형·퀴즈형이 같은 진행 기록(flashProgress)을 씀
 export function useLearnStep(level, dayNum, total) {
@@ -16,7 +16,7 @@ export function useLearnStep(level, dayNum, total) {
   const reviewOnly = st.passedDays.includes(dayNum)
   const saved = reviewOnly ? 0 : (st.flashProgress[dayNum] || 0)
   const start = saved < total ? saved : 0
-  const micro = style?.pace === 'micro'
+  const chunk = chunkOf(style) // 한 세트 단어 수 (0이면 끊지 않음)
 
   // n번째 단어까지 봤음 (이전으로 돌아갔다 와도 기록이 줄지 않도록)
   const saveProgress = (n) => {
@@ -24,8 +24,8 @@ export function useLearnStep(level, dayNum, total) {
     update(level, s => ({ ...s, flashProgress: { ...s.flashProgress, [dayNum]: Math.max(n, s.flashProgress[dayNum] || 0) } }))
   }
 
-  // 마이크로형: 10단어마다 쉬어 가기
-  const isBreak = (n) => micro && n < total && n % CHUNK === 0
+  // 마이크로·미디엄형: 한 세트마다 쉬어 가기
+  const isBreak = (n) => chunk > 0 && n < total && n % chunk === 0
 
   const finish = () => {
     if (reviewOnly) { toast('단어 복습 완료! ✅'); navigate(levelHome(level)); return }
@@ -50,12 +50,12 @@ export function useLearnStep(level, dayNum, total) {
     }
   }
 
-  return { reviewOnly, start, micro, saveProgress, isBreak, finish, stop, exit, isSaved, toggleSave }
+  return { reviewOnly, start, chunk, saveProgress, isBreak, finish, stop, exit, isSaved, toggleSave }
 }
 
-// 마이크로형 세트 사이 쉬는 화면
-export function BreakCard({ done, total, onContinue, onStop }) {
-  const left = Math.min(CHUNK, total - done)
+// 세트 사이 쉬는 화면
+export function BreakCard({ done, total, chunk, onContinue, onStop }) {
+  const left = Math.min(chunk, total - done)
   return (
     <>
       <div className="result-card">

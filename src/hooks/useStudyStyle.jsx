@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { PACE, COGNITIVE } from '../lib/studyStyle'
+import { PACE, COGNITIVE, PROFILE } from '../lib/studyStyle'
 import { useAuth } from './useAuth'
 
 const StudyStyleContext = createContext(null)
@@ -24,8 +24,10 @@ export function StudyStyleProvider({ children }) {
     : valid(fromServer) ? fromServer : readLocal(userId)
 
   const save = useCallback(async (next) => {
-    // source: 'quiz'(4문항) | 'ai'(내 AI에게 물어보기), reason: AI가 말한 이유
-    const s = { pace: next.pace, cognitive: next.cognitive, source: next.source, answers: next.answers, reason: next.reason, at: new Date().toISOString() }
+    // AI 프로필 요소만 저장 (긴 본문은 로그인 토큰에 실리지 않도록 진행 기록 쪽에 따로 저장)
+    const s = { at: new Date().toISOString(), source: 'ai' }
+    for (const { key: k } of PROFILE) if (next[k]) s[k] = next[k]
+    s.cognitive = next.cognitive
     setSaved({ userId, s })
     try { localStorage.setItem(key(userId), JSON.stringify(s)) } catch {}
     const { error } = await supabase.auth.updateUser({ data: { study_style: s } })

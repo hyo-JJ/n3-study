@@ -4,7 +4,6 @@ import { Topbar } from '../components/Layout'
 import { useStudyStyle } from '../hooks/useStudyStyle'
 import { useLearnStep, BreakCard } from '../hooks/useLearnStep'
 import { getDay } from '../lib/data'
-import { CHUNK } from '../lib/studyStyle'
 import WritePad from '../components/WritePad'
 import Furigana from '../components/Furigana'
 import ListLearn from './learn/ListLearn'
@@ -56,20 +55,21 @@ function CardLearn({ level, dayNum, dayData }) {
   }
 
   const saved = step.isSaved(word)
-  const set = `${Math.floor(idx / CHUNK) + 1}/${Math.ceil(total / CHUNK)}세트`
+  const { chunk } = step
+  const set = chunk ? `${Math.floor(idx / chunk) + 1}/${Math.ceil(total / chunk)}세트` : ''
 
   return (
     <div className="screen">
       <Topbar title={`Day ${dayNum} · ${dayData.topic}`} onBack={step.exit} />
       <div className="fc-wrap">
         <div className="fc-meta">
-          <span className="fc-cnt">{idx + 1} / {total}{step.micro && ` · ${set}`}</span>
+          <span className="fc-cnt">{idx + 1} / {total}{set && ` · ${set}`}</span>
           <span className="phase-badge">① 단어 카드</span>
         </div>
         <div className="prog"><div className="prog-fill" style={{ width: pct }} /></div>
 
         {paused ? (
-          <BreakCard done={idx} total={total} onContinue={() => setPaused(false)} onStop={step.stop} />
+          <BreakCard done={idx} total={total} chunk={chunk} onContinue={() => setPaused(false)} onStop={step.stop} />
         ) : (
           <>
             <div className={`flashcard${flipped ? ' flipped' : ''}${flipped && writing ? ' compact' : ''}`} onClick={flip}>

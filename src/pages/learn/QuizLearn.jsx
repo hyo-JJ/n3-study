@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Topbar } from '../../components/Layout'
 import { useLearnStep, BreakCard } from '../../hooks/useLearnStep'
-import { CHUNK } from '../../lib/studyStyle'
 import Furigana from '../../components/Furigana'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
@@ -54,20 +53,21 @@ export default function QuizLearn({ level, dayNum, dayData }) {
 
   const n = retry ? `다시 ${pos + 1} / ${queue.length}` : `${wi + 1} / ${total}`
   const pct = retry ? (pos + 1) / queue.length : (wi + 1) / total
-  const set = `${Math.floor(wi / CHUNK) + 1}/${Math.ceil(total / CHUNK)}세트`
+  const { chunk } = step
+  const set = chunk ? `${Math.floor(wi / chunk) + 1}/${Math.ceil(total / chunk)}세트` : ''
 
   return (
     <div className="screen">
       <Topbar title={`Day ${dayNum} · ${dayData.topic}`} onBack={step.exit} />
       <div className="fc-wrap">
         <div className="fc-meta">
-          <span className="fc-cnt">{n}{step.micro && !retry && ` · ${set}`}</span>
+          <span className="fc-cnt">{n}{set && !retry && ` · ${set}`}</span>
           <span className="phase-badge">{retry ? '① 틀린 단어 다시' : '① 바로 퀴즈'}</span>
         </div>
         <div className="prog"><div className="prog-fill" style={{ width: `${(pct * 100).toFixed(0)}%` }} /></div>
 
         {pause === 'break' ? (
-          <BreakCard done={wi} total={total} onContinue={() => setPause(null)} onStop={step.stop} />
+          <BreakCard done={wi} total={total} chunk={chunk} onContinue={() => setPause(null)} onStop={step.stop} />
         ) : pause === 'retry' ? (
           <>
             <div className="result-card">

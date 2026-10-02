@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Topbar } from '../../components/Layout'
 import { useLearnStep, BreakCard } from '../../hooks/useLearnStep'
-import { CHUNK } from '../../lib/studyStyle'
 import Furigana from '../../components/Furigana'
 
-// 목록형: 단어·읽는 법·뜻을 한 화면에 쭉 (마이크로형은 10단어씩 끊어서)
+// 목록형: 단어·읽는 법·뜻을 한 화면에 쭉 (마이크로·미디엄형은 세트로 끊어서)
 export default function ListLearn({ level, dayNum, dayData }) {
   const words = dayData.words
   const total = words.length
   const step = useLearnStep(level, dayNum, total)
-  const size = step.micro ? CHUNK : total
+  const size = step.chunk || total
   const [page, setPage] = useState(Math.floor(step.start / size))
   const [paused, setPaused] = useState(false)
   const [hide, setHide] = useState(false) // 읽는 법·뜻 가리고 스스로 확인
@@ -43,7 +42,7 @@ export default function ListLearn({ level, dayNum, dayData }) {
         <div className="prog"><div className="prog-fill" style={{ width: `${(to / total * 100).toFixed(0)}%` }} /></div>
 
         {paused ? (
-          <BreakCard done={from} total={total} onContinue={() => setPaused(false)} onStop={step.stop} />
+          <BreakCard done={from} total={total} chunk={size} onContinue={() => setPaused(false)} onStop={step.stop} />
         ) : (
           <>
             <div className="ll-bar">

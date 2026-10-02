@@ -249,14 +249,15 @@
 [data-theme="dark"] .pic{filter:grayscale(1) brightness(1.25)}
 [data-theme="dark"] .nav-btn.active .nav-ico .pic{filter:grayscale(1) brightness(1.25)}
 
-/* 공부 성향 테스트 */
-.st-step{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:800;color:var(--nb-sub);margin-bottom:4px}
-.st-q{font-size:24px;font-weight:900;line-height:1.35;letter-spacing:-.6px;margin:26px 2px 4px;word-break:keep-all}
-.st-opt{display:flex;align-items:center;gap:12px;line-height:1.45;word-break:keep-all}
-.st-letter{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px;height:28px;border:2px solid var(--nb-line);border-radius:8px;background:var(--nb-yellow);color:#111;font-size:13px}
+/* 나의 공부법 (AI 학습 프로필) */
 .nb-style{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:-6px 0 18px}
 .nb-style .nb-p{flex:1;min-width:120px;font-size:13px}
-.st-big{font-size:30px;width:46px;text-align:center;flex-shrink:0}
 .st-prompt{max-height:220px;overflow-y:auto;white-space:pre-wrap;font-size:13px;line-height:1.6;color:var(--nb-sub);user-select:text;-webkit-user-select:text}
 .st-paste{min-height:140px;resize:vertical;line-height:1.5;font-size:15px}
 .st-err{margin-top:10px;padding:10px 12px;border:2px solid var(--nb-err);border-radius:10px;font-size:13px;line-height:1.55;color:var(--nb-err);word-break:keep-all}
+.st-prof{padding:6px 16px}
+.st-prof-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;font-size:14px;border-bottom:1.5px dashed var(--nb-mute)}
+.st-prof-row:last-child{border-bottom:none}
+.st-prof-row span{color:var(--nb-sub);flex-shrink:0}
+.st-prof-row b{text-align:right;word-break:keep-all}
+.st-text{white-space:pre-wrap;font-size:14px;line-height:1.7;word-break:keep-all;user-select:text;-webkit-user-select:text}

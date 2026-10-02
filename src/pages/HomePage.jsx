@@ -107,7 +107,7 @@ export default function HomePage() {
         <div className="nb-style">
           <span className="nb-chip" style={{ '--c': 'var(--nb-sky)' }}>{PACE[style.pace].emoji}{COGNITIVE[style.cognitive].emoji} {styleName(style)}</span>
           <span className="nb-p">{PACE[style.pace].short} · {COGNITIVE[style.cognitive].short}</span>
-          <button className="nb-btn ghost sm" onClick={() => navigate('/style')}>공부법 다시 찾기</button>
+          <button className="nb-btn ghost sm" onClick={() => navigate('/style')}>내 학습 프로필</button>
         </div>
 
         <div className="nb-status">
