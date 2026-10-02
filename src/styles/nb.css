@@ -256,3 +256,7 @@
 .st-letter{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px;height:28px;border:2px solid var(--nb-line);border-radius:8px;background:var(--nb-yellow);color:#111;font-size:13px}
 .nb-style{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:-6px 0 18px}
 .nb-style .nb-p{flex:1;min-width:120px;font-size:13px}
+.st-big{font-size:30px;width:46px;text-align:center;flex-shrink:0}
+.st-prompt{max-height:220px;overflow-y:auto;white-space:pre-wrap;font-size:13px;line-height:1.6;color:var(--nb-sub);user-select:text;-webkit-user-select:text}
+.st-paste{min-height:140px;resize:vertical;line-height:1.5;font-size:15px}
+.st-err{margin-top:10px;padding:10px 12px;border:2px solid var(--nb-err);border-radius:10px;font-size:13px;line-height:1.55;color:var(--nb-err);word-break:keep-all}

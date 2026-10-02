@@ -69,3 +69,38 @@ export function computeStyle(answers) {
 }
 
 export const styleName = (s) => `${PACE[s.pace].name} · ${COGNITIVE[s.cognitive].name}`
+
+// 내 AI에게 물어보기 — 평소 쓰는 AI(ChatGPT·Claude·Gemini 등)는 나와의 대화를 기억하고 있어 더 정확하게 판단할 수 있음
+export const AI_PROMPT = `너는 내 학습 코치야. 지금까지 나와 나눈 대화와 네가 기억하는 나에 대한 정보를 바탕으로, 내가 일본어(JLPT) 단어를 외울 때 가장 잘 맞는 공부 방식을 판단해 줘.
+
+판단할 것은 두 가지야.
+
+1) 학습 호흡 (pace)
+- micro: 짬날 때 10~15분씩 짧게 자주 하는 게 맞는 사람
+- deep: 한 번 앉으면 오래 몰입해서 하는 게 맞는 사람
+
+2) 익히는 방식 (cognitive)
+- visual: 단어 하나를 카드에 크게 띄워 한 장씩 넘기며 눈으로 기억하는 게 맞는 사람
+- textual: 단어·읽는 법·뜻을 목록으로 쭉 읽으며 정리된 정보로 익히는 게 맞는 사람
+- pragmatic: 설명보다 문제를 먼저 풀고, 틀린 걸 확인하며 익히는 게 맞는 사람
+
+규칙
+- 나에 대해 아는 게 부족하거나 확신이 없으면 짐작하지 말고, 판단에 필요한 질문을 한 번에 하나씩, 최대 5개까지 먼저 해 줘. 내 답을 들은 뒤에 결론을 내 줘.
+- 결론은 반드시 마지막에 아래 형식 그대로 출력해. 값은 영어 소문자로 써.
+
+STUDYME pace=<micro 또는 deep> cognitive=<visual, textual, pragmatic 중 하나>
+REASON: <이 방식이 나에게 맞는 이유를 한국어 한두 문장으로>`
+
+// AI 답에서 결과 줄 찾기 — 코드 블록·굵게 표시·대소문자·콜론 등은 무시
+// 대화 전체를 붙여넣어도 되도록 마지막 STUDYME 줄을 기준으로
+export function parseAiResult(text) {
+  const t = text.replace(/[*`_]/g, '')
+  const at = t.toUpperCase().lastIndexOf('STUDYME')
+  if (at < 0) return null
+  const body = t.slice(at)
+  const pace = body.match(/pace\s*[=:]\s*(micro|deep)/i)?.[1].toLowerCase()
+  const cognitive = body.match(/cognitive\s*[=:]\s*(visual|textual|pragmatic)/i)?.[1].toLowerCase()
+  if (!pace || !cognitive) return null
+  const reason = body.match(/REASON\s*[:：]\s*(.+)/i)?.[1].trim().slice(0, 300) || ''
+  return { pace, cognitive, reason }
+}

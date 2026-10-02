@@ -24,7 +24,8 @@ export function StudyStyleProvider({ children }) {
     : valid(fromServer) ? fromServer : readLocal(userId)
 
   const save = useCallback(async (next) => {
-    const s = { pace: next.pace, cognitive: next.cognitive, answers: next.answers, at: new Date().toISOString() }
+    // source: 'quiz'(4문항) | 'ai'(내 AI에게 물어보기), reason: AI가 말한 이유
+    const s = { pace: next.pace, cognitive: next.cognitive, source: next.source, answers: next.answers, reason: next.reason, at: new Date().toISOString() }
     setSaved({ userId, s })
     try { localStorage.setItem(key(userId), JSON.stringify(s)) } catch {}
     const { error } = await supabase.auth.updateUser({ data: { study_style: s } })
