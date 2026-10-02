@@ -163,6 +163,10 @@ export default function HomePage() {
             meta={<><b>{kanji.passedDays.length}/{KANJI_SETS}세트</b><br />{KANJI_COUNT.toLocaleString()}자</>}
             desc={`${COGNITIVE[style.cognitive].name}으로 20자씩, 음훈·예시 단어까지`}
             onClick={() => navigate('/kanji')} />
+          <Folder c="var(--nb-sky)" icon={<Ico.Pic name="chat" />} name="AI 회화" isNew
+            meta={<><b>상황극 8가지</b><br />실제 예문</>}
+            desc="AI 점원·친구와 일본어로 대화하고 첨삭받기"
+            onClick={() => navigate('/tutor')} />
         </div>
       </div>
       <BottomNav />
