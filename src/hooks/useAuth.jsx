@@ -5,7 +5,7 @@ import { setMyLevel } from '../lib/level'
 const AuthContext = createContext(null)
 const ProfileContext = createContext(null)
 
-// 가입할 때 명단에서 정해진 이름·레벨·역할 (profiles 테이블, 없으면 가입 때 넣은 정보로)
+// 가입할 때 명단에서 정해진 이름·레벨·역할 (profiles 테이블, 못 불러오면 가입 때 넣은 정보로)
 const fallbackProfile = (user) => ({
   name: user.user_metadata?.full_name || '학생',
   level: user.user_metadata?.level || 'N3',
@@ -31,9 +31,11 @@ export function AuthProvider({ children }) {
     setProfile(null)
     if (!userId) return
     let cancelled = false
-    supabase.from('profiles').select('name, level, role').eq('user_id', userId).maybeSingle().then(({ data }) => {
+    supabase.from('profiles').select('name, level, role').eq('user_id', userId).maybeSingle().then(({ data, error }) => {
       if (cancelled) return
-      const p = data ?? fallbackProfile(user)
+      // 프로필이 없으면 삭제됐거나 명단에 없는 예전 계정 — 기기에 남은 로그인 정보를 지우고 가입 화면으로
+      if (!error && !data) { supabase.auth.signOut({ scope: 'local' }); return }
+      const p = data ?? fallbackProfile(user) // 네트워크 오류 등으로 못 불러왔을 때만
       setMyLevel(p.level)
       setProfile(p)
     })
