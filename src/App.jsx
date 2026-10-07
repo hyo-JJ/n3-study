@@ -1,5 +1,5 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './hooks/useAuth'
+import { AuthProvider, useAuth, useProfile } from './hooks/useAuth'
 import { ProgressProvider } from './hooks/useProgress'
 import { ThemeProvider } from './hooks/useTheme'
 import { StudyStyleProvider, useStudyStyle } from './hooks/useStudyStyle'
@@ -19,11 +19,14 @@ import KanjiPage from './pages/KanjiPage'
 import KanjiStudyPage from './pages/KanjiStudyPage'
 import MyPage from './pages/MyPage'
 import TutorPage from './pages/TutorPage'
+import MyWordsPage from './pages/MyWordsPage'
 import PrintPage from './pages/PrintPage'
 import StylePage from './pages/StylePage'
+import AdminPage from './pages/AdminPage'
 
 function AppRoutes() {
   const user = useAuth()
+  const profile = useProfile()
   const { style } = useStudyStyle()
 
   if (user === undefined) {
@@ -38,6 +41,15 @@ function AppRoutes() {
     return (
       <Routes>
         <Route path="*" element={<AuthPage />} />
+      </Routes>
+    )
+  }
+
+  // 관리자(백선미)는 학생 관리 화면만
+  if (profile?.role === 'admin') {
+    return (
+      <Routes>
+        <Route path="*" element={<AdminPage />} />
       </Routes>
     )
   }
@@ -63,6 +75,7 @@ function AppRoutes() {
           <Route path="/kanji/:set/test" element={<KanjiStudyPage mode="test" />} />
           <Route path="/my" element={<MyPage />} />
           <Route path="/tutor" element={<TutorPage />} />
+          <Route path="/mywords" element={<MyWordsPage />} />
           <Route path="/learn/:level/:day/flash" element={<FlashcardPage />} />
           <Route path="/learn/:level/:day/blank" element={<BlankReviewPage />} />
           <Route path="/quiz/:level/:day" element={<QuizPage />} />

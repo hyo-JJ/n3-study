@@ -8,6 +8,7 @@ import { useToast } from '../components/Toast'
 import { useActiveLevel } from '../hooks/useActiveLevel'
 import { LEVELS } from '../lib/data'
 import { wordOf } from '../lib/study'
+import { visibleLevels } from '../lib/level'
 import { COGNITIVE, REVIEW } from '../lib/studyStyle'
 import LearnSession from '../components/learn/Session'
 
@@ -67,7 +68,7 @@ export default function WrongNotesPage() {
       <Topbar title="오답노트" onBack={() => navigate('/review')} />
       <div className="scroll">
         <div className="level-tabs">
-          {Object.entries(LEVELS).map(([key, val]) => (
+          {visibleLevels().map(key => [key, LEVELS[key]]).map(([key, val]) => (
             <button key={key} className={`level-tab${activeLevel === key ? ' active' : ''}`} onClick={() => setActiveLevel(key)}>
               {val.label} · {getLevel(key).wrongWords.length}
             </button>

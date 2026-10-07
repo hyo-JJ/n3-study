@@ -4,15 +4,15 @@ import { useProgress } from '../hooks/useProgress'
 import { useAuth } from '../hooks/useAuth'
 import { learnedWords } from '../lib/study'
 import { Pic } from '../components/Icons'
-import { gamePoints, addPoints, fetchLeaderboard, setNickname, defaultNickname } from '../lib/ranking'
+import { submitScore, fetchLeaderboard, setNickname, defaultNickname } from '../lib/ranking'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
 const MIN_WORDS = 8
 
 const GAMES = [
-  { id: 'speed', name: '스피드 퀴즈', desc: '60초 동안 뜻을 최대한 많이 맞히기', ico: 'chat', c: 'var(--nb-pink)', unit: '개', better: 'high' },
-  { id: 'match', name: '짝 맞추기', desc: '단어와 뜻 6쌍을 빨리 짝지어요', ico: 'sakura', c: 'var(--nb-sky)', unit: '초', better: 'low' },
-  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (10문제 · 문제당 10초)', ico: 'hiragana', c: 'var(--nb-lime)', unit: '점', better: 'high' },
+  { id: 'speed', name: '스피드 퀴즈', desc: '60초 동안 뜻을 최대한 많이 맞히기', ico: 'chat', c: 'var(--nb-pink)', unit: '개', better: 'high', rankBy: '60초 동안 맞힌 개수가 많을수록 위예요' },
+  { id: 'match', name: '짝 맞추기', desc: '단어와 뜻 6쌍을 빨리 짝지어요', ico: 'sakura', c: 'var(--nb-sky)', unit: '초', better: 'low', rankBy: '6쌍을 다 맞추는 데 걸린 시간이 짧을수록 위예요' },
+  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (10문제 · 문제당 10초)', ico: 'hiragana', c: 'var(--nb-lime)', unit: '점', better: 'high', rankBy: '10문제 점수가 높을수록 위예요 (같은 점수면 먼저 세운 사람이 위)' },
 ]
 
 // 문제가 바뀐 직후엔 잠깐 입력을 막아, 연달아 누른 손가락이 다음 문제 보기를 누르지 않게 한다
@@ -44,15 +44,15 @@ function useBest(id, better) {
   return [best, record]
 }
 
-function Result({ game, value, isNew, points, onAgain, onExit }) {
+function Result({ game, value, isNew, onAgain, onExit }) {
   const user = useAuth()
-  const [rank, setRank] = useState(null) // null = 적립 중, 숫자 = 이번 주 순위, false = 실패
+  const [rank, setRank] = useState(null) // null = 올리는 중, 숫자 = 이 게임 이번 주 순위, false = 실패
   const sent = useRef(false)
   useEffect(() => {
     if (sent.current) return
     sent.current = true
-    addPoints(user, points)
-      .then(ok => ok ? fetchLeaderboard(user, true) : Promise.reject())
+    submitScore(user, game.id, value)
+      .then(ok => ok ? fetchLeaderboard(user, game.id, true) : Promise.reject())
       .then(rows => setRank(rows.find(r => r.user_id === user.id)?.rank ?? false))
       .catch(() => setRank(false))
   }, [])
@@ -62,9 +62,8 @@ function Result({ game, value, isNew, points, onAgain, onExit }) {
         <div className="hint" style={{ marginTop: 0 }}>{game.name}</div>
         <div className="big">{value}{game.unit}</div>
         <div className="hint">{isNew ? '🏆 최고 기록 달성!' : '틀린 단어는 오답노트에 담았어요'}</div>
-        <div className="rk-earn">+{points}P</div>
         <div className="hint">
-          {rank === null ? '포인트 적립 중...' : rank ? `이번 주 랭킹 ${rank}위` : '포인트는 다음에 연결되면 적립돼요'}
+          {rank === null ? '랭킹에 올리는 중...' : rank ? <span className="rk-earn">이번 주 {rank}위</span> : '기록은 다음에 연결되면 랭킹에 올라가요'}
         </div>
       </div>
       <div className="gap" />
@@ -95,7 +94,7 @@ function SpeedQuiz({ pool, game, onExit }) {
   useEffect(() => { setTime(60); setScore(0); setResult(null); setQ(makeQ()) }, [round])
   useEffect(() => {
     if (result) return
-    if (time <= 0) { setResult({ value: score, isNew: record(score), points: gamePoints.speed(score) }); return }
+    if (time <= 0) { setResult({ value: score, isNew: record(score) }); return }
     const t = setTimeout(() => setTime(v => v - 1), 1000)
     return () => clearTimeout(t)
   }, [time, result])
@@ -156,7 +155,7 @@ function Match({ pool, game, onExit }) {
       setGone(g); setSel(null)
       if (g.length === tiles.length) {
         const secs = Math.max(1, Math.round((Date.now() - start.current) / 1000))
-        setResult({ value: secs, isNew: record(secs), points: gamePoints.match(tiles.length / 2, secs) })
+        setResult({ value: secs, isNew: record(secs) })
       }
     } else {
       setBad([sel.k, t.k]); setSel(null)
@@ -221,7 +220,7 @@ function ReadingQuiz({ pool, game, onExit }) {
     const t = setTimeout(() => {
       if (idx === qs.length - 1) {
         const v = Math.round(score / qs.length * 100)
-        setResult({ value: v, isNew: record(v), points: gamePoints.reading(score) })
+        setResult({ value: v, isNew: record(v) })
         return
       }
       setIdx(i => i + 1); setPicked(null); setLeft(READING_SEC)
@@ -268,20 +267,23 @@ function ReadingQuiz({ pool, game, onExit }) {
 
 const MEDALS = ['🥇', '🥈', '🥉']
 
-function Ranking() {
+// 게임별 순위 — 각자 최고 기록으로 (이번 주 / 전체)
+function Ranking({ initial }) {
   const user = useAuth()
+  const [gameId, setGameId] = useState(initial ?? GAMES[0].id)
   const [weekly, setWeekly] = useState(true)
   const [rows, setRows] = useState(null) // null = 불러오는 중, 'error' = 실패
   const [editing, setEditing] = useState(false)
   const [nick, setNick] = useState('')
   const [reload, setReload] = useState(0)
+  const game = GAMES.find(g => g.id === gameId)
 
   useEffect(() => {
     let alive = true
     setRows(null)
-    fetchLeaderboard(user, weekly).then(d => alive && setRows(d), () => alive && setRows('error'))
+    fetchLeaderboard(user, gameId, weekly).then(d => alive && setRows(d), () => alive && setRows('error'))
     return () => { alive = false }
-  }, [weekly, reload])
+  }, [gameId, weekly, reload])
 
   const list = Array.isArray(rows) ? rows : []
   const mine = list.find(r => r.user_id === user.id)
@@ -295,7 +297,7 @@ function Ranking() {
   return (
     <>
       <div className="nb-card" style={{ marginBottom: 16 }}>
-        <p className="nb-p">게임에서 <b>맞힌 개수 × 10P</b>가 쌓여요. 짝 맞추기는 빨리 끝낼수록 보너스! 이번 주 랭킹은 매주 월요일에 새로 시작해요.</p>
+        <p className="nb-p">게임마다 <b>내 최고 기록</b>으로 순위를 매겨요. 이번 주 랭킹은 매주 월요일에 새로 시작해요.</p>
         {editing ? (
           <div className="rk-nick">
             <input className="nb-input" value={nick} maxLength={12} autoFocus onChange={e => setNick(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveNick()} placeholder="닉네임 (1~12자)" />
@@ -310,9 +312,13 @@ function Ranking() {
       </div>
 
       <div className="nb-tabs">
-        <button className={`nb-tab${weekly ? ' on' : ''}`} onClick={() => setWeekly(true)}>이번 주</button>
-        <button className={`nb-tab${!weekly ? ' on' : ''}`} onClick={() => setWeekly(false)}>전체 누적</button>
+        {GAMES.map(g => <button key={g.id} className={`nb-tab${gameId === g.id ? ' on' : ''}`} onClick={() => setGameId(g.id)}>{g.name}</button>)}
       </div>
+      <div className="nb-tabs">
+        <button className={`nb-tab${weekly ? ' on' : ''}`} onClick={() => setWeekly(true)}>이번 주</button>
+        <button className={`nb-tab${!weekly ? ' on' : ''}`} onClick={() => setWeekly(false)}>전체 기록</button>
+      </div>
+      <p className="nb-p" style={{ margin: '0 2px 12px', fontSize: 13 }}>{game.rankBy}</p>
 
       {rows === null && <div className="nb-empty">불러오는 중...</div>}
       {rows === 'error' && <div className="nb-empty"><span className="big">📡</span>랭킹을 불러오지 못했어요.<br />잠시 후 다시 시도해주세요.</div>}
@@ -323,7 +329,7 @@ function Ranking() {
             <div key={r.user_id} className={`rk-row${r.user_id === user.id ? ' me' : ''}${r.rank <= 3 ? ' top' : ''}`}>
               <span className="rk-rank">{MEDALS[r.rank - 1] ?? r.rank}</span>
               <span className="rk-name">{r.nickname}{r.user_id === user.id && <em> (나)</em>}</span>
-              <span className="rk-pt">{r.points.toLocaleString()}P</span>
+              <span className="rk-pt">{r.best}{game.unit}</span>
             </div>
           ))}
         </div>
@@ -357,13 +363,13 @@ export default function GamePage() {
           <>
             <div className="nb-card" style={{ marginBottom: 14 }}>
               <b>외운 단어 {pool.length}개</b>로 게임해요
-              <p className="nb-p" style={{ marginTop: 4 }}>N3·N4·N5에서 익힌 단어가 나와요. 틀린 단어는 오답노트에 자동으로 담겨요.</p>
+              <p className="nb-p" style={{ marginTop: 4 }}>단어 공부에서 익힌 단어가 나와요. 틀린 단어는 오답노트에 자동으로 담겨요.</p>
             </div>
             <button className="nb-card nb-row" style={{ marginBottom: 20, background: 'var(--nb-yellow)', color: '#111' }} onClick={() => setPlaying('rank')}>
               <span className="nb-ico pic-box"><Pic name="crown" /></span>
               <span className="grow">
                 <div className="t">게임 랭킹</div>
-                <div className="s" style={{ color: '#333' }}>맞힌 만큼 포인트를 모아 순위에 도전해요</div>
+                <div className="s" style={{ color: '#333' }}>게임별 최고 기록으로 순위에 도전해요</div>
               </span>
               <span style={{ fontSize: 20, fontWeight: 900 }}>→</span>
             </button>

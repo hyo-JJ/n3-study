@@ -1,8 +1,10 @@
 import { LEVELS } from './data'
+import { GRAMMAR } from './data/jlpt'
 import { today } from '../hooks/useProgress'
+import { isDaily, prevLevel } from './level'
 
-// Day 잠금 규칙 — 순차 학습, dailyLimit 레벨(N3)은 하루 1 Day
-const passedToday = (level, st, d) => LEVELS[level]?.dailyLimit && st.passedAt?.[d] === today()
+// Day 잠금 규칙 — 순차 학습, 내 레벨 이상은 하루 1 Day (lib/level.js)
+const passedToday = (level, st, d) => isDaily(level) && st.passedAt?.[d] === today()
 export const isUnlocked = (level, st, d) =>
   d === 1 || st.passedDays.includes(d) || (st.passedDays.includes(d - 1) && !passedToday(level, st, d - 1))
 export const opensTomorrow = (level, st, d) => !isUnlocked(level, st, d) && st.passedDays.includes(d - 1)
@@ -39,6 +41,12 @@ export const learnedWords = (getLevel) =>
 
 export const levelHome = (level) => `/study/${level}`
 
+// 내 레벨보다 어려운 레벨은 바로 아래 레벨을 다 끝내야 열림
+export const levelLocked = (level, getLevel) => {
+  const prev = prevLevel(level)
+  return !!prev && !levelSummary(prev, getLevel(prev)).allDone
+}
+
 // 간격 반복 — 통과한 지 1·3·7·14·30일째인 Day가 오늘 복습할 Day
 const INTERVALS = [1, 3, 7, 14, 30]
 const daysSince = (date) => Math.round((new Date(today()) - new Date(date)) / 864e5)
@@ -57,3 +65,13 @@ export function priorityKeys(review, level, st, maxDay) {
   }
   return keys
 }
+
+// 문법도 하루에 1 Day(5개)씩 — 진행은 나만의 기록(MY)의 grammarDays[레벨]에 { passed, at } 로 저장
+export const GRAMMAR_PER_DAY = 5
+export const grammarDays = (lv) => {
+  const all = GRAMMAR[lv] ?? []
+  return Array.from({ length: Math.ceil(all.length / GRAMMAR_PER_DAY) }, (_, i) => all.slice(i * GRAMMAR_PER_DAY, (i + 1) * GRAMMAR_PER_DAY))
+}
+export const grammarState = (my, lv) => ({ passed: [], at: {}, ...(my.grammarDays?.[lv] ?? {}) })
+export const grammarUnlocked = (gs, d) =>
+  d === 1 || gs.passed.includes(d) || (gs.passed.includes(d - 1) && gs.at[d - 1] !== today())

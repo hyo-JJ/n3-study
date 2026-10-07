@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { NbHeader, BottomNav } from '../components/Layout'
 import { useProgress } from '../hooks/useProgress'
 import { useToast } from '../components/Toast'
 import { LEVELS } from '../lib/data'
-import { isUnlocked, opensTomorrow, flashDone, blankDone, dayRoute } from '../lib/study'
+import { isUnlocked, opensTomorrow, flashDone, blankDone, dayRoute, levelLocked } from '../lib/study'
+import { basicLevels, isDaily, visibleLevels, prevLevel } from '../lib/level'
 
-// N4·N5는 한 화면에서 탭으로 전환
-const BASIC = ['N5', 'N4']
+// 내 레벨보다 쉬운 레벨(제한 없음)은 한 화면에서 탭으로 전환
 export const LAST_BASIC = 'kotoba.basic'
 
 export default function LevelPage() {
@@ -15,18 +15,22 @@ export default function LevelPage() {
   const { getLevel } = useProgress()
   const navigate = useNavigate()
   const toast = useToast()
+  const BASIC = basicLevels()
   const isBasic = BASIC.includes(level)
 
   useEffect(() => {
     if (isBasic) try { localStorage.setItem(LAST_BASIC, level) } catch {}
   }, [level, isBasic])
 
-  if (!LEVELS[level]) return null
+  // 내 레벨에서 볼 수 없는 레벨이면 홈으로
+  if (!LEVELS[level] || !visibleLevels().includes(level)) return <Navigate to="/home" replace />
+  const locked = levelLocked(level, getLevel)
   const st = getLevel(level)
   const days = LEVELS[level].days
   const totalWords = st.passedDays.reduce((s, d) => s + (days[d - 1]?.words.length ?? 0), 0)
 
   const handleDay = (d) => {
+    if (locked) { toast(`${prevLevel(level)}를 모두 끝내면 열려요 🔒`); return }
     if (!isUnlocked(level, st, d)) {
       if (opensTomorrow(level, st, d)) toast('오늘 학습은 끝! 이 Day는 내일 열려요 🌙')
       return
@@ -36,7 +40,7 @@ export default function LevelPage() {
 
   return (
     <div className="screen nb">
-      <NbHeader title={isBasic ? 'N4·N5 단어' : 'N3 본 공부'} />
+      <NbHeader title={isBasic ? `${BASIC.join('·')} 단어` : `${level} 본 공부`} />
       <div className="scroll">
         {isBasic && (
           <div className="nb-tabs">
@@ -48,8 +52,8 @@ export default function LevelPage() {
           </div>
         )}
         <p className="nb-p" style={{ marginBottom: 14 }}>
-          {LEVELS[level].dailyLimit
-            ? '하루에 1 Day씩! 테스트를 통과하면 다음 Day는 내일 열려요.'
+          {locked ? `${prevLevel(level)} 단어를 모두 끝내면 열려요. 그때부터 ${level}도 하루에 1 Day씩!`
+            : isDaily(level) ? '하루에 1 Day씩! 테스트를 통과하면 다음 Day는 내일 열려요.'
             : '개수 제한 없이 테스트를 통과하면 다음 Day가 바로 열려요.'}
         </p>
 
@@ -62,7 +66,7 @@ export default function LevelPage() {
         <div className="day-list">
           {days.map((d, i) => {
             const n = i + 1
-            const u = isUnlocked(level, st, n), p = st.passedDays.includes(n)
+            const u = !locked && isUnlocked(level, st, n), p = st.passedDays.includes(n)
             const fd = flashDone(level, st, n), bd = blankDone(level, st, n)
             let pill, pillC, badgeC
             if (p)                { pill = '완료 ✓'; pillC = 'done'; badgeC = 'done' }

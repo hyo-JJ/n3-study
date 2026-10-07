@@ -1,9 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 const ID_DOMAIN = '@kotoba.local'
 const toEmail = (id) => `${id.trim().toLowerCase()}${ID_DOMAIN}`
 const ID_RE = /^[a-z0-9_]{4,20}$/i
+const CHECK = {
+  not_member: '등록된 학생 명단에 없는 이름이에요. 관리자에게 문의해주세요',
+  taken: '이미 가입된 이름이에요. 로그인해주세요',
+  error: '이름을 확인하지 못했어요. 잠시 후 다시 시도해주세요',
+}
 
 export default function AuthPage() {
   const [tab, setTab] = useState('login')
@@ -14,6 +19,20 @@ export default function AuthPage() {
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
+  // 이름을 입력하면 등록된 명단인지 확인하고 레벨을 미리 보여줌
+  const [check, setCheck] = useState(null) // { status: 'ok'|'not_member'|'taken'|'error', level, role }
+  const name = form.name.replace(/\s/g, '')
+  useEffect(() => {
+    setCheck(null)
+    if (tab !== 'signup' || name.length < 2) return
+    let cancelled = false
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc('check_signup_name', { p_name: name })
+      if (!cancelled) setCheck(error ? { status: 'error' } : data)
+    }, 300)
+    return () => { cancelled = true; clearTimeout(t) }
+  }, [name, tab])
+
   // 내부적으로 가짜 이메일을 쓰므로 Supabase 에러에 '이메일' 문구가 노출되지 않게 코드 기준으로 변환
   const ERRS = {
     invalid_credentials: '아이디 또는 비밀번호가 올바르지 않아요',
@@ -21,6 +40,7 @@ export default function AuthPage() {
     email_exists: '이미 사용 중인 아이디예요',
     weak_password: '비밀번호는 6자 이상이어야 해요',
     email_address_invalid: '사용할 수 없는 아이디예요',
+    unexpected_failure: '등록된 이름이 아니거나 이미 가입된 이름이에요',
     email_not_confirmed: '가입 승인이 아직 완료되지 않았어요. 관리자에게 문의해주세요',
     email_provider_disabled: '현재 회원가입을 받을 수 없어요. 관리자에게 문의해주세요',
     signup_disabled: '현재 회원가입을 받을 수 없어요. 관리자에게 문의해주세요',
@@ -42,11 +62,12 @@ export default function AuthPage() {
     if (!ID_RE.test(form.username)) return setErr('아이디는 영문/숫자/밑줄 4~20자로 입력해주세요')
     if (form.pw.length < 6) return setErr('비밀번호는 6자 이상이어야 해요')
     if (form.pw !== form.pw2) return setErr('비밀번호가 일치하지 않아요')
+    if (check?.status !== 'ok') return setErr(CHECK[check?.status] || '이름을 확인하는 중이에요. 잠시 후 다시 눌러주세요')
     setLoading(true); setErr(''); setInfo('')
     const { data, error } = await supabase.auth.signUp({
       email: toEmail(form.username),
       password: form.pw,
-      options: { data: { full_name: form.name, username: form.username.trim().toLowerCase() } },
+      options: { data: { full_name: name, username: form.username.trim().toLowerCase(), level: check.level } },
     })
     if (error) setErr(errMsg(error))
     else if (data.user && !data.session) setInfo('가입이 완료됐어요. 로그인해주세요!')
@@ -57,7 +78,7 @@ export default function AuthPage() {
     <div className="auth-screen">
       <img className="auth-logo" src={`${import.meta.env.BASE_URL}app-logo.png`} alt="ことば" />
       <div className="auth-name">こと<em>ば</em></div>
-      <div className="auth-sub">하루 한 Day, 꾸준히 N3 정복</div>
+      <div className="auth-sub">하루 한 Day, 꾸준히 JLPT 정복</div>
       <div className="auth-box">
         <div className="seg">
           <button className={`seg-btn${tab === 'login' ? ' active' : ''}`} onClick={() => { setTab('login'); setErr(''); setInfo('') }}>로그인</button>
@@ -73,7 +94,12 @@ export default function AuthPage() {
           </>
         ) : (
           <>
-            <div className="fld"><label>이름</label><input type="text" placeholder="홍길동" value={form.name} onChange={set('name')} /></div>
+            <div className="fld"><label>이름 (본인 성명)</label><input type="text" placeholder="홍길동" value={form.name} onChange={set('name')} /></div>
+            {check && (
+              <div className={check.status === 'ok' ? 'info-msg' : 'err-msg'}>
+                {check.status === 'ok' ? (check.role === 'admin' ? '관리자 계정으로 가입돼요' : `${name}님은 JLPT ${check.level} 레벨로 가입돼요`) : CHECK[check.status]}
+              </div>
+            )}
             <div className="fld"><label>아이디</label><input type="text" placeholder="영문/숫자/밑줄 4~20자" value={form.username} onChange={set('username')} /></div>
             <div className="fld"><label>비밀번호 (6자 이상)</label><input type="password" placeholder="••••••" value={form.pw} onChange={set('pw')} /></div>
             <div className="fld"><label>비밀번호 확인</label><input type="password" placeholder="••••••" value={form.pw2} onChange={set('pw2')} onKeyDown={e => e.key === 'Enter' && doSignup()} /></div>

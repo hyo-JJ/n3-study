@@ -7,7 +7,8 @@ import { useRecord } from '../hooks/useRecord'
 import { BreakCard, MissList } from '../components/learn/Session'
 import { useToast } from '../components/Toast'
 import { levelHome } from '../lib/study'
-import { getDay, LEVELS } from '../lib/data'
+import { getDay } from '../lib/data'
+import { isDaily } from '../lib/level'
 import Furigana from '../components/Furigana'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
@@ -98,7 +99,7 @@ export default function BlankReviewPage() {
     record()
     toast('백지 복습 완료! 🎉')
     setTimeout(() => {
-      const when = LEVELS[level]?.dailyLimit ? '내일 ' : ''
+      const when = isDaily(level) ? '내일 ' : ''
       if (confirm(`Day ${dayNum} 학습 완료!\n누적 테스트를 통과하면 ${when}다음 Day가 열립니다.\n지금 시작할까요?`)) {
         navigate(`/quiz/${level}/${dayNum}`)
       } else {

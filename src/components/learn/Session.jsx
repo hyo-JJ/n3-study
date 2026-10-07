@@ -13,6 +13,7 @@ import WritePad from '../WritePad'
 //   feedback: 퀴즈 피드백 방식 'immediate' | 'adaptive' | 'delayed'
 //   recall: 카드에서 뜻을 먼저 떠올려 보도록 안내
 //   pool: 퀴즈 오답 보기로 쓸 뜻 목록 (items가 적을 때)
+//   save: { isSaved(item), toggle(item) } 있으면 카드·목록에 '단어장에 담기' 버튼 (useMyWords)
 export default function LearnSession(props) {
   if (props.screen === 'textual') return <ListSession {...props} />
   if (props.screen === 'pragmatic') return <QuizSession {...props} />
@@ -68,7 +69,7 @@ export function MissList({ misses, title = '틀린 문제 확인' }) {
 }
 
 // 카드형: 한 장씩 크게, 탭하면 뜻
-function CardSession({ items, start = 0, chunk = 0, badge, onProgress, onFinish, onStop, grade, recall }) {
+function CardSession({ items, start = 0, chunk = 0, badge, onProgress, onFinish, onStop, grade, recall, save }) {
   const total = items.length
   const [idx, setIdx] = useState(start)
   const [flipped, setFlipped] = useState(false)
@@ -107,9 +108,10 @@ function CardSession({ items, start = 0, chunk = 0, badge, onProgress, onFinish,
 
           {flipped && item.detail && <div className="fc-detail">{item.detail}</div>}
 
-          {flipped && item.writable && (
+          {flipped && (item.writable || save) && (
             <div className="fc-actions">
-              <button className={`fc-save${writing ? ' on' : ''}`} onClick={toggleWriting}>{writing ? '✍️ 쓰기 접기' : '✍️ 쓰기 연습'}</button>
+              {save && <button className={`fc-save${save.isSaved(item) ? ' on' : ''}`} onClick={() => save.toggle(item)}>{save.isSaved(item) ? '★ 단어장에 담김' : '☆ 단어장에 담기'}</button>}
+              {item.writable && <button className={`fc-save${writing ? ' on' : ''}`} onClick={toggleWriting}>{writing ? '✍️ 쓰기 접기' : '✍️ 쓰기 연습'}</button>}
             </div>
           )}
           {flipped && item.writable && writing && (
@@ -139,7 +141,7 @@ function CardSession({ items, start = 0, chunk = 0, badge, onProgress, onFinish,
 }
 
 // 목록형: 한 화면에 쭉 (세트 크기가 있으면 세트별로)
-function ListSession({ items, start = 0, chunk = 0, badge, onProgress, onFinish, onStop, grade, finishLabel }) {
+function ListSession({ items, start = 0, chunk = 0, badge, onProgress, onFinish, onStop, grade, finishLabel, save }) {
   const total = items.length
   const size = chunk || total
   const [page, setPage] = useState(Math.floor(start / size))
@@ -190,6 +192,10 @@ function ListSession({ items, start = 0, chunk = 0, badge, onProgress, onFinish,
                     <div className="ll-mean">{open ? it.meaning : '탭해서 확인'}</div>
                     {open && it.detail && <div className="ll-detail">{it.detail}</div>}
                   </div>
+                  {save && (
+                    <button className={`ll-star${save.isSaved(it) ? ' on' : ''}`} aria-label="단어장에 담기"
+                      onClick={(e) => { e.stopPropagation(); save.toggle(it) }}>{save.isSaved(it) ? '★' : '☆'}</button>
+                  )}
                   {grade && (
                     <button className={`ll-ok${ok ? ' on' : ''}`} disabled={ok} aria-label="외웠어요"
                       onClick={(e) => { e.stopPropagation(); markKnown(it) }}>{ok ? '✓' : '외웠어요'}</button>

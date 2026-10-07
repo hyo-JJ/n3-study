@@ -1,14 +1,14 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NbHeader, BottomNav } from '../components/Layout'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth, useProfile } from '../hooks/useAuth'
 import { useProgress, today } from '../hooks/useProgress'
 import { useStudyStyle } from '../hooks/useStudyStyle'
 import { useToast } from '../components/Toast'
 import { supabase } from '../lib/supabase'
 import { LEVELS } from '../lib/data'
-import { GRAMMAR } from '../lib/data/jlpt'
-import { learnedWords } from '../lib/study'
+import { learnedWords, grammarDays, grammarState } from '../lib/study'
+import { visibleLevels } from '../lib/level'
 import { KANJI_LV, KANJI_SETS } from '../lib/kanji'
 import { PACE, COGNITIVE, styleName } from '../lib/studyStyle'
 
@@ -37,20 +37,22 @@ function Bar({ label, value, max, c }) {
 // 마이페이지 — 내 학습 프로필, 얼마나 잘하고 있는지, 기록 초기화, 로그아웃
 export default function MyPage() {
   const user = useAuth()
+  const profile = useProfile()
   const { getLevel, update, my, updateMy } = useProgress()
   const { style } = useStudyStyle()
   const navigate = useNavigate()
   const toast = useToast()
 
-  const name = user?.user_metadata?.full_name || '학생'
-  const levels = Object.keys(LEVELS)
+  const name = profile.name
+  const levels = visibleLevels()
   const log = my.log ?? {}
   const scores = my.scores ?? []
   const learned = useMemo(() => learnedWords(getLevel).length, [getLevel])
   const wrong = levels.reduce((s, l) => s + getLevel(l).wrongWords.length, 0)
   const kanji = getLevel(KANJI_LV)
-  const grammarAll = Object.values(GRAMMAR).reduce((s, a) => s + a.length, 0)
-  const grammarDone = Object.keys(my.grammarDone ?? {}).length
+  const GL = ['N5', 'N4', 'N3']
+  const grammarAll = GL.reduce((s, l) => s + grammarDays(l).length, 0)
+  const grammarDone = GL.reduce((s, l) => s + grammarState(my, l).passed.length, 0)
 
   const week = Array.from({ length: 7 }, (_, i) => daysAgo(6 - i))
   const weekCount = week.filter(d => log[d]).length
@@ -66,15 +68,18 @@ export default function MyPage() {
     : weekCount > 0 ? '조금씩 하고 있어요. 하루 한 세트만 더 해볼까요?'
     : '이번 주는 아직 기록이 없어요. 오늘 한 세트부터 시작해요 🌱'
 
+  // 진도를 지워도 관리자 화면의 정답률(stats)은 남김
+  const clear = (l) => update(l, st => ({ ...EMPTY(), stats: st.stats }))
+
   // 기록 초기화 — 되돌릴 수 없으니 두 번 확인
   const reset = (what, label) => {
     if (!confirm(`${label}을(를) 초기화할까요?\n지운 기록은 되돌릴 수 없어요.`)) return
     if (what === 'all' && !confirm('정말 모든 학습 기록을 지울까요?\n(학습 프로필·게임 기록·랭킹은 그대로예요)')) return
     if (what === 'wrong') [...levels, KANJI_LV].forEach(l => update(l, st => ({ ...st, wrongWords: [] })))
     else if (what === 'all') {
-      [...levels, KANJI_LV].forEach(l => update(l, EMPTY()))
-      updateMy(m => ({ ...m, log: {}, scores: [], grammarDone: {}, grammarWrong: {} }))
-    } else update(what, EMPTY())
+      [...levels, KANJI_LV].forEach(clear)
+      updateMy(m => ({ ...m, log: {}, scores: [], grammarDays: {}, grammarWrong: {} }))
+    } else clear(what)
     toast(`${label} 초기화했어요`)
   }
 
@@ -86,7 +91,7 @@ export default function MyPage() {
       <div className="scroll">
         <div className="nb-card my-me">
           <div className="grow">
-            <div className="my-name">{name}님</div>
+            <div className="my-name">{name}님 <span className="nb-chip" style={{ '--c': 'var(--nb-yellow)', fontSize: 12 }}>{profile.level}</span></div>
             <div className="nb-p" style={{ fontSize: 12.5 }}>{user?.email}</div>
           </div>
           <button className="nb-btn ghost sm" onClick={() => navigate('/style')}>학습 프로필</button>
@@ -136,11 +141,11 @@ export default function MyPage() {
         </div>
 
         <div className="nb-card">
-          {['N5', 'N4', 'N3'].map((l, i) => (
-            <Bar key={l} label={`${l} 단어`} value={getLevel(l).passedDays.length} max={LEVELS[l].days.length} c={['var(--nb-green)', 'var(--nb-yellow)', 'var(--nb-purple)'][i]} />
+          {levels.map((l, i) => (
+            <Bar key={l} label={`${l} 단어`} value={getLevel(l).passedDays.length} max={LEVELS[l].days.length} c={['var(--nb-green)', 'var(--nb-yellow)', 'var(--nb-purple)', 'var(--nb-pink)', 'var(--nb-sky)'][i]} />
           ))}
           <Bar label="상용한자 세트" value={kanji.passedDays.length} max={KANJI_SETS} c="var(--nb-lime)" />
-          <Bar label="외운 문법" value={grammarDone} max={grammarAll} c="var(--nb-sky)" />
+          <Bar label="문법 Day" value={grammarDone} max={grammarAll} c="var(--nb-sky)" />
           <p className="nb-p" style={{ marginTop: 10, fontSize: 13 }}>학습한 단어 <b>{learned}</b>개 · 오답 <b>{wrong}</b>개 · 틀린 한자 <b>{kanji.wrongWords.length}</b>자</p>
         </div>
 
@@ -148,7 +153,7 @@ export default function MyPage() {
         <div className="nb-card">
           <p className="nb-p" style={{ marginBottom: 12 }}>처음부터 다시 하고 싶은 기록만 골라서 지울 수 있어요. 지운 기록은 되돌릴 수 없어요.</p>
           <div className="my-reset">
-            {['N5', 'N4', 'N3'].map(l => <button key={l} className="nb-btn ghost sm" onClick={() => reset(l, `${l} 진도`)}>{l} 진도</button>)}
+            {levels.map(l => <button key={l} className="nb-btn ghost sm" onClick={() => reset(l, `${l} 진도`)}>{l} 진도</button>)}
             <button className="nb-btn ghost sm" onClick={() => reset(KANJI_LV, '상용한자 진도')}>상용한자</button>
             <button className="nb-btn ghost sm" onClick={() => reset('wrong', '오답노트')}>오답노트</button>
           </div>

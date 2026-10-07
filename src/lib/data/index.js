@@ -1,8 +1,10 @@
 import n5 from './n5.json'
 import n4 from './n4.json'
 import n3 from './n3.json'
+import n2 from './n2.json'
+import n1 from './n1.json'
 
-// dailyLimit: true면 하루에 Day 1개만 (다음 Day는 테스트 통과 다음 날 열림)
+// 하루 1 Day 제한은 레벨이 아니라 가입한 학생의 레벨에 따라 정해짐 (lib/level.js)
 export const LEVELS = {
   N5: {
     label: 'JLPT N5',
@@ -18,7 +20,16 @@ export const LEVELS = {
     label: 'JLPT N3',
     color: '#5856D6',
     days: n3,
-    dailyLimit: true,
+  },
+  N2: {
+    label: 'JLPT N2',
+    color: '#FF2D55',
+    days: n2,
+  },
+  N1: {
+    label: 'JLPT N1',
+    color: '#AF52DE',
+    days: n1,
   },
 }
 

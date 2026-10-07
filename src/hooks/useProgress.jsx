@@ -10,6 +10,7 @@ const DEFAULT = () => ({
   blankProgress: {},
   wrongWords: [],
   passedAt: {}, // { [dayNum]: 'YYYY-MM-DD' } — 하루 1 Day 제한용
+  stats: { correct: 0, total: 0 }, // 이 레벨 테스트·문법 퀴즈 누적 정답 수 — 관리자 화면 정답률
 })
 
 // 로컬 기준 오늘 날짜 (YYYY-MM-DD)
@@ -26,7 +27,7 @@ const toRow = (userId, level, st, my) => ({
   user_id: userId,
   level,
   passed_days: st.passedDays,
-  flash_progress: { ...st.flashProgress, _passedAt: st.passedAt ?? {}, ...(my ? { _my: my } : {}) },
+  flash_progress: { ...st.flashProgress, _passedAt: st.passedAt ?? {}, _stats: st.stats ?? DEFAULT().stats, ...(my ? { _my: my } : {}) },
   blank_progress: st.blankProgress,
   wrong_words: st.wrongWords,
   updated_at: new Date().toISOString(),
@@ -54,6 +55,7 @@ const mergeLevel = (server, local) => {
     flashProgress: maxMerge(server.flashProgress, local.flashProgress),
     blankProgress: maxMerge(server.blankProgress, local.blankProgress),
     passedAt: { ...server.passedAt, ...local.passedAt },
+    stats: (local.stats?.total ?? 0) > (server.stats?.total ?? 0) ? local.stats : server.stats,
     wrongWords: wrong,
   }
 }
@@ -94,13 +96,14 @@ export function ProgressProvider({ children }) {
       if (error) { setTimeout(() => { if (!cancelled) load() }, 2000); return }
       const map = {}
       data.forEach(row => {
-        // passedAt은 별도 컬럼 없이 flash_progress._passedAt에 함께 저장
-        const { _passedAt, _my, ...flashProgress } = row.flash_progress ?? {}
+        // passedAt·정답률은 별도 컬럼 없이 flash_progress._passedAt·_stats에 함께 저장
+        const { _passedAt, _stats, _my, ...flashProgress } = row.flash_progress ?? {}
         if (_my) map[MY] = { ...MY_DEFAULT(), ..._my }
         map[row.level] = {
           passedDays: row.passed_days ?? [],
           flashProgress,
           passedAt: _passedAt ?? {},
+          stats: _stats ?? DEFAULT().stats,
           blankProgress: row.blank_progress ?? {},
           wrongWords: row.wrong_words ?? [],
         }
@@ -189,6 +192,12 @@ export function ProgressProvider({ children }) {
 
   const updateMy = useCallback((updater) => update(MY, updater), [update])
 
+  // 테스트·퀴즈 결과를 레벨별 정답률에 더하기
+  const addStats = useCallback((level, correct, total) => update(level, st => {
+    const s = st.stats ?? DEFAULT().stats
+    return { ...st, stats: { correct: s.correct + correct, total: s.total + total } }
+  }), [update])
+
   // 서버 데이터를 불러오기 전에 학습 화면이 열리면 빈 진행 상황으로 덮어쓸 수 있으므로 대기
   if (!loaded) {
     return (
@@ -199,7 +208,7 @@ export function ProgressProvider({ children }) {
   }
 
   return (
-    <ProgressContext.Provider value={{ getLevel, update, my, updateMy, syncing, saveFailed }}>
+    <ProgressContext.Provider value={{ getLevel, update, addStats, my, updateMy, syncing, saveFailed }}>
       {children}
     </ProgressContext.Provider>
   )

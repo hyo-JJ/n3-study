@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Topbar } from '../components/Layout'
 import { usePlan } from '../hooks/useStudyStyle'
 import { useLearnStep } from '../hooks/useLearnStep'
+import { useMyWords } from '../hooks/useMyWords'
 import { getDay } from '../lib/data'
 import LearnSession from '../components/learn/Session'
 
@@ -16,6 +17,7 @@ export default function FlashcardPage() {
   const plan = usePlan()
   const items = useMemo(() => (dayData?.words ?? []).map(w => ({ key: w.no, word: w.word, reading: w.reading, meaning: w.meaning, writable: true })), [dayData])
   const step = useLearnStep(level, dayNum, items.length)
+  const save = useMyWords(`${level} Day ${dayNum}`)
 
   if (!dayData) return null
   return (
@@ -23,7 +25,7 @@ export default function FlashcardPage() {
       <Topbar title={`Day ${dayNum} · ${dayData.topic}`} onBack={step.exit} />
       <div className="fc-wrap">
         <LearnSession items={items} screen={plan.screen} chunk={plan.chunk} feedback={plan.feedback} recall={plan.recall}
-          badge={BADGE[plan.screen]} start={step.start}
+          badge={BADGE[plan.screen]} start={step.start} save={save}
           onProgress={step.onProgress} onFinish={step.onFinish} onStop={step.onStop}
           finishLabel={step.reviewOnly ? '복습 끝 ✓' : '다 외웠어요 → 백지 복습'} />
       </div>

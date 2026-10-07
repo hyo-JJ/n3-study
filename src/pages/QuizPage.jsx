@@ -5,8 +5,9 @@ import { useProgress, today } from '../hooks/useProgress'
 import { usePlan } from '../hooks/useStudyStyle'
 import { useRecord } from '../hooks/useRecord'
 import { useToast } from '../components/Toast'
-import { getLevelDays, LEVELS } from '../lib/data'
+import { getLevelDays } from '../lib/data'
 import { levelHome, priorityKeys } from '../lib/study'
+import { isDaily } from '../lib/level'
 import TestRunner from '../components/learn/TestRunner'
 import { MissList } from '../components/learn/Session'
 import { KANJI } from '../lib/furigana'
@@ -68,7 +69,7 @@ export default function QuizPage() {
   const dayNum = Number(day)
   const navigate = useNavigate()
   const toast = useToast()
-  const { getLevel, update } = useProgress()
+  const { getLevel, update, addStats } = useProgress()
   const plan = usePlan()
   const record = useRecord()
   const allDays = getLevelDays(level)
@@ -123,10 +124,11 @@ export default function QuizPage() {
 
   const onDone = (r) => {
     setResult(r)
+    addStats(level, r.correct, r.total)
     record({ kind: 'test', label: `${level} Day 1~${dayNum} 누적 테스트`, correct: r.correct, total: r.total })
   }
 
-  const dailyLimit = LEVELS[level]?.dailyLimit
+  const dailyLimit = isDaily(level)
   const hasNext = dayNum < allDays.length
 
   const handlePass = () => {

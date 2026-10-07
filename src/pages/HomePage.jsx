@@ -1,15 +1,15 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BottomNav } from '../components/Layout'
-import { useAuth } from '../hooks/useAuth'
+import { useProfile } from '../hooks/useAuth'
 import { useProgress } from '../hooks/useProgress'
 import { useTheme } from '../hooks/useTheme'
 import { useStudyStyle, usePlan } from '../hooks/useStudyStyle'
 import { PACE, COGNITIVE, styleName } from '../lib/studyStyle'
 import { useToast } from '../components/Toast'
-import { LEVELS } from '../lib/data'
 import { GRAMMAR, nextExam } from '../lib/data/jlpt'
-import { levelSummary, dayRoute, learnedWords, dueDays } from '../lib/study'
+import { levelSummary, dayRoute, learnedWords, dueDays, levelLocked } from '../lib/study'
+import { basicLevels, upperLevels, visibleLevels } from '../lib/level'
 import { KANJI_LV, KANJI_SETS, KANJI_COUNT } from '../lib/kanji'
 import { LAST_BASIC } from './LevelPage'
 import * as Ico from '../components/Icons'
@@ -34,7 +34,7 @@ function InstallCard() {
   )
 }
 
-const lastBasic = () => { try { return localStorage.getItem(LAST_BASIC) === 'N4' ? 'N4' : 'N5' } catch { return 'N5' } }
+const lastBasic = (basics) => { try { const v = localStorage.getItem(LAST_BASIC); return basics.includes(v) ? v : basics[0] } catch { return basics[0] } }
 
 function Folder({ c, icon, meta, desc, name, isNew, onClick }) {
   return (
@@ -53,19 +53,20 @@ function Folder({ c, icon, meta, desc, name, isNew, onClick }) {
 }
 
 export default function HomePage() {
-  const user = useAuth()
-  const { getLevel, syncing, saveFailed } = useProgress()
+  const profile = useProfile()
+  const { getLevel, syncing, saveFailed, my } = useProgress()
   const { toggle, isDark } = useTheme()
   const { style } = useStudyStyle()
   const plan = usePlan()
   const navigate = useNavigate()
   const toast = useToast()
 
-  const name = user?.user_metadata?.full_name || '학생'
+  const name = profile.name
+  const mine = profile.level
   const h = new Date().getHours()
   const hello = h < 12 ? '좋은 아침이에요' : h < 18 ? '안녕하세요' : '오늘도 수고했어요'
 
-  const levels = Object.keys(LEVELS)
+  const levels = visibleLevels()
   const sum = Object.fromEntries(levels.map(l => [l, levelSummary(l, getLevel(l))]))
   const wrong = levels.reduce((s, l) => s + getLevel(l).wrongWords.length, 0)
   const passedAll = levels.reduce((s, l) => s + sum[l].passed, 0)
@@ -73,18 +74,24 @@ export default function HomePage() {
   const { dday } = nextExam()
   const grammarCount = Object.values(GRAMMAR).reduce((s, a) => s + a.length, 0)
 
-  // 이어하기: 오늘 할 N3 Day → 없으면 N4·N5
-  const n3 = sum.N3
-  const basic = lastBasic()
-  const target = !n3.allDone && !n3.doneToday ? 'N3' : !sum[basic].allDone ? basic : null
-  const status1 = n3.allDone ? 'N3 완주! 🎉'
-    : n3.doneToday ? '오늘 N3 학습 완료 ✓'
-    : `오늘의 N3 · Day ${n3.next}`
+  // 이어하기: 오늘 할 내 레벨 Day → (내 레벨을 끝냈으면 열린 윗 레벨) → 없으면 쉬운 레벨
+  const main = sum[mine]
+  const ups = upperLevels()
+  const up = ups.find(l => !sum[l].allDone) ?? ups[ups.length - 1] // 지금 도전할 윗 레벨
+  const upOpen = !!up && !levelLocked(up, getLevel)
+  const basics = basicLevels()
+  const basic = lastBasic(basics)
+  const canDo = (l) => l && !sum[l].allDone && !sum[l].doneToday
+  const target = canDo(mine) ? mine : upOpen && canDo(up) ? up : basic && !sum[basic].allDone ? basic : null
+  const daily = upOpen ? up : mine
+  const status1 = sum[daily].allDone ? `${daily} 완주! 🎉`
+    : sum[daily].doneToday ? `오늘 ${daily} 학습 완료 ✓`
+    : `오늘의 ${daily} · Day ${sum[daily].next}`
   const status2 = `완료 ${passedAll} Day · 학습 단어 ${learned} · 오답 ${wrong}`
 
   const go = () => {
     if (!target) { toast('모든 Day를 끝냈어요! 복습·게임으로 가볼까요? 🎉'); return }
-    if (target !== 'N3') toast(`N3는 내일! 지금은 ${target} Day ${sum[target].next} 이어하기 💪`)
+    if (target !== daily) toast(`${daily}는 내일! 지금은 ${target} Day ${sum[target].next} 이어하기 💪`)
     navigate(dayRoute(target, getLevel(target), sum[target].next))
   }
 
@@ -139,14 +146,22 @@ export default function HomePage() {
 
         <h2 className="nb-sec">내 학습 공간</h2>
         <div className="nb-grid">
-          <Folder c="var(--nb-gray)" icon={<Ico.Pic name="fuji" />} name="N3 본 공부"
-            meta={<><b>Day {n3.passed}/{n3.total}</b><br />하루 1 Day</>}
-            desc={n3.doneToday ? '오늘 몫 끝! 내일 또 만나요' : `단어 ${COGNITIVE[style.cognitive].name} → 백지 복습 → 누적 테스트`}
-            onClick={() => navigate('/study/N3')} />
-          <Folder c="var(--nb-green)" icon={<Ico.Pic name="sprout" />} name="N4·N5 단어"
-            meta={<><b>N5 {sum.N5.passed}/{sum.N5.total}</b><br /><b>N4 {sum.N4.passed}/{sum.N4.total}</b></>}
-            desc="제한 없이 기초를 쭉쭉"
-            onClick={() => navigate(`/study/${basic}`)} />
+          <Folder c="var(--nb-gray)" icon={<Ico.Pic name="fuji" />} name={`${mine} 본 공부`}
+            meta={<><b>Day {main.passed}/{main.total}</b><br />하루 1 Day</>}
+            desc={main.doneToday ? '오늘 몫 끝! 내일 또 만나요' : `단어 ${COGNITIVE[style.cognitive].name} → 백지 복습 → 누적 테스트`}
+            onClick={() => navigate(`/study/${mine}`)} />
+          {up && (
+            <Folder c="var(--nb-purple)" icon={<Ico.Pic name="star" />} name={`${up} 도전`}
+              meta={<><b>Day {sum[up].passed}/{sum[up].total}</b><br />{upOpen ? '하루 1 Day' : '🔒 잠김'}</>}
+              desc={upOpen ? (sum[up].doneToday ? '오늘 몫 끝! 내일 또 만나요' : '한 단계 위 레벨, 하루 1 Day씩') : `${ups[ups.indexOf(up) - 1] ?? mine}를 모두 끝내면 열려요`}
+              onClick={() => navigate(`/study/${up}`)} />
+          )}
+          {basics.length > 0 && (
+            <Folder c="var(--nb-green)" icon={<Ico.Pic name="sprout" />} name={`${basics.join('·')} 단어`}
+              meta={<><b>{basics.reduce((n, l) => n + sum[l].passed, 0)}/{basics.reduce((n, l) => n + sum[l].total, 0)} Day</b><br />{basics.length}개 레벨</>}
+              desc="제한 없이 순서대로 쭉쭉"
+              onClick={() => navigate(`/study/${basic}`)} />
+          )}
           <Folder c="var(--nb-beige)" icon={<Ico.Pic name="book" />} name="복습 공간"
             meta={<><b>오답 {wrong}개</b><br />간격·누적 복습</>}
             desc="나의 복습 방식에 맞춰 오답·지난 Day 다시 보기"
@@ -167,6 +182,10 @@ export default function HomePage() {
             meta={<><b>상황극 8가지</b><br />실제 예문</>}
             desc="공항·호텔·식당 등 실제 대화 예문으로 말하기 연습"
             onClick={() => navigate('/tutor')} />
+          <Folder c="var(--nb-yellow)" icon={<Ico.Pic name="star" />} name="나만의 단어장"
+            meta={<><b>{my.words.length}단어</b><br />직접 모으기</>}
+            desc="외우기 힘든 단어만 따로 모아 카드로 외우기"
+            onClick={() => navigate('/mywords')} />
         </div>
       </div>
       <BottomNav />
