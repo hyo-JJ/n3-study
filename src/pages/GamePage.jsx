@@ -5,6 +5,8 @@ import { useAuth } from '../hooks/useAuth'
 import { learnedWords } from '../lib/study'
 import { Pic } from '../components/Icons'
 import { submitScore, fetchLeaderboard, setNickname, defaultNickname } from '../lib/ranking'
+import { KANJI } from '../lib/furigana'
+import { cleanReading, readingOptions } from '../lib/reading'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
 const MIN_WORDS = 8
@@ -177,6 +179,8 @@ function Match({ pool, game, onExit }) {
 }
 
 const READING_N = 10
+// 한자가 들어간 단어만 (가나 단어는 문제에 답이 그대로 보임)
+const hasReading = (w) => !!w.reading && KANJI.test(w.word)
 const READING_SEC = 10 // 문제당 제한 시간
 const NEXT_MS = { ok: 1200, no: 2500 } // 정답 확인 후 다음 문제까지
 const TIMEOUT = Symbol('timeout')
@@ -184,14 +188,12 @@ const TIMEOUT = Symbol('timeout')
 function ReadingQuiz({ pool, game, onExit }) {
   const [round, setRound] = useState(0)
   const qs = useMemo(() => {
-    const withR = pool.filter(w => w.reading)
-    return shuffle(withR).slice(0, READING_N).map(w => {
-      // 글자 수가 비슷한 읽기를 오답으로
-      const others = shuffle(withR.filter(x => x.reading !== w.reading))
-        .sort((a, b) => Math.abs(a.reading.length - w.reading.length) - Math.abs(b.reading.length - w.reading.length))
-        .slice(0, 3).map(x => x.reading)
-      return { w, opts: shuffle([w.reading, ...others]) }
-    })
+    const withR = pool.filter(hasReading)
+    return shuffle(withR).slice(0, READING_N).map(w => ({
+      w: { ...w, reading: cleanReading(w.reading) },
+      // 장음·촉음·탁음만 바꾼 가짜 읽기 + 다른 단어의 비슷한 읽기
+      opts: readingOptions(w.reading, withR.filter(x => x !== w).map(x => x.reading)),
+    }))
   }, [pool, round])
   const [idx, setIdx] = useState(0)
   const [picked, setPicked] = useState(null)
@@ -349,7 +351,7 @@ export default function GamePage() {
   const game = GAMES.find(g => g.id === playing)
   const ranking = playing === 'rank'
   const exit = () => setPlaying(null)
-  const readingCount = pool.filter(w => w.reading).length
+  const readingCount = pool.filter(hasReading).length
 
   return (
     <div className="screen nb">

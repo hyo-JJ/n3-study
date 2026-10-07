@@ -19,7 +19,7 @@ alter table public.members enable row level security;
 
 insert into public.members (name, level, role) values
   ('김정훈', 'N3', 'student'), ('민건우', 'N3', 'student'), ('서정환', 'N3', 'student'), ('문수혁', 'N3', 'student'),
-  ('이현준', 'N3', 'student'), ('김효정', 'N3', 'student'), ('정지윤', 'N3', 'student'),
+  ('이현준', 'N3', 'student'), ('김효정', 'N3', 'student'), ('정지윤', 'N3', 'student'), ('성윤수', 'N3', 'student'),
   ('이예빈', 'N2', 'student'),
   ('진수현', 'N1', 'student'), ('고승연', 'N1', 'student'),
   ('백선미', null, 'admin')

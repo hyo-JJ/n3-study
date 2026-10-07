@@ -9,6 +9,7 @@ import TestRunner from '../components/learn/TestRunner'
 import { GRAMMAR_PER_DAY, grammarDays, grammarState, grammarUnlocked } from '../lib/study'
 import { getMyLevel } from '../lib/level'
 import { EXAM_INFO, QUESTION_TYPES, STRATEGY, GRAMMAR, nextExam } from '../lib/data/jlpt'
+import { GRAMMAR_WRONG } from '../lib/data/grammarQuiz'
 
 const TABS = ['시험 안내', '문제 유형', '문법', '문법 퀴즈']
 const GL = ['N3', 'N4', 'N5']
@@ -149,7 +150,8 @@ function GrammarTest({ lv, items, label, actions }) {
 
   const qs = useMemo(() => shuffle(items).map(g => {
     const ans = answerOf(g)
-    const others = shuffle(GRAMMAR[lv].filter(x => answerOf(x) !== ans)).slice(0, 3).map(answerOf)
+    // 문법마다 정해 둔 오답 — 없으면 같은 레벨 다른 문법의 정답에서 (같은 글자가 두 번 나오지 않게)
+    const others = GRAMMAR_WRONG[lv]?.[g.p] ?? [...new Set(shuffle(GRAMMAR[lv]).map(answerOf))].filter(a => a !== ans).slice(0, 3)
     return {
       key: g.p, g, answer: ans, jp: true, hint: g.ko, missQ: g.ex.replace(/【.+?】/, '（　）'),
       opts: shuffle([ans, ...others]),

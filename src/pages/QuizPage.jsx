@@ -11,13 +11,14 @@ import { isDaily } from '../lib/level'
 import TestRunner from '../components/learn/TestRunner'
 import { MissList } from '../components/learn/Session'
 import { KANJI } from '../lib/furigana'
+import { cleanReading } from '../lib/reading'
 
 const shuffle = (arr) => [...arr].sort(() => Math.random() - .5)
 
 // 문제 유형: 뜻 고르기 / 요미카타 고르기 / 한자 고르기 / 뜻 보고 단어 고르기
 const TYPES = {
   meaning: { badge: '뜻', hint: '이 단어의 뜻은?', ans: w => w.meaning, jpOpts: false },
-  reading: { badge: '요미카타', hint: '읽는 법(요미카타)은?', ans: w => w.reading, jpOpts: true },
+  reading: { badge: '요미카타', hint: '읽는 법(요미카타)은?', ans: w => cleanReading(w.reading), jpOpts: true },
   kanji: { badge: '한자', hint: '어떤 한자로 쓸까요?', ans: w => w.word, jpOpts: true },
   word: { badge: '단어', hint: '이 뜻의 일본어는?', ans: w => w.word, jpOpts: true },
 }
