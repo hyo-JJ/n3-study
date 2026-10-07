@@ -15,7 +15,7 @@ import { PACE, COGNITIVE, styleName } from '../lib/studyStyle'
 const EMPTY = () => ({ passedDays: [], flashProgress: {}, blankProgress: {}, wrongWords: [], passedAt: {} })
 const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return ymd(d) }
-const KIND = { test: '누적 테스트', kanji: '한자 테스트', grammar: '문법 퀴즈' }
+const KIND = { test: '누적 테스트', kanji: '한자 테스트', grammar: '문법 퀴즈', talk: '회화 문장 맞추기' }
 
 // 연속 학습일 — 오늘(아직 안 했으면 어제)부터 거꾸로
 function streakOf(log) {

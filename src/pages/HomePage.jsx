@@ -179,8 +179,8 @@ export default function HomePage() {
             desc={`${COGNITIVE[style.cognitive].name}으로 20자씩, 음훈·예시 단어까지`}
             onClick={() => navigate('/kanji')} />
           <Folder c="var(--nb-sky)" icon={<Ico.Pic name="chat" />} name="상황별 회화" isNew
-            meta={<><b>상황극 8가지</b><br />실제 예문</>}
-            desc="공항·호텔·식당 등 실제 대화 예문으로 말하기 연습"
+            meta={<><b>상황극 8가지</b><br />문장 맞추기</>}
+            desc="공항·호텔·식당 등 실제 대화 문장을 조각 맞추기로 연습"
             onClick={() => navigate('/tutor')} />
           <Folder c="var(--nb-yellow)" icon={<Ico.Pic name="star" />} name="나만의 단어장"
             meta={<><b>{my.words.length}단어</b><br />직접 모으기</>}

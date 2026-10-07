@@ -298,3 +298,13 @@
 .tt-row span{font-size:14.5px}
 .tt-row b{font-size:17px}
 .tt-row .tt-hidden{font-size:13px;color:var(--nb-mute);font-family:inherit}
+/* 상황별 회화 문장 맞추기 */
+.sc-ans{min-height:58px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;margin-top:14px;padding:10px;border:2px dashed var(--nb-line);border-radius:12px}
+.sc-ans.ok{border-style:solid;border-color:var(--nb-ok)}
+.sc-ans.no{border-style:solid;border-color:var(--nb-err)}
+.sc-ph{font-size:13px;color:var(--nb-mute);align-self:center}
+.sc-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.sc-chip{font-family:'Noto Sans JP',sans-serif;font-size:17px;font-weight:700;padding:8px 12px;background:var(--nb-card);color:var(--nb-ink);border:2px solid var(--nb-line);border-radius:10px;box-shadow:var(--nb-sh-sm);cursor:pointer;touch-action:manipulation}
+.sc-chip:active{transform:translate(2px,2px);box-shadow:none}
+.sc-chip.used{visibility:hidden}
+.sc-ans .sc-chip{background:var(--nb-yellow);color:#111;box-shadow:none}
