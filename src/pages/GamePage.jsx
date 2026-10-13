@@ -14,7 +14,7 @@ const MIN_WORDS = 8
 const GAMES = [
   { id: 'speed', name: '스피드 퀴즈', desc: '60초 동안 뜻을 최대한 많이 맞히기', ico: 'chat', c: 'var(--nb-pink)', unit: '개', better: 'high', rankBy: '60초 동안 맞힌 개수가 많을수록 위예요' },
   { id: 'match', name: '짝 맞추기', desc: '단어와 뜻 6쌍을 빨리 짝지어요', ico: 'sakura', c: 'var(--nb-sky)', unit: '초', better: 'low', rankBy: '6쌍을 다 맞추는 데 걸린 시간이 짧을수록 위예요' },
-  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (10문제 · 문제당 10초)', ico: 'hiragana', c: 'var(--nb-lime)', unit: '점', better: 'high', rankBy: '10문제 점수가 높을수록 위예요 (같은 점수면 먼저 세운 사람이 위)' },
+  { id: 'reading', name: '요미카타 퀴즈', desc: '한자를 보고 읽는 법 고르기 (50문제 · 100점 만점 · 문제당 10초)', ico: 'hiragana', c: 'var(--nb-lime)', unit: '점', better: 'high', rankBy: '50문제 점수(100점 만점)가 높을수록 위예요 (같은 점수면 먼저 세운 사람이 위)' },
 ]
 
 // 문제가 바뀐 직후엔 잠깐 입력을 막아, 연달아 누른 손가락이 다음 문제 보기를 누르지 않게 한다
@@ -178,7 +178,7 @@ function Match({ pool, game, onExit }) {
   )
 }
 
-const READING_N = 10
+const READING_N = 50 // 외운 한자 단어가 이보다 적으면 있는 만큼만 (점수는 항상 100점 만점)
 // 한자가 들어간 단어만 (가나 단어는 문제에 답이 그대로 보임)
 const hasReading = (w) => !!w.reading && KANJI.test(w.word)
 const READING_SEC = 10 // 문제당 제한 시간

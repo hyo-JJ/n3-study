@@ -42,6 +42,13 @@ export async function fetchLeaderboard(user, game, weekly) {
   return data
 }
 
+// 내 게임 기록(이번 주·전체 최고 기록)을 랭킹에서 지우기 — 올리지 못한 기록도 함께 버림
+export async function resetMyScores(user) {
+  writePending(user.id, {})
+  const { error } = await supabase.rpc('reset_my_game_scores')
+  if (error) throw error
+}
+
 export async function setNickname(nickname) {
   const { error } = await supabase.rpc('set_game_nickname', { p_nickname: nickname })
   if (error) throw error

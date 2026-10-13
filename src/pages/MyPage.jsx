@@ -6,6 +6,7 @@ import { useProgress, today } from '../hooks/useProgress'
 import { useStudyStyle } from '../hooks/useStudyStyle'
 import { useToast } from '../components/Toast'
 import { supabase } from '../lib/supabase'
+import { resetMyScores } from '../lib/ranking'
 import { LEVELS } from '../lib/data'
 import { learnedWords, grammarDays, grammarState } from '../lib/study'
 import { visibleLevels } from '../lib/level'
@@ -74,11 +75,14 @@ export default function MyPage() {
   // 기록 초기화 — 되돌릴 수 없으니 두 번 확인
   const reset = (what, label) => {
     if (!confirm(`${label}을(를) 초기화할까요?\n지운 기록은 되돌릴 수 없어요.`)) return
-    if (what === 'all' && !confirm('정말 모든 학습 기록을 지울까요?\n(학습 프로필·게임 기록·랭킹은 그대로예요)')) return
+    if (what === 'all' && !confirm('정말 모든 학습 기록을 지울까요?\n(게임 최고 기록·랭킹 기록까지 모두 지워져요.\n학습 프로필과 나만의 단어장은 그대로예요)')) return
     if (what === 'wrong') [...levels, KANJI_LV].forEach(l => update(l, st => ({ ...st, wrongWords: [] })))
     else if (what === 'all') {
       [...levels, KANJI_LV].forEach(clear)
-      updateMy(m => ({ ...m, log: {}, scores: [], grammarDays: {}, grammarWrong: {} }))
+      updateMy(m => ({ ...m, log: {}, scores: [], grammarDays: {}, grammarWrong: {}, blankScore: {}, best: {} }))
+      resetMyScores(user).then(() => toast('모든 학습 기록과 게임 랭킹을 초기화했어요'),
+        () => toast('학습 기록은 지웠지만 랭킹 기록은 지우지 못했어요. 잠시 후 다시 시도해주세요'))
+      return
     } else clear(what)
     toast(`${label} 초기화했어요`)
   }
