@@ -10,7 +10,7 @@ const DEFAULT = () => ({
   blankProgress: {},
   wrongWords: [],
   passedAt: {}, // { [dayNum]: 'YYYY-MM-DD' } — 하루 1 Day 제한용
-  stats: { correct: 0, total: 0 }, // 이 레벨 테스트·문법 퀴즈 누적 정답 수 — 관리자 화면 정답률
+  stats: { correct: 0, total: 0 }, // 이 레벨 백지 복습·문법 퀴즈 누적 정답 수 — 관리자 화면 정답률
 })
 
 // 로컬 기준 오늘 날짜 (YYYY-MM-DD)

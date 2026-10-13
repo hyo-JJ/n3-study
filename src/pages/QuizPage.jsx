@@ -70,7 +70,7 @@ export default function QuizPage() {
   const dayNum = Number(day)
   const navigate = useNavigate()
   const toast = useToast()
-  const { getLevel, update, addStats } = useProgress()
+  const { getLevel, update } = useProgress()
   const plan = usePlan()
   const record = useRecord()
   const allDays = getLevelDays(level)
@@ -123,10 +123,10 @@ export default function QuizPage() {
     })
   }
 
+  // 객관식 누적 테스트는 Day 통과 확인용 — 점수 기록·정답률은 백지 복습 점수로
   const onDone = (r) => {
     setResult(r)
-    addStats(level, r.correct, r.total)
-    record({ kind: 'test', label: `${level} Day 1~${dayNum} 누적 테스트`, correct: r.correct, total: r.total })
+    record()
   }
 
   const dailyLimit = isDaily(level)

@@ -131,7 +131,7 @@ function Match({ pool, game, onExit }) {
   const tiles = useMemo(() => {
     const ws = shuffle(pool).filter((w, i, a) => a.findIndex(x => x.meaning === w.meaning) === i).slice(0, 6)
     return shuffle(ws.flatMap((w, i) => [{ k: `w${i}`, pair: i, text: w.word, jp: true }, { k: `m${i}`, pair: i, text: w.meaning }]))
-  }, [pool, round])
+  }, [round]) // eslint-disable-line react-hooks/exhaustive-deps
   const [sel, setSel] = useState(null)
   const [gone, setGone] = useState([])
   const [bad, setBad] = useState([])
@@ -194,7 +194,7 @@ function ReadingQuiz({ pool, game, onExit }) {
       // 장음·촉음·탁음만 바꾼 가짜 읽기 + 다른 단어의 비슷한 읽기
       opts: readingOptions(w.reading, withR.filter(x => x !== w).map(x => x.reading)),
     }))
-  }, [pool, round])
+  }, [round]) // eslint-disable-line react-hooks/exhaustive-deps -- 틀려서 오답노트가 바뀌어도 한 판 동안 문제 고정
   const [idx, setIdx] = useState(0)
   const [picked, setPicked] = useState(null)
   const [left, setLeft] = useState(READING_SEC)

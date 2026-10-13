@@ -158,7 +158,7 @@ function GrammarTest({ lv, items, label, actions }) {
       q: (answered) => <div className="sent"><Example ex={g.ex} blank={answered ? ans : true} /></div>,
       after: <><b className="jp">{g.p}</b> — {g.m}<div className="gm-c">접속: {g.c}</div>{g.d && <p className="gm-d">{g.d}</p>}</>,
     }
-  }), [items, lv])
+  }), []) // eslint-disable-line react-hooks/exhaustive-deps -- 답할 때마다 기록이 바뀌어 items가 새로 만들어져도 문제 순서·보기 고정 (새 판은 key로)
 
   const onAnswer = (q, ok) => updateMy(m => {
     const next = { ...(m.grammarWrong ?? {}) }

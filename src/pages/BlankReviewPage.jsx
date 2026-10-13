@@ -32,7 +32,7 @@ export default function BlankReviewPage() {
   const dayData = getDay(level, dayNum)
   const navigate = useNavigate()
   const toast = useToast()
-  const { getLevel, update } = useProgress()
+  const { getLevel, update, addStats, my, updateMy } = useProgress()
   const plan = usePlan()
   const record = useRecord()
   const words = dayData?.words ?? []
@@ -58,6 +58,7 @@ export default function BlankReviewPage() {
   const [misses, setMisses] = useState([])
   const [pause, setPause] = useState(null) // 'misses' | 'break'
   const timer = useRef(null)
+  const right = useRef(0) // 이번 세트에서 한 번에 맞힌 문제 수
   useEffect(() => () => clearTimeout(timer.current), [])
 
   if (!dayData) return null
@@ -93,14 +94,22 @@ export default function BlankReviewPage() {
     if (r.ok && plan.feedback === 'adaptive') timer.current = setTimeout(() => next(true), 650)
   }
 
+  // 백지 복습 점수 = 이 Day의 실제 점수 (쓰기·뜻 두 라운드를 한 번에 맞힌 비율)
+  // 세트마다 나눠 풀어도 이어지도록 나만의 기록(MY)의 blankScore에 쌓고, 첫 세트부터 다시 하면 새로 계산
   const finishSet = () => {
     update(level, st => ({ ...st, blankProgress: { ...st.blankProgress, [dayNum]: Math.max(to, st.blankProgress[dayNum] || 0) } }))
+    const key = `${level}:${dayNum}`
+    const prev = from === 0 ? { correct: 0, total: 0 } : (my.blankScore?.[key] ?? { correct: 0, total: 0 })
+    const score = { correct: prev.correct + right.current, total: prev.total + steps.length }
+    updateMy(m => ({ ...m, blankScore: { ...(m.blankScore ?? {}), [key]: score } }))
     if (to < total) { setPause('break'); return }
-    record()
-    toast('백지 복습 완료! 🎉')
+    const pct = Math.round(score.correct / score.total * 100)
+    addStats(level, score.correct, score.total)
+    record({ kind: 'blank', label: `${level} Day ${dayNum} 백지 복습`, ...score })
+    toast(`백지 복습 완료! ${pct}점 🎉`)
     setTimeout(() => {
       const when = isDaily(level) ? '내일 ' : ''
-      if (confirm(`Day ${dayNum} 학습 완료!\n누적 테스트를 통과하면 ${when}다음 Day가 열립니다.\n지금 시작할까요?`)) {
+      if (confirm(`Day ${dayNum} 백지 복습 ${pct}점 (${score.correct}/${score.total})\n누적 테스트를 통과하면 ${when}다음 Day가 열립니다.\n지금 시작할까요?`)) {
         navigate(`/quiz/${level}/${dayNum}`)
       } else {
         navigate(levelHome(level))
@@ -110,6 +119,7 @@ export default function BlankReviewPage() {
 
   const next = (correct) => {
     clearTimeout(timer.current)
+    if (correct) right.current++
     if (!correct) {
       update(level, st => {
         const already = st.wrongWords.some(w => w.dn === dayNum && w.no === word.no)
@@ -130,7 +140,7 @@ export default function BlankReviewPage() {
     setIdx(nextIdx)
   }
 
-  const nextSet = () => { setFrom(to); setIdx(0); setMisses([]); setPause(null) }
+  const nextSet = () => { setFrom(to); setIdx(0); setMisses([]); setPause(null); right.current = 0 }
 
   // 한글/일본어 IME 변환 중 Enter는 무시
   const onKey = (e) => {
